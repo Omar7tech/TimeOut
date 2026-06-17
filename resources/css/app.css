@@ -82,6 +82,12 @@
         var(--foreground);
     --color-background:
         var(--background);
+    --color-brand-red:
+        var(--brand-red);
+    --color-brand-light:
+        var(--brand-light);
+    --color-brand-yellow:
+        var(--brand-yellow);
     --radius-sm:
         calc(var(--radius) * 0.6);
     --radius-md:
@@ -99,6 +105,12 @@
 }
 
 :root {
+    --brand-red:
+        #ec1c24;
+    --brand-light:
+        #f0f0f0;
+    --brand-yellow:
+        #f0e502;
     --background:
         oklch(1 0 0);
     --foreground:
