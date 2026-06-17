@@ -5,7 +5,7 @@ export default function Welcome() {
         <>
             <Head title="Welcome" />
             <div>
-                hello
+                hello for america 
             </div>
         </>
     );
