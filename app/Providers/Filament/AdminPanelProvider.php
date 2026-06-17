@@ -36,6 +36,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->sidebarCollapsibleOnDesktop()
             ->spa()
+            ->sidebarWidth('14rem')
             ->profile()
             ->brandLogo(asset('logos/timeout-logo-on-light.png'))
             ->darkModeBrandLogo(asset('logos/timeout-logo.png'))
