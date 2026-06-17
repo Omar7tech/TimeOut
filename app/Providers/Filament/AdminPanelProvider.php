@@ -34,6 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Red,
             ])
+            ->sidebarCollapsibleOnDesktop()
             ->spa()
             ->profile()
             ->brandLogo(asset('logos/timeout-logo-on-light.png'))
