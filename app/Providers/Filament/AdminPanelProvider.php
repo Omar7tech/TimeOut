@@ -32,8 +32,9 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Red,
             ])
+            ->spa()
             ->profile()
             ->brandLogo(asset('logos/timeout-logo-on-light.png'))
             ->darkModeBrandLogo(asset('logos/timeout-logo.png'))
@@ -48,6 +49,7 @@ class AdminPanelProvider extends PanelProvider
                 AccountWidget::class,
                 FilamentInfoWidget::class,
             ])
+            ->darkMode(true)
             ->plugin(
                 AuthDesignerPlugin::make()
                     ->login(
@@ -56,7 +58,6 @@ class AdminPanelProvider extends PanelProvider
                             ->mediaPosition(MediaPosition::Left)
                             ->mediaSize('65%')
                             ->themeToggle()
-                            
                     )
             )
             ->middleware([
