@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products\Tables;
 
+use App\Enums\OrderType;
 use App\Filament\Tables\Columns\PriceColumn;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -13,6 +14,7 @@ use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class ProductsTable
 {
@@ -58,9 +60,35 @@ class ProductsTable
                     ->relationship('category', 'title')
                     ->searchable()
                     ->preload(),
+                SelectFilter::make('order_type')
+                    ->label('Order type')
+                    ->options(OrderType::class),
                 TernaryFilter::make('is_active')
                     ->label('Active'),
+                TernaryFilter::make('is_featured')
+                    ->label('Featured'),
+                TernaryFilter::make('discount_price')
+                    ->label('Discount')
+                    ->placeholder('All products')
+                    ->trueLabel('On discount')
+                    ->falseLabel('Full price')
+                    ->queries(
+                        true: fn (Builder $query): Builder => $query->whereNotNull('discount_price'),
+                        false: fn (Builder $query): Builder => $query->whereNull('discount_price'),
+                        blank: fn (Builder $query): Builder => $query,
+                    ),
+                TernaryFilter::make('schedules')
+                    ->label('Scheduled')
+                    ->placeholder('All products')
+                    ->trueLabel('Has schedule')
+                    ->falseLabel('Always available')
+                    ->queries(
+                        true: fn (Builder $query): Builder => $query->has('schedules'),
+                        false: fn (Builder $query): Builder => $query->doesntHave('schedules'),
+                        blank: fn (Builder $query): Builder => $query,
+                    ),
             ])
+            ->filtersFormColumns(2)
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
