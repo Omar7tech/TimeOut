@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\OrderType;
+use App\Models\Category;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,6 +19,10 @@ return new class extends Migration
             $table->string('subtitle')->nullable();
             $table->text('description')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->unsignedMediumInteger('sort_order')->default(0);
+            $table->foreignIdFor(Category::class)->constrained()->cascadeOnDelete();
+            $table->decimal('price', 8, 2);
+            $table->string('order_type')->default(OrderType::BOTH->value);
             $table->timestamps();
         });
     }
