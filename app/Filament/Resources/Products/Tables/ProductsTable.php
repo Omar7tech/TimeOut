@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products\Tables;
 
+use App\Filament\Tables\Columns\PriceColumn;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -36,8 +37,8 @@ class ProductsTable
                     ->badge()
                     ->color('info')
                     ->sortable(),
-                TextColumn::make('price')
-                    ->money('USD')
+                PriceColumn::make('price')
+                    ->label('Price')
                     ->sortable(),
                 TextColumn::make('schedules_count')
                     ->label('Schedules')
