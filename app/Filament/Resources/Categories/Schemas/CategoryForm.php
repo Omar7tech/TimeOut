@@ -39,6 +39,8 @@ class CategoryForm
                             ->disk('public')
                             ->visibility('public')
                             ->image()
+                            ->conversion('webp')
+                            ->responsiveImages()
                             ->imageEditor()
                             ->columnSpanFull(),
                     ]),
