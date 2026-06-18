@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use App\Enums\OrderType;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
@@ -78,6 +80,34 @@ class ProductForm
                             ->label('Featured')
                             ->default(false)
                             ->inline(false),
+                    ]),
+
+                Section::make('Variants')
+                    ->description('Optional priced variants with a name and price.')
+                    ->columnSpanFull()
+                    ->components([
+                        Repeater::make('variants')
+                            ->hiddenLabel()
+                            ->table([
+                                TableColumn::make('Name')->markAsRequired(),
+                                TableColumn::make('Price')->markAsRequired(),
+                                TableColumn::make('Discount price'),
+                            ])
+                            ->compact()
+                            ->addActionLabel('Add variant')
+                            ->reorderable()
+                            ->schema([
+                                TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('price')
+                                    ->required()
+                                    ->numeric()
+                                    ->minValue(0),
+                                TextInput::make('discount_price')
+                                    ->numeric()
+                                    ->minValue(0),
+                            ]),
                     ]),
             ]);
     }
