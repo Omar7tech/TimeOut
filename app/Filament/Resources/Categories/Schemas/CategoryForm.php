@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Categories\Schemas;
 
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -17,6 +18,7 @@ class CategoryForm
             ->components([
                 Section::make('Details')
                     ->description('Basic information about the category.')
+                    ->columnSpanFull()
                     ->columns(2)
                     ->components([
                         TextInput::make('title')
@@ -35,14 +37,17 @@ class CategoryForm
 
                 Section::make('Add-ons')
                     ->description('Optional extras with a name and price.')
+                    ->columnSpanFull()
                     ->components([
                         Repeater::make('addons')
                             ->hiddenLabel()
-                            ->columns(2)
+                            ->table([
+                                TableColumn::make('Name')->markAsRequired(),
+                                TableColumn::make('Price')->markAsRequired(),
+                            ])
+                            ->compact()
                             ->addActionLabel('Add add-on')
                             ->reorderable()
-                            ->collapsible()
-                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
                             ->schema([
                                 TextInput::make('name')
                                     ->required()
@@ -50,8 +55,7 @@ class CategoryForm
                                 TextInput::make('price')
                                     ->required()
                                     ->numeric()
-                                    ->minValue(0)
-                                    ->prefix('$'),
+                                    ->minValue(0),
                             ]),
                     ]),
             ]);

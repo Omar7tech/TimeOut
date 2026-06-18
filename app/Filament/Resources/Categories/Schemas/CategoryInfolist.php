@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Categories\Schemas;
 
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\RepeatableEntry\TableColumn;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -15,6 +16,7 @@ class CategoryInfolist
         return $schema
             ->components([
                 Section::make('Details')
+                    ->columnSpanFull()
                     ->columns(2)
                     ->components([
                         TextEntry::make('title'),
@@ -29,11 +31,15 @@ class CategoryInfolist
                     ]),
 
                 Section::make('Add-ons')
+                    ->columnSpanFull()
                     ->components([
                         RepeatableEntry::make('addons')
                             ->hiddenLabel()
-                            ->columns(2)
                             ->placeholder('No add-ons.')
+                            ->table([
+                                TableColumn::make('Name'),
+                                TableColumn::make('Price')->width('160px'),
+                            ])
                             ->schema([
                                 TextEntry::make('name'),
                                 TextEntry::make('price')
@@ -42,6 +48,7 @@ class CategoryInfolist
                     ]),
 
                 Section::make('Meta')
+                    ->columnSpanFull()
                     ->columns(2)
                     ->collapsed()
                     ->components([
