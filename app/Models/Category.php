@@ -35,10 +35,10 @@ class Category extends Model implements HasMedia
     public function registerMediaConversions(?Media $media = null): void
     {
         $this->addMediaConversion('webp')
-            ->format('webp')
-            ->quality(35)
             ->withResponsiveImages()
-            ->nonQueued();
+            ->nonQueued()
+            ->format('webp')
+            ->quality(35);
     }
 
     /**
