@@ -13,9 +13,11 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\ManageRelatedRecords;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class ManageCategoryProducts extends ManageRelatedRecords
 {
@@ -28,6 +30,17 @@ class ManageCategoryProducts extends ManageRelatedRecords
     public static function getNavigationLabel(): string
     {
         return 'Products';
+    }
+
+    public function getTabs(): array
+    {
+        return [
+            'all' => Tab::make('All'),
+            'scheduled' => Tab::make('Scheduled')
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->has('schedules')),
+            'unscheduled' => Tab::make('Unscheduled')
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->doesntHave('schedules')),
+        ];
     }
 
     public function form(Schema $schema): Schema
