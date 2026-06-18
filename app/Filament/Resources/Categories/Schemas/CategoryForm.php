@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Categories\Schemas;
 
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -32,6 +33,13 @@ class CategoryForm
                             ->inline(false),
                         Textarea::make('description')
                             ->rows(3)
+                            ->columnSpanFull(),
+                        SpatieMediaLibraryFileUpload::make('image')
+                            ->collection('image')
+                            ->disk('public')
+                            ->visibility('public')
+                            ->image()
+                            ->imageEditor()
                             ->columnSpanFull(),
                     ]),
 
