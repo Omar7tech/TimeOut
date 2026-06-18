@@ -16,9 +16,7 @@ use Spatie\Sluggable\Attributes\Sluggable;
 class Category extends Model implements HasMedia
 {
     /** @use HasFactory<CategoryFactory> */
-    use HasFactory;
-
-    use InteractsWithMedia;
+    use HasFactory, InteractsWithMedia;
 
     public function getRouteKeyName(): string
     {
