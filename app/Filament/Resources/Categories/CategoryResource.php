@@ -5,12 +5,14 @@ namespace App\Filament\Resources\Categories;
 use App\Filament\Resources\Categories\Pages\CreateCategory;
 use App\Filament\Resources\Categories\Pages\EditCategory;
 use App\Filament\Resources\Categories\Pages\ListCategories;
+use App\Filament\Resources\Categories\Pages\ManageCategoryProducts;
 use App\Filament\Resources\Categories\Pages\ViewCategory;
 use App\Filament\Resources\Categories\Schemas\CategoryForm;
 use App\Filament\Resources\Categories\Schemas\CategoryInfolist;
 use App\Filament\Resources\Categories\Tables\CategoriesTable;
 use App\Models\Category;
 use BackedEnum;
+use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -39,11 +41,13 @@ class CategoryResource extends Resource
         return CategoriesTable::configure($table);
     }
 
-    public static function getRelations(): array
+    public static function getRecordSubNavigation(Page $page): array
     {
-        return [
-            //
-        ];
+        return $page->generateNavigationItems([
+            ViewCategory::class,
+            EditCategory::class,
+            ManageCategoryProducts::class,
+        ]);
     }
 
     public static function getPages(): array
@@ -53,6 +57,7 @@ class CategoryResource extends Resource
             'create' => CreateCategory::route('/create'),
             'view' => ViewCategory::route('/{record}'),
             'edit' => EditCategory::route('/{record}/edit'),
+            'products' => ManageCategoryProducts::route('/{record}/products'),
         ];
     }
 }
