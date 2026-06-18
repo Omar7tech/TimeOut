@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Categories\Schemas;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\RepeatableEntry\TableColumn;
+use Filament\Infolists\Components\SpatieMediaLibraryImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -19,6 +20,12 @@ class CategoryInfolist
                     ->columnSpanFull()
                     ->columns(2)
                     ->components([
+                        SpatieMediaLibraryImageEntry::make('image')
+                            ->label('Image')
+                            ->collection('image')
+                            ->conversion('webp')
+                            ->placeholder('-')
+                            ->columnSpanFull(),
                         TextEntry::make('title'),
                         TextEntry::make('subtitle')
                             ->placeholder('-'),

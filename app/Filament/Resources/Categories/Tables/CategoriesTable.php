@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\TernaryFilter;
@@ -19,6 +20,11 @@ class CategoriesTable
             ->reorderable('sort_order')
             ->defaultSort('sort_order')
             ->columns([
+                SpatieMediaLibraryImageColumn::make('image')
+                    ->label('Image')
+                    ->collection('image')
+                    ->conversion('webp')
+                    ->circular(),
                 TextColumn::make('title')
                     ->searchable()
                     ->sortable()
