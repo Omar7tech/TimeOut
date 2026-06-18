@@ -36,6 +36,12 @@ class CategoriesTable
                     ->color('info')
                     ->state(fn ($record): int => count($record->addons ?? []))
                     ->formatStateUsing(fn (int $state): string => $state === 1 ? '1 add-on' : "{$state} add-ons"),
+                TextColumn::make('products_count')
+                    ->label('Products')
+                    ->counts('products')
+                    ->badge()
+                    ->color(fn (int $state): string => $state > 0 ? 'success' : 'gray')
+                    ->sortable(),
                 ToggleColumn::make('is_active')
                     ->label('Active')
                     ->sortable(),
