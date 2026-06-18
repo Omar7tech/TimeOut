@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\Categories\Schemas;
 
 use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class CategoryInfolist
@@ -12,25 +14,44 @@ class CategoryInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('title'),
-                TextEntry::make('subtitle')
-                    ->placeholder('-'),
-                TextEntry::make('slug'),
-                TextEntry::make('description')
-                    ->placeholder('-'),
-                IconEntry::make('is_active')
-                    ->boolean(),
-                TextEntry::make('sort_order')
-                    ->numeric(),
-                TextEntry::make('addons')
-                    ->placeholder('-')
-                    ->columnSpanFull(),
-                TextEntry::make('created_at')
-                    ->dateTime()
-                    ->placeholder('-'),
-                TextEntry::make('updated_at')
-                    ->dateTime()
-                    ->placeholder('-'),
+                Section::make('Details')
+                    ->columns(2)
+                    ->components([
+                        TextEntry::make('title'),
+                        TextEntry::make('subtitle')
+                            ->placeholder('-'),
+                        IconEntry::make('is_active')
+                            ->label('Active')
+                            ->boolean(),
+                        TextEntry::make('description')
+                            ->placeholder('-')
+                            ->columnSpanFull(),
+                    ]),
+
+                Section::make('Add-ons')
+                    ->components([
+                        RepeatableEntry::make('addons')
+                            ->hiddenLabel()
+                            ->columns(2)
+                            ->placeholder('No add-ons.')
+                            ->schema([
+                                TextEntry::make('name'),
+                                TextEntry::make('price')
+                                    ->money('USD'),
+                            ]),
+                    ]),
+
+                Section::make('Meta')
+                    ->columns(2)
+                    ->collapsed()
+                    ->components([
+                        TextEntry::make('created_at')
+                            ->dateTime()
+                            ->placeholder('-'),
+                        TextEntry::make('updated_at')
+                            ->dateTime()
+                            ->placeholder('-'),
+                    ]),
             ]);
     }
 }

@@ -6,8 +6,9 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
 class CategoriesTable
@@ -15,19 +16,22 @@ class CategoriesTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->reorderable('sort_order')
+            ->defaultSort('sort_order')
             ->columns([
                 TextColumn::make('title')
-                    ->searchable(),
-                TextColumn::make('subtitle')
-                    ->searchable(),
-                TextColumn::make('slug')
-                    ->searchable(),
-                TextColumn::make('description')
-                    ->searchable(),
-                IconColumn::make('is_active')
-                    ->boolean(),
-                TextColumn::make('sort_order')
-                    ->numeric()
+                    ->searchable()
+                    ->sortable()
+                    ->weight('medium')
+                    ->description(fn ($record): ?string => $record->subtitle),
+                TextColumn::make('addons')
+                    ->label('Add-ons')
+                    ->badge()
+                    ->color('info')
+                    ->state(fn ($record): int => count($record->addons ?? []))
+                    ->formatStateUsing(fn (int $state): string => $state === 1 ? '1 add-on' : "{$state} add-ons"),
+                ToggleColumn::make('is_active')
+                    ->label('Active')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -39,7 +43,8 @@ class CategoriesTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                TernaryFilter::make('is_active')
+                    ->label('Active'),
             ])
             ->recordActions([
                 ViewAction::make(),
