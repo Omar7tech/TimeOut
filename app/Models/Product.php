@@ -13,5 +13,6 @@ class Product extends Model
 
     protected $casts = [
         'order_type' => OrderType::class,
+        'variants' => 'array',
     ];
 }

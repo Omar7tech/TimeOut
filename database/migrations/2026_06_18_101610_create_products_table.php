@@ -16,13 +16,18 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('slug')->unique();
             $table->string('subtitle')->nullable();
             $table->text('description')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->boolean('is_featured')->default(false);
             $table->unsignedMediumInteger('sort_order')->default(0);
-            $table->foreignIdFor(Category::class)->constrained()->cascadeOnDelete();
             $table->decimal('price', 8, 2);
+            $table->decimal('discount_price', 8, 2)->nullable();
             $table->string('order_type')->default(OrderType::BOTH->value);
+            $table->unsignedSmallInteger('preparation_time')->nullable();
+            $table->json('variants')->nullable();
+            $table->foreignIdFor(Category::class)->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
