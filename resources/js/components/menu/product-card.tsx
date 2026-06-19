@@ -35,7 +35,7 @@ export function ProductCard({ product }: ProductCardProps) {
     return (
         <div className="group flex min-w-0 flex-col rounded-lg border-2 border-neutral-700 bg-card p-2.5 text-card-foreground shadow-[4px_4px_0_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000]">
             <div className="flex gap-3">
-                <div className="relative size-20 shrink-0 overflow-hidden rounded-md">
+                <div className="relative size-20 shrink-0 overflow-hidden rounded-md md:size-28">
                     {image ? (
                         <img
                             src={image}
