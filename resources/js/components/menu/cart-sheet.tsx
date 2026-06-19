@@ -1,4 +1,5 @@
 import { Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useCart } from '@/contexts/cart-context';
 import { usePricing } from '@/hooks/use-pricing';
@@ -11,9 +12,29 @@ import { cn } from '@/lib/utils';
 export function CartSheet() {
     const { items, open, setOpen, count, subtotalUsd, increment, decrement, removeItem, clear } = useCart();
     const pricing = usePricing();
+    const [confirmingClear, setConfirmingClear] = useState(false);
+
+    // Auto-dismiss the clear confirmation after a few seconds.
+    useEffect(() => {
+        if (!confirmingClear) {
+            return;
+        }
+
+        const timeout = window.setTimeout(() => setConfirmingClear(false), 4000);
+
+        return () => window.clearTimeout(timeout);
+    }, [confirmingClear]);
+
+    const handleOpenChange = (next: boolean): void => {
+        setOpen(next);
+
+        if (!next) {
+            setConfirmingClear(false);
+        }
+    };
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="gap-0 p-0">
                 <DialogHeader className="border-b-2 border-neutral-700 p-4 pr-12">
                     <DialogTitle className="flex items-center gap-2">
@@ -119,21 +140,48 @@ export function CartSheet() {
                                 </span>
                             </div>
 
-                            <div className="flex gap-2">
-                                <button
-                                    type="button"
-                                    onClick={clear}
-                                    className="inline-flex items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold uppercase tracking-wide text-card-foreground shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                >
-                                    Clear
-                                </button>
-                                <button
-                                    type="button"
-                                    className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold uppercase tracking-wide text-white shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                >
-                                    Checkout
-                                </button>
-                            </div>
+                            {confirmingClear ? (
+                                <div className="flex flex-col gap-2 rounded-md border-2 border-dashed border-brand-red/60 p-2.5">
+                                    <p className="text-center text-sm font-bold">Clear all items from your cart?</p>
+                                    <div className="flex gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setConfirmingClear(false)}
+                                            className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold uppercase tracking-wide text-card-foreground shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                clear();
+                                                setConfirmingClear(false);
+                                            }}
+                                            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold uppercase tracking-wide text-white shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                        >
+                                            <Trash2 className="size-4" />
+                                            Clear
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="flex gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setConfirmingClear(true)}
+                                        aria-label="Clear cart"
+                                        className="inline-flex items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold uppercase tracking-wide text-card-foreground shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                    >
+                                        <Trash2 className="size-4" />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold uppercase tracking-wide text-white shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                    >
+                                        Checkout
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </>
                 )}
