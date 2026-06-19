@@ -16,7 +16,7 @@ export function SiteHeader({ showCart = false }: SiteHeaderProps) {
             <img
                 src="/logos/timeout-logo.png"
                 alt="Time Out Snack"
-                className="h-10 select-none md:h-16"
+                className="h-12 select-none md:h-16"
                 draggable={false}
             />
 
