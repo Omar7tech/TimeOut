@@ -99,7 +99,7 @@ export default function Menu({ orderTypeLabel, categories }: MenuProps) {
 
                         <FilterPills categories={categories} activeId={active} onSelect={setActive} />
 
-                        <h2 className="text-lg font-extrabold">{heading}</h2>
+                        <h2 className="text-2xl font-black uppercase md:text-4xl">{heading}</h2>
 
                         {products.length > 0 ? (
                             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
