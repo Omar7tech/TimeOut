@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\Controllers\MenuController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
 
-Route::inertia('/menu/dine-in', 'menu/dine-in')->name('menu.dine-in');
-Route::inertia('/menu/delivery', 'menu/delivery')->name('menu.delivery');
+Route::get('/menu/dine-in', [MenuController::class, 'dineIn'])->name('menu.dine-in');
+Route::get('/menu/delivery', [MenuController::class, 'delivery'])->name('menu.delivery');
