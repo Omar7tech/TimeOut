@@ -20,7 +20,11 @@ export default function Menu({ orderTypeLabel }: MenuProps) {
                     draggable={false}
                 />
 
-                <Button size="icon" variant="ghost" className="relative" aria-label="Cart">
+                <Button
+                    size="icon"
+                    className="relative rounded-full bg-brand-red text-white hover:bg-brand-red/90"
+                    aria-label="Cart"
+                >
                     <ShoppingCart className="size-5" />
                 </Button>
             </header>
