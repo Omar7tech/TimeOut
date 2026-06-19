@@ -1,4 +1,5 @@
 import type { Product } from '@/types';
+import { cn } from '@/lib/utils';
 import { Star } from 'lucide-react';
 import { useState } from 'react';
 
@@ -31,7 +32,8 @@ export function ProductCard({ product }: ProductCardProps) {
     const image = product.thumb ?? product.image;
 
     return (
-        <div className="group flex gap-4 rounded-lg border-2 border-neutral-700 bg-card p-3 text-card-foreground shadow-[4px_4px_0_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000]">
+        <div className="group flex flex-col rounded-lg border-2 border-neutral-700 bg-card p-3 text-card-foreground shadow-[4px_4px_0_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000]">
+            <div className="flex gap-4">
             <div className="relative size-24 shrink-0 overflow-hidden rounded-md">
                 {image ? (
                     <img
@@ -71,23 +73,38 @@ export function ProductCard({ product }: ProductCardProps) {
                     <span className="rounded-md border-2 border-black bg-brand-red px-2 py-0.5 font-extrabold text-white">
                         {formatPrice(hasDiscount ? (discountPrice as number) : basePrice)}
                     </span>
-
-                    {hasVariants && (
-                        <select
-                            value={selectedIndex}
-                            onChange={(event) => setSelectedIndex(Number(event.target.value))}
-                            aria-label="Choose a variant"
-                            className="ml-auto rounded-md border-2 border-black bg-card px-1.5 py-0.5 text-[11px] font-bold text-card-foreground shadow-[2px_2px_0_0_#000] focus:outline-none"
-                        >
-                            {variants.map((variant, index) => (
-                                <option key={index} value={index}>
-                                    {variant.name}
-                                </option>
-                            ))}
-                        </select>
-                    )}
                 </div>
             </div>
+            </div>
+
+            {hasVariants && (
+                <div className="mt-3 border-t-2 border-dashed border-neutral-700 pt-3">
+                    <div
+                        role="group"
+                        aria-label="Choose a variant"
+                        className="flex w-full overflow-hidden rounded-md border-2 border-black shadow-[2px_2px_0_0_#000]"
+                    >
+                        {variants.map((variant, index) => {
+                            const selected = index === selectedIndex;
+
+                            return (
+                                <button
+                                    key={index}
+                                    type="button"
+                                    aria-pressed={selected}
+                                    onClick={() => setSelectedIndex(index)}
+                                    className={cn(
+                                        'flex-1 px-2 py-1.5 text-xs font-bold uppercase tracking-wide transition-colors not-first:-ml-px not-first:border-l-2 not-first:border-black',
+                                        selected ? 'bg-brand-red text-white' : 'bg-card text-card-foreground hover:bg-muted',
+                                    )}
+                                >
+                                    {variant.name}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
