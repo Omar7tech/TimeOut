@@ -36,8 +36,8 @@ export function ProductDialog({
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
-                {image && (
-                    <div className="relative -mx-5 -mt-5 aspect-video overflow-hidden border-b-2 border-black sm:mx-0 sm:mt-0 sm:rounded-lg sm:border-2">
+                {image ? (
+                    <div className="relative aspect-video w-full overflow-hidden rounded-xl border-2 border-black shadow-[3px_3px_0_0_#000]">
                         <img src={image} alt={product.title} className="size-full object-cover" draggable={false} />
                         {product.available_today && (
                             <span className="absolute left-2 top-2 rounded border border-black bg-brand-yellow px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-black">
@@ -45,6 +45,9 @@ export function ProductDialog({
                             </span>
                         )}
                     </div>
+                ) : (
+                    // Keep the close button clear of the title when there's no image.
+                    <div className="h-2" />
                 )}
 
                 <DialogHeader>
