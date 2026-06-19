@@ -30,6 +30,8 @@ class ProductResource extends JsonResource
             'preparation_time' => $this->preparation_time,
             'is_featured' => (bool) $this->is_featured,
             'variants' => $this->variants,
+            'available_today' => $this->has_schedule
+                && in_array(now()->dayOfWeekIso, $this->available_days ?? [], true),
             'image' => $this->getFirstMediaUrl('image', 'webp') ?: null,
             'thumb' => $this->getFirstMediaUrl('image', 'thumb') ?: null,
         ];

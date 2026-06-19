@@ -18,6 +18,8 @@ export type Product = {
     preparation_time: number | null;
     is_featured: boolean;
     variants: ProductVariant[] | null;
+    /** True when the product is scheduled and available on the current weekday. */
+    available_today: boolean;
     image: string | null;
     thumb: string | null;
 };

@@ -1,9 +1,10 @@
 import { CategoryGrid } from '@/components/menu/category-grid';
-import { FilterPills } from '@/components/menu/filter-pills';
+import { FilterPills, type MenuFilter } from '@/components/menu/filter-pills';
 import { ProductCard } from '@/components/menu/product-card';
 import { SiteHeader } from '@/components/menu/site-header';
 import { Button } from '@/components/ui/button';
-import type { Category, OrderType } from '@/types';
+import type { OrderType, Product } from '@/types';
+import type { Category } from '@/types';
 import { Head } from '@inertiajs/react';
 import { ChevronLeft } from 'lucide-react';
 import { useState } from 'react';
@@ -15,9 +16,19 @@ interface MenuProps {
 }
 
 export default function Menu({ orderTypeLabel, categories }: MenuProps) {
-    const [activeId, setActiveId] = useState<number | null>(null);
+    const [active, setActive] = useState<MenuFilter | null>(null);
 
-    const activeCategory = categories.find((category) => category.id === activeId) ?? null;
+    let heading = '';
+    let products: Product[] = [];
+
+    if (active === 'today') {
+        heading = 'Available today';
+        products = categories.flatMap((category) => category.products ?? []).filter((product) => product.available_today);
+    } else if (typeof active === 'number') {
+        const category = categories.find((item) => item.id === active);
+        heading = category?.title ?? '';
+        products = category?.products ?? [];
+    }
 
     return (
         <>
@@ -26,30 +37,32 @@ export default function Menu({ orderTypeLabel, categories }: MenuProps) {
             <SiteHeader />
 
             <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6">
-                {activeCategory === null ? (
-                    <CategoryGrid categories={categories} onSelect={(category) => setActiveId(category.id)} />
+                {active === null ? (
+                    <CategoryGrid categories={categories} onSelect={(category) => setActive(category.id)} />
                 ) : (
                     <>
                         <Button
                             variant="ghost"
                             size="sm"
                             className="-ml-2 w-fit gap-1 text-muted-foreground"
-                            onClick={() => setActiveId(null)}
+                            onClick={() => setActive(null)}
                         >
                             <ChevronLeft className="size-4" />
                             All categories
                         </Button>
 
-                        <FilterPills categories={categories} activeId={activeCategory.id} onSelect={setActiveId} />
+                        <FilterPills categories={categories} activeId={active} onSelect={setActive} />
 
-                        {(activeCategory.products ?? []).length > 0 ? (
+                        <h2 className="text-lg font-extrabold">{heading}</h2>
+
+                        {products.length > 0 ? (
                             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                                {(activeCategory.products ?? []).map((product) => (
+                                {products.map((product) => (
                                     <ProductCard key={product.id} product={product} />
                                 ))}
                             </div>
                         ) : (
-                            <p className="text-sm text-muted-foreground">No items available in this category.</p>
+                            <p className="text-sm text-muted-foreground">No items available.</p>
                         )}
                     </>
                 )}
