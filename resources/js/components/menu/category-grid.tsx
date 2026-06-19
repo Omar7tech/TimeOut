@@ -3,19 +3,18 @@ import type { Category } from '@/types';
 
 interface CategoryGridProps {
     categories: Category[];
-    /** Menu URL the cards link to (same for every category of this order type). */
-    menuUrl: string;
+    onSelect: (category: Category) => void;
 }
 
 /**
  * Responsive grid of category boxes, scaling from 3 columns on mobile up to
  * 6 on extra-large screens.
  */
-export function CategoryGrid({ categories, menuUrl }: CategoryGridProps) {
+export function CategoryGrid({ categories, onSelect }: CategoryGridProps) {
     return (
         <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-5 xl:grid-cols-6">
             {categories.map((category) => (
-                <CategoryCard key={category.id} category={category} href={menuUrl} />
+                <CategoryCard key={category.id} category={category} onSelect={onSelect} />
             ))}
         </div>
     );

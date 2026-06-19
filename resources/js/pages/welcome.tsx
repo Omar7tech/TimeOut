@@ -20,7 +20,7 @@ export default function Welcome() {
                         size="lg"
                         className="h-12 flex-1 bg-brand-red text-base font-bold text-white hover:bg-brand-red/90"
                     >
-                        <Link href="/categories/dine-in">Dine In</Link>
+                        <Link href="/menu/dine-in">Dine In</Link>
                     </Button>
 
                     <Button
@@ -28,7 +28,7 @@ export default function Welcome() {
                         size="lg"
                         className="h-12 flex-1 bg-brand-red text-base font-bold text-white hover:bg-brand-red/90"
                     >
-                        <Link href="/categories/delivery">Delivery</Link>
+                        <Link href="/menu/delivery">Delivery</Link>
                     </Button>
                 </div>
             </main>
