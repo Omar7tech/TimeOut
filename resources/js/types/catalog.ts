@@ -27,5 +27,6 @@ export type Category = {
     title: string;
     slug: string;
     image: string | null;
-    products: Product[];
+    /** Only present when the endpoint eager-loads products (e.g. the menu page). */
+    products?: Product[];
 };
