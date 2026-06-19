@@ -1,6 +1,6 @@
+import { Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { ProductVariant } from '@/types';
-import { Layers } from 'lucide-react';
 
 interface VariantSelectorProps {
     variants: ProductVariant[];

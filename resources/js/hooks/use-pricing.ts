@@ -1,6 +1,6 @@
+import { usePage } from '@inertiajs/react';
 import { convertUsdToLbp, formatLbp, formatUsd } from '@/lib/currency';
 import type { Pricing } from '@/types';
-import { usePage } from '@inertiajs/react';
 
 export type PriceParts = {
     /** Whether the USD price should be shown. */

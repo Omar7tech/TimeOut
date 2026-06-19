@@ -1,12 +1,11 @@
-import { Button } from '@/components/ui/button';
-import { ShoppingCart } from 'lucide-react';
+import { CartButton } from '@/components/menu/cart-button';
 
 /**
  * Shared top bar for the customer-facing pages: logo on the left, cart on the right.
  */
 export function SiteHeader() {
     return (
-        <header className="mx-auto flex max-w-[1400px] items-center justify-between px-4 md:px-10 py-4">
+        <header className="mx-auto flex max-w-[1400px] items-center justify-between px-4 py-4 md:px-10">
             <img
                 src="/logos/timeout-logo.png"
                 alt="Time Out Snack"
@@ -14,13 +13,7 @@ export function SiteHeader() {
                 draggable={false}
             />
 
-            <Button
-                size="icon"
-                className="relative rounded-full bg-brand-red text-white hover:bg-brand-red/90"
-                aria-label="Cart"
-            >
-                <ShoppingCart className="size-5" />
-            </Button>
+            <CartButton />
         </header>
     );
 }

@@ -1,9 +1,10 @@
+import { Eye, Plus, Star } from 'lucide-react';
+import { useState } from 'react';
 import { ProductDialog } from '@/components/menu/product-dialog';
 import { ProductPrice } from '@/components/menu/product-price';
 import { VariantSelector } from '@/components/menu/variant-selector';
+import { useCart } from '@/contexts/cart-context';
 import type { Product } from '@/types';
-import { Eye, Plus, Star } from 'lucide-react';
-import { useState } from 'react';
 
 interface ProductCardProps {
     product: Product;
@@ -14,6 +15,7 @@ interface ProductCardProps {
  * price, and quick actions. The "View" action opens the full details modal.
  */
 export function ProductCard({ product }: ProductCardProps) {
+    const { addItem } = useCart();
     const variants = product.variants ?? [];
     const hasVariants = variants.length > 0;
 
@@ -24,11 +26,19 @@ export function ProductCard({ product }: ProductCardProps) {
     const selectedVariant = hasVariants ? variants[selectedIndex] : null;
     const basePrice = selectedVariant ? selectedVariant.price : product.price;
     const discountPrice = selectedVariant ? selectedVariant.discount_price : product.discount_price;
+    const effectivePrice = discountPrice ?? basePrice;
 
     const image = product.thumb ?? product.image;
 
     const handleAddToCart = (): void => {
-        // TODO: wire up to a real cart once available.
+        addItem({
+            productId: product.id,
+            variantIndex: hasVariants ? selectedIndex : null,
+            title: product.title,
+            variantName: selectedVariant?.name ?? null,
+            unitUsd: effectivePrice,
+            image,
+        });
         setOpen(false);
     };
 

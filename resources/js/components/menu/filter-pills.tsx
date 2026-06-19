@@ -1,5 +1,5 @@
-import type { Category } from '@/types';
 import { cn } from '@/lib/utils';
+import type { Category } from '@/types';
 
 export type MenuFilter = number | 'today';
 

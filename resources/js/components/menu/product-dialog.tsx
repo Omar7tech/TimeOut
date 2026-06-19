@@ -1,8 +1,8 @@
+import { ShoppingCart, Star } from 'lucide-react';
 import { ProductPrice } from '@/components/menu/product-price';
 import { VariantSelector } from '@/components/menu/variant-selector';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import type { Product } from '@/types';
-import { ShoppingCart, Star } from 'lucide-react';
 
 interface ProductDialogProps {
     product: Product;

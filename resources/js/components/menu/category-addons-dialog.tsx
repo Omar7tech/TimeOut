@@ -1,3 +1,4 @@
+import { Plus } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -9,7 +10,6 @@ import {
 import { usePricing } from '@/hooks/use-pricing';
 import { cn } from '@/lib/utils';
 import type { Category } from '@/types';
-import { Plus } from 'lucide-react';
 
 interface CategoryAddonsDialogProps {
     category: Category;

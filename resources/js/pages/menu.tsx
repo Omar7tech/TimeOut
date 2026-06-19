@@ -1,14 +1,17 @@
-import { CategoryAddonsDialog } from '@/components/menu/category-addons-dialog';
-import { CategoryGrid } from '@/components/menu/category-grid';
-import { FilterPills, type MenuFilter } from '@/components/menu/filter-pills';
-import { ProductCard } from '@/components/menu/product-card';
-import { SiteHeader } from '@/components/menu/site-header';
-import { Button } from '@/components/ui/button';
-import type { OrderType, Product } from '@/types';
-import type { Category } from '@/types';
 import { Head } from '@inertiajs/react';
 import { ChevronLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { CartSheet } from '@/components/menu/cart-sheet';
+import { CategoryAddonsDialog } from '@/components/menu/category-addons-dialog';
+import { CategoryGrid } from '@/components/menu/category-grid';
+import { FilterPills  } from '@/components/menu/filter-pills';
+import type {MenuFilter} from '@/components/menu/filter-pills';
+import { ProductCard } from '@/components/menu/product-card';
+import { SiteHeader } from '@/components/menu/site-header';
+import { Button } from '@/components/ui/button';
+import { CartProvider } from '@/contexts/cart-context';
+import type { OrderType, Product } from '@/types';
+import type { Category } from '@/types';
 
 interface MenuProps {
     orderType: OrderType;
@@ -73,7 +76,7 @@ export default function Menu({ orderTypeLabel, categories }: MenuProps) {
     }
 
     return (
-        <>
+        <CartProvider>
             <Head title={`${orderTypeLabel} Menu`} />
 
             <SiteHeader />
@@ -124,6 +127,8 @@ export default function Menu({ orderTypeLabel, categories }: MenuProps) {
                     </>
                 )}
             </main>
-        </>
+
+            <CartSheet />
+        </CartProvider>
     );
 }
