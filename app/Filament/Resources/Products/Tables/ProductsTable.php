@@ -47,6 +47,10 @@ class ProductsTable
                     ->label('Price')
                     ->sortable()
                     ->lbpRate($lbpRate),
+                TextColumn::make('order_type')
+                    ->label('Order type')
+                    ->badge()
+                    ->sortable(),
                 TextColumn::make('schedules_count')
                     ->label('Schedules')
                     ->counts('schedules')
