@@ -10,16 +10,16 @@ function formatPrice(value: number): string {
 }
 
 /**
- * Menu item card: image, title/subtitle, and price (with discount), styled to
- * match the neo-brutalist filter pills.
+ * Menu item card: image, title/subtitle, and price (with discount). Uses theme
+ * surfaces so it sits naturally on the dark menu, with a red hover accent.
  */
 export function ProductCard({ product }: ProductCardProps) {
     const hasDiscount = product.discount_price !== null;
     const image = product.thumb ?? product.image;
 
     return (
-        <div className="group flex gap-4 rounded-xl border-2 border-black bg-white p-3 text-black shadow-[3px_3px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000]">
-            <div className="relative size-24 shrink-0 overflow-hidden rounded-lg border-2 border-black">
+        <div className="group flex gap-4 rounded-xl border border-border bg-card p-3 text-card-foreground transition-colors hover:border-brand-red">
+            <div className="relative size-24 shrink-0 overflow-hidden rounded-lg border border-border">
                 {image ? (
                     <img
                         src={image}
@@ -29,11 +29,11 @@ export function ProductCard({ product }: ProductCardProps) {
                         loading="lazy"
                     />
                 ) : (
-                    <div className="size-full bg-neutral-100" />
+                    <div className="size-full bg-muted" />
                 )}
 
                 {product.available_today && (
-                    <span className="absolute left-1 top-1 rounded bg-brand-yellow px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide">
+                    <span className="absolute left-1 top-1 rounded bg-brand-yellow px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-black">
                         Today
                     </span>
                 )}
@@ -48,12 +48,12 @@ export function ProductCard({ product }: ProductCardProps) {
                 </div>
 
                 {product.subtitle && (
-                    <p className="mt-0.5 line-clamp-2 text-sm text-neutral-500">{product.subtitle}</p>
+                    <p className="mt-0.5 line-clamp-2 text-sm text-muted-foreground">{product.subtitle}</p>
                 )}
 
                 <div className="mt-auto flex items-center gap-2 pt-2">
                     {hasDiscount && (
-                        <span className="text-sm text-neutral-400 line-through">{formatPrice(product.price)}</span>
+                        <span className="text-sm text-muted-foreground line-through">{formatPrice(product.price)}</span>
                     )}
                     <span className="rounded-md bg-brand-red px-2 py-0.5 font-extrabold text-white">
                         {formatPrice(hasDiscount ? (product.discount_price as number) : product.price)}
