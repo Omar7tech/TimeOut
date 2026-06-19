@@ -6,7 +6,6 @@ use App\Filament\Resources\Products\Pages\CreateProduct;
 use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Filament\Resources\Products\Pages\ListProducts;
 use App\Filament\Resources\Products\Pages\ViewProduct;
-use App\Filament\Resources\Products\RelationManagers\SchedulesRelationManager;
 use App\Filament\Resources\Products\Schemas\ProductForm;
 use App\Filament\Resources\Products\Schemas\ProductInfolist;
 use App\Filament\Resources\Products\Tables\ProductsTable;
@@ -38,13 +37,6 @@ class ProductResource extends Resource
     public static function table(Table $table): Table
     {
         return ProductsTable::configure($table);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            SchedulesRelationManager::class,
-        ];
     }
 
     public static function getPages(): array

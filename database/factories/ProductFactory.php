@@ -30,6 +30,7 @@ class ProductFactory extends Factory
 
         $price = $this->faker->randomElement([4.99, 7.50, 9.99, 12.00, 14.50, 18.99, 24.00, 32.50]);
         $hasDiscount = $this->faker->boolean(30);
+        $hasSchedule = $this->faker->boolean(25);
 
         return [
             'category_id' => Category::factory(),
@@ -43,6 +44,10 @@ class ProductFactory extends Factory
             'discount_price' => $hasDiscount ? round($price * $this->faker->randomFloat(2, 0.5, 0.9), 2) : null,
             'order_type' => $this->faker->randomElement(OrderType::cases()),
             'preparation_time' => $this->faker->boolean(60) ? $this->faker->numberBetween(5, 45) : null,
+            'has_schedule' => $hasSchedule,
+            'available_days' => $hasSchedule
+                ? $this->faker->randomElements([1, 2, 3, 4, 5, 6, 7], $this->faker->numberBetween(1, 5))
+                : null,
             'variants' => $this->faker->boolean(40) ? $this->variants() : null,
         ];
     }

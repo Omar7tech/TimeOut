@@ -3,16 +3,15 @@
 namespace App\Models;
 
 use App\Enums\OrderType;
-use App\Enums\ScheduleType;
 use Carbon\CarbonInterface;
 use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -28,6 +27,7 @@ class Product extends Model implements HasMedia
     protected $casts = [
         'order_type' => OrderType::class,
         'variants' => 'array',
+        'has_schedule' => 'boolean',
     ];
 
     public function getRouteKeyName(): string
@@ -44,18 +44,35 @@ class Product extends Model implements HasMedia
     }
 
     /**
-     * @return HasMany<ProductSchedule, $this>
+     * The ISO weekdays (1=Mon .. 7=Sun) the product is available on.
+     *
+     * Stored as a JSON array of integers so weekday lookups stay type-safe.
+     *
+     * @return Attribute<list<int>|null, list<int>|null>
      */
-    public function schedules(): HasMany
+    protected function availableDays(): Attribute
     {
-        return $this->hasMany(ProductSchedule::class);
+        return Attribute::make(
+            get: fn (?string $value): ?array => $value === null
+                ? null
+                : array_values(array_map(intval(...), json_decode($value, true))),
+            set: function (?array $value): ?string {
+                if ($value === null) {
+                    return null;
+                }
+
+                $encoded = json_encode(array_values(array_map(intval(...), $value)));
+
+                return $encoded === false ? null : $encoded;
+            },
+        );
     }
 
     /**
      * Limit to products available at the given moment (defaults to now).
      *
-     * A product with no active schedule rules is always available.
-     * Otherwise it must match at least one rule.
+     * A product with no schedule is always available; otherwise the moment's
+     * weekday must be one of its available days.
      *
      * @param  Builder<Product>  $query
      */
@@ -63,27 +80,13 @@ class Product extends Model implements HasMedia
     protected function availableNow(Builder $query, ?CarbonInterface $moment = null): void
     {
         $moment ??= now();
-        $time = $moment->format('H:i:s');
 
-        $query->where('is_active', true)->where(function (Builder $query) use ($moment, $time): void {
+        $query->where('is_active', true)->where(function (Builder $query) use ($moment): void {
             $query
-                ->whereDoesntHave('schedules', fn (Builder $rule) => $rule->where('is_active', true))
-                ->orWhereHas('schedules', function (Builder $rule) use ($moment, $time): void {
-                    $rule
-                        ->where('is_active', true)
-                        ->where(function (Builder $rule) use ($moment): void {
-                            $rule
-                                ->where(fn (Builder $r) => $r
-                                    ->where('type', ScheduleType::RECURRING->value)
-                                    ->where('day_of_week', $moment->dayOfWeekIso))
-                                ->orWhere(fn (Builder $r) => $r
-                                    ->where('type', ScheduleType::WINDOW->value)
-                                    ->where(fn (Builder $q) => $q->whereNull('start_date')->orWhereDate('start_date', '<=', $moment))
-                                    ->where(fn (Builder $q) => $q->whereNull('end_date')->orWhereDate('end_date', '>=', $moment)));
-                        })
-                        ->where(fn (Builder $q) => $q->whereNull('start_time')->orWhere('start_time', '<=', $time))
-                        ->where(fn (Builder $q) => $q->whereNull('end_time')->orWhere('end_time', '>=', $time));
-                });
+                ->where('has_schedule', false)
+                ->orWhere(fn (Builder $scheduled) => $scheduled
+                    ->where('has_schedule', true)
+                    ->whereJsonContains('available_days', $moment->dayOfWeekIso));
         });
     }
 
@@ -94,13 +97,15 @@ class Product extends Model implements HasMedia
     {
         $moment ??= now();
 
-        $activeRules = $this->schedules->where('is_active', true);
-
-        if ($activeRules->isEmpty()) {
-            return $this->is_active;
+        if (! $this->is_active) {
+            return false;
         }
 
-        return $this->is_active && $activeRules->contains(fn (ProductSchedule $rule) => $rule->matches($moment));
+        if (! $this->has_schedule) {
+            return true;
+        }
+
+        return in_array($moment->dayOfWeekIso, $this->available_days ?? [], true);
     }
 
     public function registerMediaCollections(): void

@@ -24,9 +24,9 @@ class ListProducts extends ListRecords
         return [
             'all' => Tab::make('All'),
             'scheduled' => Tab::make('Scheduled')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->has('schedules')),
-            'unscheduled' => Tab::make('Unscheduled')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->doesntHave('schedules')),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->where('has_schedule', true)),
+            'unscheduled' => Tab::make('Always available')
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->where('has_schedule', false)),
         ];
     }
 }

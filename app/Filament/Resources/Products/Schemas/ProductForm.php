@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use App\Enums\OrderType;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
@@ -85,6 +86,32 @@ class ProductForm
                                     ->label('Featured')
                                     ->default(false)
                                     ->inline(false),
+                            ]),
+
+                        Tab::make('Availability')
+                            ->icon(Heroicon::OutlinedCalendarDays)
+                            ->schema([
+                                Toggle::make('has_schedule')
+                                    ->label('Limit to specific days')
+                                    ->helperText('When off, the product is always available.')
+                                    ->live(),
+                                CheckboxList::make('available_days')
+                                    ->label('Available days')
+                                    ->options([
+                                        1 => 'Monday',
+                                        2 => 'Tuesday',
+                                        3 => 'Wednesday',
+                                        4 => 'Thursday',
+                                        5 => 'Friday',
+                                        6 => 'Saturday',
+                                        7 => 'Sunday',
+                                    ])
+                                    ->columns(2)
+                                    ->bulkToggleable()
+                                    ->requiredIf('has_schedule', true)
+                                    ->visibleJs(<<<'JS'
+                                        $get('has_schedule')
+                                        JS),
                             ]),
 
                         Tab::make('Variants')

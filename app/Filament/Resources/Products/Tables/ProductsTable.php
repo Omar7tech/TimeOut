@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Products\Tables;
 
 use App\Enums\OrderType;
 use App\Filament\Tables\Columns\PriceColumn;
+use App\Models\Product;
 use App\Settings\GeneralSettings;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -19,6 +20,19 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ProductsTable
 {
+    /**
+     * @var array<int, string>
+     */
+    private const DAYS = [
+        1 => 'Mon',
+        2 => 'Tue',
+        3 => 'Wed',
+        4 => 'Thu',
+        5 => 'Fri',
+        6 => 'Sat',
+        7 => 'Sun',
+    ];
+
     public static function configure(Table $table): Table
     {
         $settings = app(GeneralSettings::class);
@@ -51,12 +65,12 @@ class ProductsTable
                     ->label('Order type')
                     ->badge()
                     ->sortable(),
-                TextColumn::make('schedules_count')
-                    ->label('Schedules')
-                    ->counts('schedules')
+                TextColumn::make('available_days')
+                    ->label('Available')
                     ->badge()
-                    ->color(fn (int $state): string => $state > 0 ? 'warning' : 'gray')
-                    ->formatStateUsing(fn (int $state): string => $state > 0 ? "{$state} rule(s)" : 'Always'),
+                    ->color(fn (Product $record): string => $record->has_schedule ? 'warning' : 'gray')
+                    ->placeholder('Always')
+                    ->formatStateUsing(fn (int $state): string => self::DAYS[$state] ?? (string) $state),
                 ToggleColumn::make('is_active')
                     ->label('Active')
                     ->sortable(),
@@ -86,16 +100,11 @@ class ProductsTable
                         false: fn (Builder $query): Builder => $query->whereNull('discount_price'),
                         blank: fn (Builder $query): Builder => $query,
                     ),
-                TernaryFilter::make('schedules')
+                TernaryFilter::make('has_schedule')
                     ->label('Scheduled')
                     ->placeholder('All products')
-                    ->trueLabel('Has schedule')
-                    ->falseLabel('Always available')
-                    ->queries(
-                        true: fn (Builder $query): Builder => $query->has('schedules'),
-                        false: fn (Builder $query): Builder => $query->doesntHave('schedules'),
-                        blank: fn (Builder $query): Builder => $query,
-                    ),
+                    ->trueLabel('Limited to days')
+                    ->falseLabel('Always available'),
             ])
             ->filtersFormColumns(2)
             ->recordActions([

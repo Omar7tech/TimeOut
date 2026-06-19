@@ -26,6 +26,13 @@ return new class extends Migration
             $table->decimal('discount_price', 8, 2)->nullable();
             $table->string('order_type')->default(OrderType::BOTH->value);
             $table->unsignedSmallInteger('preparation_time')->nullable();
+
+            // availability: when has_schedule is false the product is always
+            // available; otherwise it is only available on the ISO weekdays
+            // (1=Mon .. 7=Sun) listed in available_days.
+            $table->boolean('has_schedule')->default(false);
+            $table->json('available_days')->nullable();
+
             $table->json('variants')->nullable();
             $table->foreignIdFor(Category::class)->constrained()->cascadeOnDelete();
             $table->timestamps();
