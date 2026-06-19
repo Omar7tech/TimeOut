@@ -9,25 +9,29 @@ interface FilterPillsProps {
     onSelect: (id: MenuFilter) => void;
 }
 
+const base =
+    'rounded-md border-2 border-black font-bold uppercase tracking-wide transition-all px-3 py-1.5 text-sm md:px-4 md:py-2 md:text-base';
+
+/** Resting state: hard offset shadow that lifts on hover. */
+const raised =
+    'shadow-[3px_3px_0_0_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#000] md:shadow-[4px_4px_0_0_#000] md:hover:shadow-[5px_5px_0_0_#000]';
+
+/** Active state: pressed into the shadow. */
+const pressed = 'translate-x-[3px] translate-y-[3px] shadow-none';
+
 /**
- * Row of filter pills shown above the products: a highlighted "Available today"
- * pill first, then one pill per category. Selecting one swaps the products
- * client-side.
+ * Neo-brutalist filter pills above the products: a yellow "Available today"
+ * pill first, then one per category. Selecting one swaps the products client-side.
  */
 export function FilterPills({ categories, activeId, onSelect }: FilterPillsProps) {
     const todayActive = activeId === 'today';
 
     return (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 md:gap-3">
             <button
                 type="button"
                 onClick={() => onSelect('today')}
-                className={cn(
-                    'rounded-full border px-3 py-1 text-sm font-semibold transition-colors',
-                    todayActive
-                        ? 'border-brand-yellow bg-brand-yellow text-black'
-                        : 'border-brand-yellow text-foreground hover:bg-brand-yellow/10',
-                )}
+                className={cn(base, 'bg-brand-yellow text-black', todayActive ? pressed : raised)}
             >
                 Available today
             </button>
@@ -41,10 +45,8 @@ export function FilterPills({ categories, activeId, onSelect }: FilterPillsProps
                         type="button"
                         onClick={() => onSelect(category.id)}
                         className={cn(
-                            'rounded-full border px-3 py-1 text-sm font-semibold transition-colors',
-                            active
-                                ? 'border-brand-red bg-brand-red text-white'
-                                : 'border-border text-foreground hover:bg-muted',
+                            base,
+                            active ? cn('bg-brand-red text-white', pressed) : cn('bg-white text-black', raised),
                         )}
                     >
                         {category.title}
