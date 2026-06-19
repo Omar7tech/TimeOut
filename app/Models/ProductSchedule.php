@@ -3,12 +3,12 @@
 namespace App\Models;
 
 use App\Enums\ScheduleType;
+use Carbon\CarbonInterface;
 use Database\Factories\ProductScheduleFactory;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 
 #[Guarded(['id'])]
 class ProductSchedule extends Model
@@ -24,6 +24,9 @@ class ProductSchedule extends Model
         'is_active' => 'boolean',
     ];
 
+    /**
+     * @return BelongsTo<Product, $this>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
@@ -32,7 +35,7 @@ class ProductSchedule extends Model
     /**
      * Whether this single rule matches the given moment.
      */
-    public function matches(Carbon $moment): bool
+    public function matches(CarbonInterface $moment): bool
     {
         if (! $this->is_active) {
             return false;

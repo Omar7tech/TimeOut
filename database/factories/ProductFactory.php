@@ -34,7 +34,7 @@ class ProductFactory extends Factory
         return [
             'category_id' => Category::factory(),
             'title' => $this->faker->randomElement($dishes).' '.$this->faker->numberBetween(1, 9999),
-            'subtitle' => $this->faker->boolean(70) ? $this->faker->catchPhrase() : null,
+            'subtitle' => $this->faker->boolean(70) ? $this->faker->sentence(4) : null,
             'description' => $this->faker->boolean(80) ? $this->faker->paragraph() : null,
             'is_active' => $this->faker->boolean(85),
             'is_featured' => $this->faker->boolean(20),
@@ -54,17 +54,22 @@ class ProductFactory extends Factory
      */
     protected function variants(): array
     {
-        $names = Arr::random(['Small', 'Medium', 'Large', 'Family', 'Spicy', 'Extra cheese'], $this->faker->numberBetween(2, 3));
+        /** @var list<string> $names */
+        $names = (array) Arr::random(['Small', 'Medium', 'Large', 'Family', 'Spicy', 'Extra cheese'], $this->faker->numberBetween(2, 3));
 
-        return collect($names)->map(function (string $name): array {
-            $price = $this->faker->randomElement([3.00, 5.50, 8.00, 11.00, 15.00]);
+        $variants = [];
 
-            return [
-                'name' => $name,
+        foreach ($names as $name) {
+            $price = (float) $this->faker->randomElement([3.00, 5.50, 8.00, 11.00, 15.00]);
+
+            $variants[] = [
+                'name' => (string) $name,
                 'price' => $price,
                 'discount_price' => $this->faker->boolean(25) ? round($price * 0.8, 2) : null,
             ];
-        })->all();
+        }
+
+        return $variants;
     }
 
     /**

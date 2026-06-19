@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\OrderType;
 use App\Enums\ScheduleType;
+use Carbon\CarbonInterface;
 use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -12,7 +13,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -56,9 +56,11 @@ class Product extends Model implements HasMedia
      *
      * A product with no active schedule rules is always available.
      * Otherwise it must match at least one rule.
+     *
+     * @param  Builder<Product>  $query
      */
     #[Scope]
-    protected function availableNow(Builder $query, ?Carbon $moment = null): void
+    protected function availableNow(Builder $query, ?CarbonInterface $moment = null): void
     {
         $moment ??= now();
         $time = $moment->format('H:i:s');
@@ -88,7 +90,7 @@ class Product extends Model implements HasMedia
     /**
      * Convenience accessor for a single loaded model.
      */
-    public function isAvailableNow(?Carbon $moment = null): bool
+    public function isAvailableNow(?CarbonInterface $moment = null): bool
     {
         $moment ??= now();
 
