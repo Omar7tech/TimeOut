@@ -23,6 +23,7 @@ class CategoryResource extends JsonResource
             'title' => $this->title,
             'slug' => $this->slug,
             'image' => $this->getFirstMediaUrl('image', 'webp') ?: null,
+            'thumb' => $this->getFirstMediaUrl('image', 'thumb') ?: null,
             'products' => ProductResource::collection($this->whenLoaded('products')),
         ];
     }

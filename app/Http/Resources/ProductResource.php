@@ -31,6 +31,7 @@ class ProductResource extends JsonResource
             'is_featured' => (bool) $this->is_featured,
             'variants' => $this->variants,
             'image' => $this->getFirstMediaUrl('image', 'webp') ?: null,
+            'thumb' => $this->getFirstMediaUrl('image', 'thumb') ?: null,
         ];
     }
 }

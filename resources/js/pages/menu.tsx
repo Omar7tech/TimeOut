@@ -23,6 +23,7 @@ interface Product {
     is_featured: boolean;
     variants: ProductVariant[] | null;
     image: string | null;
+    thumb: string | null;
 }
 
 interface Category {
@@ -30,6 +31,7 @@ interface Category {
     title: string;
     slug: string;
     image: string | null;
+    thumb: string | null;
     products: Product[];
 }
 
@@ -69,12 +71,13 @@ export default function Menu({ orderTypeLabel, categories }: MenuProps) {
                             type="button"
                             className="flex aspect-square flex-col items-center justify-center gap-2 rounded-lg border-2 border-white bg-brand-red p-3 text-white transition-transform hover:scale-[1.02] md:aspect-auto md:h-36 md:w-36"
                         >
-                            {category.image ? (
+                            {category.thumb ? (
                                 <img
-                                    src={category.image}
+                                    src={category.thumb}
                                     alt={category.title}
                                     className="h-12 w-12 rounded-full object-cover md:h-16 md:w-16"
                                     draggable={false}
+                                    loading="lazy"
                                 />
                             ) : (
                                 <div className="h-12 w-12 rounded-full bg-white/20 md:h-16 md:w-16" />
