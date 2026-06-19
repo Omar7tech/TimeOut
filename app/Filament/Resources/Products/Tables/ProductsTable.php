@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Products\Tables;
 
 use App\Enums\OrderType;
 use App\Filament\Tables\Columns\PriceColumn;
+use App\Settings\GeneralSettings;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -20,6 +21,9 @@ class ProductsTable
 {
     public static function configure(Table $table): Table
     {
+        $settings = app(GeneralSettings::class);
+        $lbpRate = $settings->show_lbp_prices ? $settings->lbp_exchange_rate : null;
+
         return $table
             ->reorderable('sort_order')
             ->defaultSort('sort_order')
@@ -41,7 +45,8 @@ class ProductsTable
                     ->sortable(),
                 PriceColumn::make('price')
                     ->label('Price')
-                    ->sortable(),
+                    ->sortable()
+                    ->lbpRate($lbpRate),
                 TextColumn::make('schedules_count')
                     ->label('Schedules')
                     ->counts('schedules')
