@@ -62,12 +62,12 @@ export default function Menu({ orderTypeLabel, categories }: MenuProps) {
             </header>
 
             <main className="mx-auto max-w-7xl px-4 py-6">
-                <div className="grid grid-cols-3 gap-3 md:gap-4">
+                <div className="grid grid-cols-3 gap-3 md:flex md:flex-wrap md:gap-4">
                     {categories.map((category) => (
                         <button
                             key={category.id}
                             type="button"
-                            className="flex aspect-square flex-col items-center justify-center gap-2 rounded-2xl bg-brand-red p-3 text-white transition-transform hover:scale-[1.02]"
+                            className="flex aspect-square flex-col items-center justify-center gap-2 rounded-2xl bg-brand-red p-3 text-white transition-transform hover:scale-[1.02] md:aspect-auto md:h-36 md:w-36"
                         >
                             {category.image ? (
                                 <img
