@@ -91,11 +91,7 @@ export default function Menu({ orderType, orderTypeLabel, categories }: MenuProp
                 </div>
 
                 {active === null ? (
-                    <CategoryGrid
-                        categories={categories}
-                        onSelect={(category) => setActive(category.id)}
-                        onSelectToday={() => setActive('today')}
-                    />
+                    <CategoryGrid categories={categories} onSelect={(category) => setActive(category.id)} />
                 ) : (
                     <>
                         <FilterPills categories={categories} activeId={active} onSelect={setActive} />
