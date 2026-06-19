@@ -24,11 +24,17 @@ export type Product = {
     thumb: string | null;
 };
 
+export type CategoryAddon = {
+    name: string;
+    price: number;
+};
+
 export type Category = {
     id: number;
     title: string;
     slug: string;
     image: string | null;
+    addons: CategoryAddon[] | null;
     /** Only present when the endpoint eager-loads products (e.g. the menu page). */
     products?: Product[];
 };

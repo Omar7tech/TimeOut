@@ -1,3 +1,4 @@
+import { CategoryAddonsDialog } from '@/components/menu/category-addons-dialog';
 import { CategoryGrid } from '@/components/menu/category-grid';
 import { FilterPills, type MenuFilter } from '@/components/menu/filter-pills';
 import { ProductCard } from '@/components/menu/product-card';
@@ -60,14 +61,15 @@ export default function Menu({ orderTypeLabel, categories }: MenuProps) {
 
     let heading = '';
     let products: Product[] = [];
+    let activeCategory: Category | null = null;
 
     if (active === 'today') {
         heading = 'Available today';
         products = categories.flatMap((category) => category.products ?? []).filter((product) => product.available_today);
     } else if (typeof active === 'number') {
-        const category = categories.find((item) => item.id === active);
-        heading = category?.title ?? '';
-        products = category?.products ?? [];
+        activeCategory = categories.find((item) => item.id === active) ?? null;
+        heading = activeCategory?.title ?? '';
+        products = activeCategory?.products ?? [];
     }
 
     return (
@@ -96,6 +98,9 @@ export default function Menu({ orderTypeLabel, categories }: MenuProps) {
                         <div className="mt-4 flex items-center gap-3">
                             <span className="h-7 w-1.5 rounded-full bg-brand-red md:h-9" />
                             <h2 className="text-2xl font-black uppercase md:text-4xl">{heading}</h2>
+                            {activeCategory && activeCategory.addons && activeCategory.addons.length > 0 && (
+                                <CategoryAddonsDialog category={activeCategory} />
+                            )}
                             {products.length > 0 && (
                                 <span className="ml-auto text-sm font-bold text-muted-foreground">
                                     {products.length} {products.length === 1 ? 'item' : 'items'}
