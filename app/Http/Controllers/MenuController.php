@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\OrderType;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -34,7 +35,10 @@ class MenuController extends Controller
                 'products' => $this->productsConstraint($orderType),
             ])
             ->orderBy('sort_order')
-            ->get();
+            ->get()
+            // Drop categories that have no products available right now.
+            ->filter(fn (Category $category): bool => $category->products->isNotEmpty())
+            ->values();
 
         return Inertia::render('menu', [
             'orderType' => $orderType->value,
@@ -44,8 +48,9 @@ class MenuController extends Controller
     }
 
     /**
-     * Eager-loading constraint limiting a category's products to the active
-     * items that are orderable for the given order type.
+     * Eager-loading constraint limiting a category's products to the items that
+     * are orderable and available right now: active, of the correct order type,
+     * and either unscheduled or scheduled for today.
      *
      * @return \Closure(Relation<*, *, *>): void
      */
@@ -56,6 +61,9 @@ class MenuController extends Controller
                 ->with('media')
                 ->where('is_active', true)
                 ->whereIn('order_type', [$orderType->value, OrderType::BOTH->value])
+                ->where(fn (Builder $available): Builder => $available
+                    ->where('has_schedule', false)
+                    ->orWhereJsonContains('available_days', now()->dayOfWeekIso))
                 ->orderBy('sort_order');
         };
     }
