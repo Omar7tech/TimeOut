@@ -1,5 +1,4 @@
 import { Head } from '@inertiajs/react';
-import { ChevronLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { CartSheet } from '@/components/menu/cart-sheet';
 import { CategoryAddonsDialog } from '@/components/menu/category-addons-dialog';
@@ -86,19 +85,7 @@ export default function Menu({ orderType, orderTypeLabel, categories }: MenuProp
 
             <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6">
                 <div className="flex items-center justify-between gap-3">
-                    <div className="flex min-w-0 items-center gap-2">
-                        {active !== null && (
-                            <button
-                                type="button"
-                                onClick={() => setActive(null)}
-                                aria-label="Back to categories"
-                                className="inline-flex size-9 shrink-0 items-center justify-center rounded-md border-2 border-black bg-card text-card-foreground shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                            >
-                                <ChevronLeft className="size-5" />
-                            </button>
-                        )}
-                        <h1 className="truncate text-xl font-black uppercase md:text-2xl">{menuTitle}</h1>
-                    </div>
+                    <h1 className="min-w-0 truncate text-xl font-black uppercase md:text-2xl">{menuTitle}</h1>
 
                     <OrderTypeSwitch current={orderType} />
                 </div>
