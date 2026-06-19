@@ -10,7 +10,7 @@ interface FilterPillsProps {
 }
 
 const base =
-    'rounded-md border-2 border-black font-bold uppercase tracking-wide transition-all px-3 py-1.5 text-sm md:px-4 md:py-2 md:text-base';
+    'shrink-0 snap-start whitespace-nowrap rounded-md border-2 border-black font-bold uppercase tracking-wide transition-all px-3 py-1.5 text-sm md:px-4 md:py-2 md:text-base';
 
 /** Resting state: hard offset shadow that lifts on hover. */
 const raised =
@@ -27,7 +27,7 @@ export function FilterPills({ categories, activeId, onSelect }: FilterPillsProps
     const todayActive = activeId === 'today';
 
     return (
-        <div className="flex flex-wrap gap-2 md:gap-3">
+        <div className="-mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto scroll-px-4 px-4 pb-2 [scrollbar-width:none] md:mx-0 md:flex-wrap md:overflow-visible md:px-0 md:pb-0 md:gap-3 [&::-webkit-scrollbar]:hidden">
             <button
                 type="button"
                 onClick={() => onSelect('today')}
