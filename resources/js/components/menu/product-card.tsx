@@ -66,19 +66,30 @@ export function ProductCard({ product }: ProductCardProps) {
                 )}
 
                 <div className="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 pt-2">
-                    {hasDiscount && (
-                        <span className="text-sm text-muted-foreground line-through">
-                            {pricing.showUsd ? pricing.usd(basePrice) : pricing.lbp(basePrice)}
-                        </span>
-                    )}
-                    <span className="inline-flex flex-col items-start rounded-md border-2 border-black bg-brand-red px-2 py-0.5 font-extrabold leading-tight text-white">
-                        {pricing.showUsd && <span>{pricing.usd(effectivePrice)}</span>}
-                        {pricing.showLbp && (
-                            <span className={cn(pricing.showUsd && 'text-[11px] font-bold text-white/85')}>
-                                {pricing.lbp(effectivePrice)}
+                    {pricing.showUsd && pricing.showLbp ? (
+                        <span className="inline-flex flex-col items-start gap-0.5 rounded-md border-2 border-black bg-brand-red px-2 py-1 font-extrabold leading-none text-white">
+                            <span className="flex items-baseline gap-1.5">
+                                {pricing.usd(effectivePrice)}
+                                {hasDiscount && (
+                                    <span className="text-[11px] font-bold text-white/55 line-through">
+                                        {pricing.usd(basePrice)}
+                                    </span>
+                                )}
                             </span>
-                        )}
-                    </span>
+                            <span className="text-[11px] font-bold text-white/90">{pricing.lbp(effectivePrice)}</span>
+                        </span>
+                    ) : (
+                        <>
+                            {hasDiscount && (
+                                <span className="text-sm text-muted-foreground line-through">
+                                    {pricing.showUsd ? pricing.usd(basePrice) : pricing.lbp(basePrice)}
+                                </span>
+                            )}
+                            <span className="rounded-md border-2 border-black bg-brand-red px-2 py-0.5 font-extrabold text-white">
+                                {pricing.showUsd ? pricing.usd(effectivePrice) : pricing.lbp(effectivePrice)}
+                            </span>
+                        </>
+                    )}
                 </div>
             </div>
             </div>
