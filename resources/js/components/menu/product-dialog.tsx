@@ -10,7 +10,8 @@ interface ProductDialogProps {
     onOpenChange: (open: boolean) => void;
     selectedIndex: number;
     onSelectVariant: (index: number) => void;
-    onAddToCart: () => void;
+    /** When omitted, the add-to-cart action is hidden (dine-in menu). */
+    onAddToCart?: () => void;
 }
 
 /**
@@ -70,14 +71,16 @@ export function ProductDialog({
 
                 <div className="mt-1 flex items-center justify-between gap-3">
                     <ProductPrice basePrice={basePrice} discountPrice={discountPrice} size="lg" />
-                    <button
-                        type="button"
-                        onClick={onAddToCart}
-                        className="inline-flex items-center gap-2 rounded-md border-2 border-black bg-brand-red px-4 py-2 font-extrabold uppercase tracking-wide text-white shadow-[3px_3px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    >
-                        <ShoppingCart className="size-4" />
-                        Add to cart
-                    </button>
+                    {onAddToCart && (
+                        <button
+                            type="button"
+                            onClick={onAddToCart}
+                            className="inline-flex items-center gap-2 rounded-md border-2 border-black bg-brand-red px-4 py-2 font-extrabold uppercase tracking-wide text-white shadow-[3px_3px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
+                            <ShoppingCart className="size-4" />
+                            Add to cart
+                        </button>
+                    )}
                 </div>
             </DialogContent>
         </Dialog>

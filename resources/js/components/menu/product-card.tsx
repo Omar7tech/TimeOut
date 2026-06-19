@@ -8,13 +8,15 @@ import type { Product } from '@/types';
 
 interface ProductCardProps {
     product: Product;
+    /** Whether add-to-cart actions are available (delivery menu only). */
+    enableCart?: boolean;
 }
 
 /**
  * Compact menu item card: thumbnail, single-line title/subtitle/description,
  * price, and quick actions. The "View" action opens the full details modal.
  */
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, enableCart = false }: ProductCardProps) {
     const { addItem } = useCart();
     const variants = product.variants ?? [];
     const hasVariants = variants.length > 0;
@@ -93,14 +95,16 @@ export function ProductCard({ product }: ProductCardProps) {
                             >
                                 <Eye className="size-4" />
                             </button>
-                            <button
-                                type="button"
-                                onClick={handleAddToCart}
-                                aria-label="Add to cart"
-                                className="inline-flex size-8 items-center justify-center rounded-md border-2 border-black bg-brand-red text-white shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                            >
-                                <ShoppingCart className="size-4" />
-                            </button>
+                            {enableCart && (
+                                <button
+                                    type="button"
+                                    onClick={handleAddToCart}
+                                    aria-label="Add to cart"
+                                    className="inline-flex size-8 items-center justify-center rounded-md border-2 border-black bg-brand-red text-white shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                >
+                                    <ShoppingCart className="size-4" />
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -118,7 +122,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 onOpenChange={setOpen}
                 selectedIndex={selectedIndex}
                 onSelectVariant={setSelectedIndex}
-                onAddToCart={handleAddToCart}
+                onAddToCart={enableCart ? handleAddToCart : undefined}
             />
         </div>
     );

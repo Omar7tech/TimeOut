@@ -39,7 +39,9 @@ function readFilterFromUrl(categories: Category[]): MenuFilter | null {
     return categories.find((category) => category.slug === param)?.id ?? null;
 }
 
-export default function Menu({ orderTypeLabel, categories }: MenuProps) {
+export default function Menu({ orderType, orderTypeLabel, categories }: MenuProps) {
+    // Cart/ordering is only available on the delivery (takeaway) menu.
+    const cartEnabled = orderType === 'takeaway';
     const [active, setActive] = useState<MenuFilter | null>(() => readFilterFromUrl(categories));
 
     useEffect(() => {
@@ -79,7 +81,7 @@ export default function Menu({ orderTypeLabel, categories }: MenuProps) {
         <CartProvider>
             <Head title={`${orderTypeLabel} Menu`} />
 
-            <SiteHeader />
+            <SiteHeader showCart={cartEnabled} />
 
             <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6">
                 {active === null ? (
@@ -118,7 +120,7 @@ export default function Menu({ orderTypeLabel, categories }: MenuProps) {
                         {products.length > 0 ? (
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                                 {products.map((product) => (
-                                    <ProductCard key={product.id} product={product} />
+                                    <ProductCard key={product.id} product={product} enableCart={cartEnabled} />
                                 ))}
                             </div>
                         ) : (
@@ -128,7 +130,7 @@ export default function Menu({ orderTypeLabel, categories }: MenuProps) {
                 )}
             </main>
 
-            <CartSheet />
+            {cartEnabled && <CartSheet />}
         </CartProvider>
     );
 }
