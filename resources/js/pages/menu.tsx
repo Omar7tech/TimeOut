@@ -15,7 +15,13 @@ interface MenuProps {
     categories: Category[];
 }
 
-/** Read the active filter from the URL `?filter=` query (today | category id). */
+/**
+ * URL token for the "available today" filter. The random suffix keeps it from
+ * colliding with a real category slug.
+ */
+const TODAY_FILTER_SLUG = 'available-today-7q2x';
+
+/** Read the active filter from the URL `?filter=` query (slug | today token). */
 function readFilterFromUrl(categories: Category[]): MenuFilter | null {
     if (typeof window === 'undefined') {
         return null;
@@ -23,13 +29,15 @@ function readFilterFromUrl(categories: Category[]): MenuFilter | null {
 
     const param = new URLSearchParams(window.location.search).get('filter');
 
-    if (param === 'today') {
+    if (param === null) {
+        return null;
+    }
+
+    if (param === TODAY_FILTER_SLUG) {
         return 'today';
     }
 
-    const id = Number(param);
-
-    return param !== null && categories.some((category) => category.id === id) ? id : null;
+    return categories.find((category) => category.slug === param)?.id ?? null;
 }
 
 export default function Menu({ orderTypeLabel, categories }: MenuProps) {
@@ -39,14 +47,22 @@ export default function Menu({ orderTypeLabel, categories }: MenuProps) {
     useEffect(() => {
         const url = new URL(window.location.href);
 
-        if (active === null) {
+        let value: string | null = null;
+
+        if (active === 'today') {
+            value = TODAY_FILTER_SLUG;
+        } else if (typeof active === 'number') {
+            value = categories.find((category) => category.id === active)?.slug ?? null;
+        }
+
+        if (value === null) {
             url.searchParams.delete('filter');
         } else {
-            url.searchParams.set('filter', String(active));
+            url.searchParams.set('filter', value);
         }
 
         window.history.replaceState(window.history.state, '', url);
-    }, [active]);
+    }, [active, categories]);
 
     let heading = '';
     let products: Product[] = [];
