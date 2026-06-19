@@ -22,10 +22,6 @@ class MenuController extends Controller
         return $this->renderMenu(OrderType::TAKEAWAY);
     }
 
-    /**
-     * Render the shared menu page. The order type only affects cart behaviour;
-     * the layout is identical for both menus.
-     */
     private function renderMenu(OrderType $orderType): Response
     {
         $categories = Category::query()
@@ -36,7 +32,6 @@ class MenuController extends Controller
             ])
             ->orderBy('sort_order')
             ->get()
-            // Drop categories that have no products available right now.
             ->filter(fn (Category $category): bool => $category->products->isNotEmpty())
             ->values();
 
@@ -47,13 +42,7 @@ class MenuController extends Controller
         ]);
     }
 
-    /**
-     * Eager-loading constraint limiting a category's products to the items that
-     * are orderable and available right now: active, of the correct order type,
-     * and either unscheduled or scheduled for today.
-     *
-     * @return \Closure(Relation<*, *, *>): void
-     */
+
     private function productsConstraint(OrderType $orderType): \Closure
     {
         return function (Relation $query) use ($orderType): void {

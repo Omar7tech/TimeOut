@@ -15,13 +15,8 @@ interface MenuProps {
     categories: Category[];
 }
 
-/**
- * URL token for the "available today" filter. The random suffix keeps it from
- * colliding with a real category slug.
- */
 const TODAY_FILTER_SLUG = 'available-today-7q2x';
 
-/** Read the active filter from the URL `?filter=` query (slug | today token). */
 function readFilterFromUrl(categories: Category[]): MenuFilter | null {
     if (typeof window === 'undefined') {
         return null;
@@ -43,7 +38,6 @@ function readFilterFromUrl(categories: Category[]): MenuFilter | null {
 export default function Menu({ orderTypeLabel, categories }: MenuProps) {
     const [active, setActive] = useState<MenuFilter | null>(() => readFilterFromUrl(categories));
 
-    // Keep the URL in sync so a refresh restores the current filter (no request).
     useEffect(() => {
         const url = new URL(window.location.href);
 
