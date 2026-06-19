@@ -2,17 +2,49 @@ import { Button } from '@/components/ui/button';
 import { Head } from '@inertiajs/react';
 import { ShoppingCart } from 'lucide-react';
 
-interface MenuProps {
-    orderType: string;
-    orderTypeLabel: string;
+type OrderType = 'dine_in' | 'takeaway' | 'both';
+
+interface ProductVariant {
+    name: string;
+    price: number;
+    discount_price: number | null;
 }
 
-export default function Menu({ orderTypeLabel }: MenuProps) {
+interface Product {
+    id: number;
+    title: string;
+    slug: string;
+    subtitle: string | null;
+    description: string | null;
+    price: number;
+    discount_price: number | null;
+    order_type: OrderType;
+    preparation_time: number | null;
+    is_featured: boolean;
+    variants: ProductVariant[] | null;
+    image: string | null;
+}
+
+interface Category {
+    id: number;
+    title: string;
+    slug: string;
+    image: string | null;
+    products: Product[];
+}
+
+interface MenuProps {
+    orderType: OrderType;
+    orderTypeLabel: string;
+    categories: Category[];
+}
+
+export default function Menu({ orderTypeLabel, categories }: MenuProps) {
     return (
         <>
             <Head title={`${orderTypeLabel} Menu`} />
 
-            <header className="flex items-center justify-between px-4 py-3 max-w-7xl mx-auto">
+            <header className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
                 <img
                     src="/logos/timeout-logo.png"
                     alt="Time Out Snack"
@@ -29,8 +61,30 @@ export default function Menu({ orderTypeLabel }: MenuProps) {
                 </Button>
             </header>
 
-            <main className="px-4 py-6">
-                <p className="text-center text-sm text-muted-foreground">{orderTypeLabel}</p>
+            <main className="mx-auto max-w-7xl px-4 py-6">
+                <div className="grid grid-cols-3 gap-3 md:gap-4">
+                    {categories.map((category) => (
+                        <button
+                            key={category.id}
+                            type="button"
+                            className="flex aspect-square flex-col items-center justify-center gap-2 rounded-2xl bg-brand-red p-3 text-white transition-transform hover:scale-[1.02]"
+                        >
+                            {category.image ? (
+                                <img
+                                    src={category.image}
+                                    alt={category.title}
+                                    className="h-12 w-12 rounded-full object-cover md:h-16 md:w-16"
+                                    draggable={false}
+                                />
+                            ) : (
+                                <div className="h-12 w-12 rounded-full bg-white/20 md:h-16 md:w-16" />
+                            )}
+                            <span className="line-clamp-2 text-center text-xs font-bold md:text-sm">
+                                {category.title}
+                            </span>
+                        </button>
+                    ))}
+                </div>
             </main>
         </>
     );
