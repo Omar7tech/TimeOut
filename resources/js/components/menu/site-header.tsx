@@ -1,4 +1,5 @@
 import { CartButton } from '@/components/menu/cart-button';
+import { ThemeToggle } from '@/components/menu/theme-toggle';
 
 interface SiteHeaderProps {
     /** Show the cart trigger (delivery menu only). */
@@ -6,8 +7,8 @@ interface SiteHeaderProps {
 }
 
 /**
- * Shared top bar for the customer-facing pages: logo on the left, cart on the
- * right (delivery menu only).
+ * Shared top bar for the customer-facing pages: logo on the left, theme toggle
+ * and cart on the right (cart on the delivery menu only).
  */
 export function SiteHeader({ showCart = false }: SiteHeaderProps) {
     return (
@@ -19,7 +20,10 @@ export function SiteHeader({ showCart = false }: SiteHeaderProps) {
                 draggable={false}
             />
 
-            {showCart && <CartButton />}
+            <div className="flex items-center gap-2">
+                <ThemeToggle />
+                {showCart && <CartButton />}
+            </div>
         </header>
     );
 }
