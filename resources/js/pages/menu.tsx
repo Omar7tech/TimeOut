@@ -1,3 +1,4 @@
+import { CategoryGrid } from '@/components/menu/category-grid';
 import { Button } from '@/components/ui/button';
 import type { Category, OrderType } from '@/types';
 import { Head } from '@inertiajs/react';
@@ -32,30 +33,7 @@ export default function Menu({ orderTypeLabel, categories }: MenuProps) {
             </header>
 
             <main className="mx-auto max-w-7xl px-4 py-6">
-                <div className="grid grid-cols-3 gap-1 md:flex md:flex-wrap md:gap-4">
-                    {categories.map((category) => (
-                        <button
-                            key={category.id}
-                            type="button"
-                            className="flex aspect-square flex-col items-center justify-center gap-2 rounded-lg border-2 border-white bg-brand-red p-3 text-white transition-transform hover:scale-[1.02] md:aspect-auto md:h-36 md:w-36"
-                        >
-                            {category.image ? (
-                                <img
-                                    src={category.image}
-                                    alt={category.title}
-                                    className="h-12 w-12 rounded-full object-cover md:h-16 md:w-16"
-                                    draggable={false}
-                                    loading="lazy"
-                                />
-                            ) : (
-                                <div className="h-12 w-12 rounded-full bg-white/20 md:h-16 md:w-16" />
-                            )}
-                            <span className="line-clamp-2 text-center text-xs font-bold md:text-sm">
-                                {category.title}
-                            </span>
-                        </button>
-                    ))}
-                </div>
+                <CategoryGrid categories={categories} />
             </main>
         </>
     );
