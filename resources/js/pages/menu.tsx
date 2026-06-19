@@ -99,10 +99,18 @@ export default function Menu({ orderTypeLabel, categories }: MenuProps) {
 
                         <FilterPills categories={categories} activeId={active} onSelect={setActive} />
 
-                        <h2 className="mt-5 text-2xl font-black uppercase md:text-3xl">{heading}</h2>
+                        <div className="mt-4 flex items-center gap-3">
+                            <span className="h-7 w-1.5 rounded-full bg-brand-red md:h-9" />
+                            <h2 className="text-2xl font-black uppercase md:text-4xl">{heading}</h2>
+                            {products.length > 0 && (
+                                <span className="ml-auto text-sm font-bold text-muted-foreground">
+                                    {products.length} {products.length === 1 ? 'item' : 'items'}
+                                </span>
+                            )}
+                        </div>
 
                         {products.length > 0 ? (
-                            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                                 {products.map((product) => (
                                     <ProductCard key={product.id} product={product} />
                                 ))}

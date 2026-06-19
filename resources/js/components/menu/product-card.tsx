@@ -1,4 +1,5 @@
 import type { Product } from '@/types';
+import { Star } from 'lucide-react';
 
 interface ProductCardProps {
     product: Product;
@@ -9,39 +10,52 @@ function formatPrice(value: number): string {
 }
 
 /**
- * Simple menu line item: image, title/subtitle, and price (with discount).
+ * Menu item card: image, title/subtitle, and price (with discount), styled to
+ * match the neo-brutalist filter pills.
  */
 export function ProductCard({ product }: ProductCardProps) {
     const hasDiscount = product.discount_price !== null;
     const image = product.thumb ?? product.image;
 
     return (
-        <div className="flex gap-3 rounded-lg border border-border p-3">
-            {image ? (
-                <img
-                    src={image}
-                    alt={product.title}
-                    className="size-16 shrink-0 rounded-md object-cover"
-                    draggable={false}
-                    loading="lazy"
-                />
-            ) : (
-                <div className="size-16 shrink-0 rounded-md bg-muted" />
-            )}
-
-            <div className="flex min-w-0 flex-1 flex-col">
-                <h3 className="truncate font-bold">{product.title}</h3>
-                {product.subtitle && (
-                    <p className="truncate text-sm text-muted-foreground">{product.subtitle}</p>
+        <div className="group flex gap-4 rounded-xl border-2 border-black bg-white p-3 text-black shadow-[3px_3px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000]">
+            <div className="relative size-24 shrink-0 overflow-hidden rounded-lg border-2 border-black">
+                {image ? (
+                    <img
+                        src={image}
+                        alt={product.title}
+                        className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        draggable={false}
+                        loading="lazy"
+                    />
+                ) : (
+                    <div className="size-full bg-neutral-100" />
                 )}
 
-                <div className="mt-auto flex items-center gap-2">
-                    {hasDiscount && (
-                        <span className="text-sm text-muted-foreground line-through">
-                            {formatPrice(product.price)}
-                        </span>
+                {product.available_today && (
+                    <span className="absolute left-1 top-1 rounded bg-brand-yellow px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide">
+                        Today
+                    </span>
+                )}
+            </div>
+
+            <div className="flex min-w-0 flex-1 flex-col">
+                <div className="flex items-start justify-between gap-2">
+                    <h3 className="line-clamp-2 font-extrabold leading-tight">{product.title}</h3>
+                    {product.is_featured && (
+                        <Star className="size-4 shrink-0 fill-brand-yellow text-brand-yellow" />
                     )}
-                    <span className="font-bold text-brand-red">
+                </div>
+
+                {product.subtitle && (
+                    <p className="mt-0.5 line-clamp-2 text-sm text-neutral-500">{product.subtitle}</p>
+                )}
+
+                <div className="mt-auto flex items-center gap-2 pt-2">
+                    {hasDiscount && (
+                        <span className="text-sm text-neutral-400 line-through">{formatPrice(product.price)}</span>
+                    )}
+                    <span className="rounded-md bg-brand-red px-2 py-0.5 font-extrabold text-white">
                         {formatPrice(hasDiscount ? (product.discount_price as number) : product.price)}
                     </span>
                 </div>
