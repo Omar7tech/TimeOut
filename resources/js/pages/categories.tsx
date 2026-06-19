@@ -17,7 +17,7 @@ export default function Categories({ orderTypeLabel, menuUrl, categories }: Cate
 
             <SiteHeader />
 
-            <main className="mx-auto max-w-7xl px-4 py-6">
+            <main className="mx-auto max-w-7xl px-4 py-20">
                 <CategoryGrid categories={categories} menuUrl={menuUrl} />
             </main>
         </>

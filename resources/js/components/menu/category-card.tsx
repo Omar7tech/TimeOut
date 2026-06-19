@@ -8,27 +8,29 @@ interface CategoryCardProps {
 }
 
 /**
- * A single red category box linking into the menu: image (or placeholder)
- * above the category name.
+ * A single red category box linking into the menu: a circular image (or
+ * placeholder) above the category name. Scales with its grid cell.
  */
 export function CategoryCard({ category, href }: CategoryCardProps) {
     return (
         <Link
             href={href}
-            className="flex aspect-square flex-col items-center justify-center gap-2 rounded-lg border-2 border-white bg-brand-red p-3 text-white transition-transform hover:scale-[1.02] md:aspect-auto md:h-36 md:w-36"
+            className="group flex aspect-square flex-col items-center justify-center gap-3 rounded-xl border-2 border-white/90 bg-brand-red p-3 text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
         >
             {category.image ? (
                 <img
                     src={category.image}
                     alt={category.title}
-                    className="h-12 w-12 rounded-full object-cover md:h-16 md:w-16"
+                    className="aspect-square w-3/5 max-w-28 rounded-lg object-cover"
                     draggable={false}
                     loading="lazy"
                 />
             ) : (
-                <div className="h-12 w-12 rounded-full bg-white/20 md:h-16 md:w-16" />
+                <div className="aspect-square w-3/5 max-w-28 rounded-lg bg-white/20" />
             )}
-            <span className="line-clamp-2 text-center text-xs font-bold md:text-sm">{category.title}</span>
+            <span className="line-clamp-2 text-center text-sm font-extrabold leading-tight sm:text-base lg:text-lg">
+                {category.title}
+            </span>
         </Link>
     );
 }

@@ -6,7 +6,7 @@ import { ShoppingCart } from 'lucide-react';
  */
 export function SiteHeader() {
     return (
-        <header className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
+        <header className="mx-auto flex max-w-[1400px] items-center justify-between px-4 md:px-10 py-4">
             <img
                 src="/logos/timeout-logo.png"
                 alt="Time Out Snack"
