@@ -12,17 +12,19 @@ interface SiteHeaderProps {
  */
 export function SiteHeader({ showCart = false }: SiteHeaderProps) {
     return (
-        <header className="mx-auto flex max-w-[1400px] items-center justify-between px-4 py-4 md:px-10">
-            <img
-                src="/logos/timeout-logo.png"
-                alt="Time Out Snack"
-                className="h-12 select-none md:h-16"
-                draggable={false}
-            />
+        <header className="header-zigzag mb-3">
+            <div className="mx-auto flex max-w-[1400px] items-center justify-between px-4 pb-6 pt-4 md:px-10">
+                <img
+                    src="/logos/timeout-logo.png"
+                    alt="Time Out Snack"
+                    className="h-12 select-none md:h-16"
+                    draggable={false}
+                />
 
-            <div className="flex items-center gap-2">
-                <ThemeToggle />
-                {showCart && <CartButton />}
+                <div className="flex items-center gap-2">
+                    <ThemeToggle />
+                    {showCart && <CartButton />}
+                </div>
             </div>
         </header>
     );

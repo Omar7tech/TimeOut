@@ -110,6 +110,9 @@
         #f0f0f0;
     --brand-yellow:
         #f0e502;
+    /* Header band: a touch darker than the cream page so it reads as a strip. */
+    --header-bg:
+        oklch(0.915 0.014 91);
     /* Warm cream canvas so white cards and black borders/shadows pop. */
     --background:
         oklch(0.971 0.014 91);
@@ -178,6 +181,8 @@
 }
 
 .dark {
+    --header-bg:
+        #000000;
     --background:
         #1d1c1c;
     --foreground:
@@ -261,4 +266,30 @@
     [role="button"]:not(:disabled) {
         cursor: pointer;
     }
+}
+
+/*
+ * Header band with a torn-paper zigzag along its bottom edge. The colored fill
+ * lives on a pseudo-element so the header content stays unmasked, and the teeth
+ * hang below the band so the page shows through the notches.
+ */
+.header-zigzag {
+    position: relative;
+    isolation: isolate;
+}
+
+.header-zigzag::before {
+    --zigzag-width: 22px;
+    --zigzag-depth: 12px;
+    content: "";
+    position: absolute;
+    inset: 0 0 calc(-1 * var(--zigzag-depth)) 0;
+    z-index: -1;
+    background: var(--header-bg);
+    -webkit-mask:
+        linear-gradient(#000 0 0) top / 100% calc(100% - var(--zigzag-depth)) no-repeat,
+        conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / var(--zigzag-width) var(--zigzag-depth) repeat-x;
+    mask:
+        linear-gradient(#000 0 0) top / 100% calc(100% - var(--zigzag-depth)) no-repeat,
+        conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / var(--zigzag-width) var(--zigzag-depth) repeat-x;
 }
