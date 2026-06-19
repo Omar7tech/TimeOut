@@ -181,8 +181,9 @@
 }
 
 .dark {
+    /* Just a touch darker than the page (#1d1c1c) rather than pure black. */
     --header-bg:
-        #000000;
+        #141313;
     --background:
         #1d1c1c;
     --foreground:
