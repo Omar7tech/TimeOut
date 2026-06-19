@@ -1,38 +1,7 @@
 import { Button } from '@/components/ui/button';
+import type { Category, OrderType } from '@/types';
 import { Head } from '@inertiajs/react';
 import { ShoppingCart } from 'lucide-react';
-
-type OrderType = 'dine_in' | 'takeaway' | 'both';
-
-interface ProductVariant {
-    name: string;
-    price: number;
-    discount_price: number | null;
-}
-
-interface Product {
-    id: number;
-    title: string;
-    slug: string;
-    subtitle: string | null;
-    description: string | null;
-    price: number;
-    discount_price: number | null;
-    order_type: OrderType;
-    preparation_time: number | null;
-    is_featured: boolean;
-    variants: ProductVariant[] | null;
-    image: string | null;
-    thumb: string | null;
-}
-
-interface Category {
-    id: number;
-    title: string;
-    slug: string;
-    image: string | null;
-    products: Product[];
-}
 
 interface MenuProps {
     orderType: OrderType;
