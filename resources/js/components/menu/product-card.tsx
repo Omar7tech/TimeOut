@@ -1,5 +1,6 @@
 import type { Product } from '@/types';
 import { Star } from 'lucide-react';
+import { useState } from 'react';
 
 interface ProductCardProps {
     product: Product;
@@ -14,7 +15,19 @@ function formatPrice(value: number): string {
  * neo-brutalist style with a hard offset shadow that lifts on hover.
  */
 export function ProductCard({ product }: ProductCardProps) {
-    const hasDiscount = product.discount_price !== null;
+    const variants = product.variants ?? [];
+    const hasVariants = variants.length > 0;
+
+    // Default to the last variant when variants exist.
+    const [selectedIndex, setSelectedIndex] = useState(hasVariants ? variants.length - 1 : 0);
+    const selectedVariant = hasVariants ? variants[selectedIndex] : null;
+
+    // When variants exist, the price comes from the selected variant instead
+    // of the product's own base price.
+    const basePrice = selectedVariant ? selectedVariant.price : product.price;
+    const discountPrice = selectedVariant ? selectedVariant.discount_price : product.discount_price;
+    const hasDiscount = discountPrice !== null;
+
     const image = product.thumb ?? product.image;
 
     return (
@@ -51,13 +64,28 @@ export function ProductCard({ product }: ProductCardProps) {
                     <p className="mt-0.5 line-clamp-2 text-sm text-muted-foreground">{product.subtitle}</p>
                 )}
 
-                <div className="mt-auto flex items-center gap-2 pt-2">
+                <div className="mt-auto flex flex-wrap items-center gap-2 pt-2">
                     {hasDiscount && (
-                        <span className="text-sm text-muted-foreground line-through">{formatPrice(product.price)}</span>
+                        <span className="text-sm text-muted-foreground line-through">{formatPrice(basePrice)}</span>
                     )}
                     <span className="rounded-md border-2 border-black bg-brand-red px-2 py-0.5 font-extrabold text-white">
-                        {formatPrice(hasDiscount ? (product.discount_price as number) : product.price)}
+                        {formatPrice(hasDiscount ? (discountPrice as number) : basePrice)}
                     </span>
+
+                    {hasVariants && (
+                        <select
+                            value={selectedIndex}
+                            onChange={(event) => setSelectedIndex(Number(event.target.value))}
+                            aria-label="Choose a variant"
+                            className="ml-auto rounded-md border-2 border-black bg-card px-2 py-0.5 text-sm font-bold text-card-foreground shadow-[2px_2px_0_0_#000] focus:outline-none"
+                        >
+                            {variants.map((variant, index) => (
+                                <option key={index} value={index}>
+                                    {variant.name}
+                                </option>
+                            ))}
+                        </select>
+                    )}
                 </div>
             </div>
         </div>
