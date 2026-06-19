@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Settings\GeneralSettings;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -35,11 +36,21 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $settings = app(GeneralSettings::class);
+
+        // Only expose the LBP rate to the client when LBP pricing is actually
+        // enabled, so the front-end can safely convert prices on its own.
+        $lbpEnabled = $settings->show_lbp_prices && (float) $settings->lbp_exchange_rate > 0;
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
                 'user' => $request->user(),
+            ],
+            'pricing' => [
+                'display' => $settings->price_display->value,
+                'lbpRate' => $lbpEnabled ? (float) $settings->lbp_exchange_rate : null,
             ],
         ];
     }

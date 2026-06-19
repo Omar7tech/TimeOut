@@ -6,15 +6,13 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import { usePricing } from '@/hooks/use-pricing';
+import { cn } from '@/lib/utils';
 import type { Category } from '@/types';
 import { Plus } from 'lucide-react';
 
 interface CategoryAddonsDialogProps {
     category: Category;
-}
-
-function formatPrice(value: number): string {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
 }
 
 /**
@@ -23,6 +21,7 @@ function formatPrice(value: number): string {
  * and a bottom sheet that slides up on mobile.
  */
 export function CategoryAddonsDialog({ category }: CategoryAddonsDialogProps) {
+    const pricing = usePricing();
     const addons = category.addons ?? [];
 
     return (
@@ -52,8 +51,13 @@ export function CategoryAddonsDialog({ category }: CategoryAddonsDialogProps) {
                             className="flex items-center justify-between gap-3 rounded-lg border-2 border-neutral-700 bg-background px-3 py-2"
                         >
                             <span className="font-bold">{addon.name}</span>
-                            <span className="rounded-md border-2 border-black bg-brand-red px-2 py-0.5 text-sm font-extrabold text-white">
-                                {formatPrice(Number(addon.price))}
+                            <span className="inline-flex flex-col items-end rounded-md border-2 border-black bg-brand-red px-2 py-0.5 text-sm font-extrabold leading-tight text-white">
+                                {pricing.showUsd && <span>{pricing.usd(Number(addon.price))}</span>}
+                                {pricing.showLbp && (
+                                    <span className={cn(pricing.showUsd && 'text-[11px] font-bold text-white/85')}>
+                                        {pricing.lbp(Number(addon.price))}
+                                    </span>
+                                )}
                             </span>
                         </li>
                     ))}

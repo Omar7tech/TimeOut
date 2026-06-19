@@ -1,5 +1,6 @@
-import type { Product } from '@/types';
+import { usePricing } from '@/hooks/use-pricing';
 import { cn } from '@/lib/utils';
+import type { Product } from '@/types';
 import { Star } from 'lucide-react';
 import { useState } from 'react';
 
@@ -7,15 +8,12 @@ interface ProductCardProps {
     product: Product;
 }
 
-function formatPrice(value: number): string {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
-}
-
 /**
  * Menu item card: image, title/subtitle, and price (with discount), in a
  * neo-brutalist style with a hard offset shadow that lifts on hover.
  */
 export function ProductCard({ product }: ProductCardProps) {
+    const pricing = usePricing();
     const variants = product.variants ?? [];
     const hasVariants = variants.length > 0;
 
@@ -28,6 +26,7 @@ export function ProductCard({ product }: ProductCardProps) {
     const basePrice = selectedVariant ? selectedVariant.price : product.price;
     const discountPrice = selectedVariant ? selectedVariant.discount_price : product.discount_price;
     const hasDiscount = discountPrice !== null;
+    const effectivePrice = hasDiscount ? (discountPrice as number) : basePrice;
 
     const image = product.thumb ?? product.image;
 
@@ -66,12 +65,19 @@ export function ProductCard({ product }: ProductCardProps) {
                     <p className="mt-0.5 line-clamp-2 text-sm text-muted-foreground">{product.subtitle}</p>
                 )}
 
-                <div className="mt-auto flex flex-wrap items-center gap-2 pt-2">
+                <div className="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 pt-2">
                     {hasDiscount && (
-                        <span className="text-sm text-muted-foreground line-through">{formatPrice(basePrice)}</span>
+                        <span className="text-sm text-muted-foreground line-through">
+                            {pricing.showUsd ? pricing.usd(basePrice) : pricing.lbp(basePrice)}
+                        </span>
                     )}
-                    <span className="rounded-md border-2 border-black bg-brand-red px-2 py-0.5 font-extrabold text-white">
-                        {formatPrice(hasDiscount ? (discountPrice as number) : basePrice)}
+                    <span className="inline-flex flex-col items-start rounded-md border-2 border-black bg-brand-red px-2 py-0.5 font-extrabold leading-tight text-white">
+                        {pricing.showUsd && <span>{pricing.usd(effectivePrice)}</span>}
+                        {pricing.showLbp && (
+                            <span className={cn(pricing.showUsd && 'text-[11px] font-bold text-white/85')}>
+                                {pricing.lbp(effectivePrice)}
+                            </span>
+                        )}
                     </span>
                 </div>
             </div>
