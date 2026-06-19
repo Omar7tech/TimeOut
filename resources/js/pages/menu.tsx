@@ -6,9 +6,9 @@ import { CategoryAddonsDialog } from '@/components/menu/category-addons-dialog';
 import { CategoryGrid } from '@/components/menu/category-grid';
 import { FilterPills  } from '@/components/menu/filter-pills';
 import type {MenuFilter} from '@/components/menu/filter-pills';
+import { OrderTypeSwitch } from '@/components/menu/order-type-switch';
 import { ProductCard } from '@/components/menu/product-card';
 import { SiteHeader } from '@/components/menu/site-header';
-import { Button } from '@/components/ui/button';
 import { CartProvider } from '@/contexts/cart-context';
 import type { OrderType, Product } from '@/types';
 import type { Category } from '@/types';
@@ -42,6 +42,7 @@ function readFilterFromUrl(categories: Category[]): MenuFilter | null {
 export default function Menu({ orderType, orderTypeLabel, categories }: MenuProps) {
     // Cart/ordering is only available on the delivery (takeaway) menu.
     const cartEnabled = orderType === 'takeaway';
+    const menuTitle = cartEnabled ? 'Delivery Menu' : 'Dine-In Menu';
     const [active, setActive] = useState<MenuFilter | null>(() => readFilterFromUrl(categories));
 
     useEffect(() => {
@@ -84,20 +85,28 @@ export default function Menu({ orderType, orderTypeLabel, categories }: MenuProp
             <SiteHeader showCart={cartEnabled} />
 
             <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6">
+                <div className="flex items-center justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-2">
+                        {active !== null && (
+                            <button
+                                type="button"
+                                onClick={() => setActive(null)}
+                                aria-label="Back to categories"
+                                className="inline-flex size-9 shrink-0 items-center justify-center rounded-md border-2 border-black bg-card text-card-foreground shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            >
+                                <ChevronLeft className="size-5" />
+                            </button>
+                        )}
+                        <h1 className="truncate text-xl font-black uppercase md:text-2xl">{menuTitle}</h1>
+                    </div>
+
+                    <OrderTypeSwitch current={orderType} />
+                </div>
+
                 {active === null ? (
                     <CategoryGrid categories={categories} onSelect={(category) => setActive(category.id)} />
                 ) : (
                     <>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="-ml-2 w-fit gap-1 text-muted-foreground"
-                            onClick={() => setActive(null)}
-                        >
-                            <ChevronLeft className="size-4" />
-                            All categories
-                        </Button>
-
                         <FilterPills categories={categories} activeId={active} onSelect={setActive} />
 
                         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
