@@ -67,7 +67,7 @@ export default function Menu({ orderTypeLabel, categories }: MenuProps) {
                         <button
                             key={category.id}
                             type="button"
-                            className="flex aspect-square flex-col items-center justify-center gap-2 rounded-2xl bg-brand-red p-3 text-white transition-transform hover:scale-[1.02] md:aspect-auto md:h-36 md:w-36"
+                            className="flex aspect-square flex-col items-center justify-center gap-2 rounded-lg border border-white bg-brand-red p-3 text-white transition-transform hover:scale-[1.02] md:aspect-auto md:h-36 md:w-36"
                         >
                             {category.image ? (
                                 <img
