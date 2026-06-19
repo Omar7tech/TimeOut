@@ -98,14 +98,16 @@ export default function Menu({ orderTypeLabel, categories }: MenuProps) {
                         <div className="mt-4 flex items-center gap-3">
                             <span className="h-7 w-1.5 rounded-full bg-brand-red md:h-9" />
                             <h2 className="text-2xl font-black uppercase md:text-4xl">{heading}</h2>
-                            {activeCategory && activeCategory.addons && activeCategory.addons.length > 0 && (
-                                <CategoryAddonsDialog category={activeCategory} />
-                            )}
-                            {products.length > 0 && (
-                                <span className="ml-auto text-sm font-bold text-muted-foreground">
-                                    {products.length} {products.length === 1 ? 'item' : 'items'}
-                                </span>
-                            )}
+                            <div className="ml-auto flex items-center gap-3">
+                                {products.length > 0 && (
+                                    <span className="text-sm font-bold text-muted-foreground">
+                                        {products.length} {products.length === 1 ? 'item' : 'items'}
+                                    </span>
+                                )}
+                                {activeCategory && activeCategory.addons && activeCategory.addons.length > 0 && (
+                                    <CategoryAddonsDialog category={activeCategory} />
+                                )}
+                            </div>
                         </div>
 
                         {products.length > 0 ? (

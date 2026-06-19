@@ -30,11 +30,12 @@ export function CategoryAddonsDialog({ category }: CategoryAddonsDialogProps) {
             <DialogTrigger asChild>
                 <button
                     type="button"
-                    aria-label={`${category.title} add-ons`}
-                    className="inline-flex items-center gap-1 rounded-md border-2 border-black bg-brand-yellow px-2 py-1 text-xs font-extrabold uppercase tracking-wide text-black shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    aria-label={`${category.title} add-ons / الإضافات`}
+                    className="inline-flex items-center gap-1.5 rounded-md border-2 border-black bg-brand-yellow px-2.5 py-1 text-xs font-extrabold uppercase tracking-wide text-black shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                    <Plus className="size-3.5" />
-                    Add-ons
+                    <Plus className="size-5" />
+                    <span>Add-ons</span>
+                    <span dir="rtl">الإضافات</span>
                 </button>
             </DialogTrigger>
 
