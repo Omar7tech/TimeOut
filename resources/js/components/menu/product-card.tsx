@@ -77,7 +77,7 @@ export function ProductCard({ product }: ProductCardProps) {
                             value={selectedIndex}
                             onChange={(event) => setSelectedIndex(Number(event.target.value))}
                             aria-label="Choose a variant"
-                            className="ml-auto rounded-md border-2 border-black bg-card px-2 py-0.5 text-sm font-bold text-card-foreground shadow-[2px_2px_0_0_#000] focus:outline-none"
+                            className="ml-auto rounded-md border-2 border-black bg-card px-1.5 py-0.5 text-[11px] font-bold text-card-foreground shadow-[2px_2px_0_0_#000] focus:outline-none"
                         >
                             {variants.map((variant, index) => (
                                 <option key={index} value={index}>
