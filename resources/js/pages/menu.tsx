@@ -7,7 +7,7 @@ import type { OrderType, Product } from '@/types';
 import type { Category } from '@/types';
 import { Head } from '@inertiajs/react';
 import { ChevronLeft } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface MenuProps {
     orderType: OrderType;
@@ -15,8 +15,38 @@ interface MenuProps {
     categories: Category[];
 }
 
+/** Read the active filter from the URL `?filter=` query (today | category id). */
+function readFilterFromUrl(categories: Category[]): MenuFilter | null {
+    if (typeof window === 'undefined') {
+        return null;
+    }
+
+    const param = new URLSearchParams(window.location.search).get('filter');
+
+    if (param === 'today') {
+        return 'today';
+    }
+
+    const id = Number(param);
+
+    return param !== null && categories.some((category) => category.id === id) ? id : null;
+}
+
 export default function Menu({ orderTypeLabel, categories }: MenuProps) {
-    const [active, setActive] = useState<MenuFilter | null>(null);
+    const [active, setActive] = useState<MenuFilter | null>(() => readFilterFromUrl(categories));
+
+    // Keep the URL in sync so a refresh restores the current filter (no request).
+    useEffect(() => {
+        const url = new URL(window.location.href);
+
+        if (active === null) {
+            url.searchParams.delete('filter');
+        } else {
+            url.searchParams.set('filter', String(active));
+        }
+
+        window.history.replaceState(window.history.state, '', url);
+    }, [active]);
 
     let heading = '';
     let products: Product[] = [];
