@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -46,12 +45,6 @@ class Category extends Model implements HasMedia
             ->nonQueued()
             ->format('webp')
             ->quality(70);
-
-        $this->addMediaConversion('thumb')
-            ->nonQueued()
-            ->format('webp')
-            ->quality(50)
-            ->fit(Fit::Max, 400, 400);
     }
 
     /**
