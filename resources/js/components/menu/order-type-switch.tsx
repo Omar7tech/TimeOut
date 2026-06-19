@@ -1,7 +1,7 @@
-import { cn } from '@/lib/utils';
-import type { OrderType } from '@/types';
 import { Link } from '@inertiajs/react';
 import { Bike, UtensilsCrossed } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import type { OrderType } from '@/types';
 
 const options = [
     { type: 'dine_in', label: 'Dine-in', href: '/menu/dine-in', icon: UtensilsCrossed },
