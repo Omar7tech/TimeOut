@@ -294,3 +294,25 @@
         linear-gradient(#000 0 0) top / 100% calc(100% - var(--zigzag-depth)) no-repeat,
         conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / var(--zigzag-width) var(--zigzag-depth) repeat-x;
 }
+
+/* Footer band: the vertical mirror of the header — torn-paper teeth on the top edge. */
+.footer-zigzag {
+    position: relative;
+    isolation: isolate;
+}
+
+.footer-zigzag::before {
+    --zigzag-width: 22px;
+    --zigzag-depth: 12px;
+    content: "";
+    position: absolute;
+    inset: calc(-1 * var(--zigzag-depth)) 0 0 0;
+    z-index: -1;
+    background: var(--header-bg);
+    -webkit-mask:
+        linear-gradient(#000 0 0) bottom / 100% calc(100% - var(--zigzag-depth)) no-repeat,
+        conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / var(--zigzag-width) var(--zigzag-depth) repeat-x;
+    mask:
+        linear-gradient(#000 0 0) bottom / 100% calc(100% - var(--zigzag-depth)) no-repeat,
+        conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / var(--zigzag-width) var(--zigzag-depth) repeat-x;
+}

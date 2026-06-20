@@ -7,6 +7,7 @@ import { FilterPills  } from '@/components/menu/filter-pills';
 import type {MenuFilter} from '@/components/menu/filter-pills';
 import { OrderTypeSwitch } from '@/components/menu/order-type-switch';
 import { ProductCard } from '@/components/menu/product-card';
+import { SiteFooter } from '@/components/menu/site-footer';
 import { SiteHeader } from '@/components/menu/site-header';
 import { CartProvider } from '@/contexts/cart-context';
 import type { OrderType, Product } from '@/types';
@@ -125,6 +126,14 @@ export default function Menu({ orderType, orderTypeLabel, categories }: MenuProp
                     </>
                 )}
             </main>
+
+            <SiteFooter
+                categories={categories}
+                onSelectCategory={(id) => {
+                    setActive(id);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+            />
 
             {cartEnabled && <CartSheet />}
         </CartProvider>
