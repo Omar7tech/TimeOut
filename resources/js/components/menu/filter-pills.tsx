@@ -19,6 +19,12 @@ const raised =
 /** Active state: pressed into the shadow. */
 const pressed = 'translate-x-[3px] translate-y-[3px] shadow-none';
 
+/** Polka-dot texture layered over the active pill's fill. */
+const stripesOnDark =
+    '[background-image:radial-gradient(rgba(255,255,255,0.22)_1.5px,transparent_1.5px)] [background-size:8px_8px]';
+const stripesOnLight =
+    '[background-image:radial-gradient(rgba(0,0,0,0.14)_1.5px,transparent_1.5px)] [background-size:8px_8px]';
+
 /**
  * Neo-brutalist filter pills above the products: a yellow "Available today"
  * pill first, then one per category. Selecting one swaps the products client-side.
@@ -31,7 +37,7 @@ export function FilterPills({ categories, activeId, onSelect }: FilterPillsProps
             <button
                 type="button"
                 onClick={() => onSelect('today')}
-                className={cn(base, 'bg-brand-yellow text-black', todayActive ? pressed : raised)}
+                className={cn(base, 'bg-brand-yellow text-black', todayActive ? cn(pressed, stripesOnLight) : raised)}
             >
                 Available today
             </button>
@@ -46,7 +52,7 @@ export function FilterPills({ categories, activeId, onSelect }: FilterPillsProps
                         onClick={() => onSelect(category.id)}
                         className={cn(
                             base,
-                            active ? cn('bg-brand-red text-white', pressed) : cn('bg-white text-black', raised),
+                            active ? cn('bg-brand-red text-white', pressed, stripesOnDark) : cn('bg-white text-black', raised),
                         )}
                     >
                         {category.title}
