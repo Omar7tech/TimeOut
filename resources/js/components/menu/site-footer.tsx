@@ -1,3 +1,4 @@
+import { BrandLogo } from '@/components/brand-logo';
 import type { Category } from '@/types';
 
 interface SiteFooterProps {
@@ -23,12 +24,7 @@ export function SiteFooter({ categories, onSelectCategory }: SiteFooterProps) {
                 <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
                     {/* Brand */}
                     <div className="max-w-xs">
-                        <img
-                            src="/logos/timeout-logo.png"
-                            alt="Time Out Snack"
-                            className="h-12 select-none md:h-14"
-                            draggable={false}
-                        />
+                        <BrandLogo className="h-12 md:h-14" />
                         <p className="mt-3 text-sm font-medium text-muted-foreground">
                             Fresh snacks, made to order. Take a time out and treat yourself.
                         </p>

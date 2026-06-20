@@ -48,6 +48,9 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'shop' => [
+                'isOpen' => $settings->is_open,
+            ],
             'pricing' => [
                 'display' => $settings->price_display->value,
                 'lbpRate' => $lbpEnabled ? (float) $settings->lbp_exchange_rate : null,

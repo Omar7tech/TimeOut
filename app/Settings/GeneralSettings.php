@@ -8,6 +8,12 @@ use Spatie\LaravelSettings\SettingsCasts\EnumCast;
 
 class GeneralSettings extends Settings
 {
+    /**
+     * Whether the shop is currently open. Drives the storefront logo (open vs.
+     * closed variant) and can gate ordering.
+     */
+    public bool $is_open;
+
     public ?float $lbp_exchange_rate;
 
     public bool $show_lbp_prices;

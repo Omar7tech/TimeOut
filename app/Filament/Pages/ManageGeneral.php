@@ -24,6 +24,16 @@ class ManageGeneral extends SettingsPage
     {
         return $schema
             ->components([
+                Section::make('Shop Status')
+                    ->description('Control whether the shop is open. When closed, the storefront shows the closed logo.')
+                    ->icon(Heroicon::OutlinedBuildingStorefront)
+                    ->schema([
+                        Toggle::make('is_open')
+                            ->label('Shop is open')
+                            ->helperText('Turn off to switch the storefront to the closed logo.')
+                            ->default(true),
+                    ]),
+
                 Section::make('LBP Pricing')
                     ->description('Configure whether prices are also shown in Lebanese Pounds.')
                     ->icon(Heroicon::OutlinedCurrencyDollar)

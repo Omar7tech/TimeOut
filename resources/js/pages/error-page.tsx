@@ -1,3 +1,4 @@
+import { BrandLogo } from '@/components/brand-logo';
 import { Button } from '@/components/ui/button';
 import { Head, Link } from '@inertiajs/react';
 
@@ -39,12 +40,7 @@ export default function ErrorPage({ status }: ErrorPageProps) {
             <Head title={`${status} — ${title}`} />
 
             <main className="flex min-h-dvh flex-col items-center justify-center gap-8 px-6 py-16 text-center">
-                <img
-                    src="/logos/timeout-logo.png"
-                    alt="Time Out Snack"
-                    className="h-12 select-none md:h-16"
-                    draggable={false}
-                />
+                <BrandLogo isOpen className="h-12 md:h-16" />
 
                 <div className="flex flex-col items-center gap-3">
                     <span className="text-7xl font-extrabold tracking-tight text-brand-red md:text-8xl">

@@ -1,3 +1,4 @@
+import { BrandLogo } from '@/components/brand-logo';
 import { Button } from '@/components/ui/button';
 import { Head, Link } from '@inertiajs/react';
 
@@ -7,12 +8,7 @@ export default function Welcome() {
             <Head title="Time Out Snack" />
 
             <main className="flex min-h-dvh flex-col items-center justify-center gap-12 px-6 py-16">
-                <img
-                    src="/logos/timeout-logo.png"
-                    alt="Time Out Snack"
-                    className="w-full max-w-xs select-none"
-                    draggable={false}
-                />
+                <BrandLogo className="w-full max-w-xs" />
 
                 <div className="flex w-full max-w-xs items-center justify-center gap-4">
                     <Button
