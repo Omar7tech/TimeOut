@@ -1,14 +1,23 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 
+export type CartAddon = {
+    name: string;
+    /** Unit price of the add-on in USD. */
+    price: number;
+    quantity: number;
+};
+
 export type CartItem = {
-    /** Unique per product + variant combination. */
+    /** Unique per product + variant + add-ons combination. */
     key: string;
     productId: number;
     title: string;
     variantName: string | null;
-    /** Effective (discounted) unit price in USD. */
+    /** Effective (discounted) base unit price in USD, excluding add-ons. */
     unitUsd: number;
+    /** Chosen optional extras; their prices are added on top of `unitUsd`. */
+    addons: CartAddon[];
     image: string | null;
     quantity: number;
 };
@@ -20,7 +29,25 @@ export type AddToCartInput = {
     variantName: string | null;
     unitUsd: number;
     image: string | null;
+    addons?: CartAddon[];
 };
+
+/** The per-unit price of a cart line including its add-ons. */
+export function cartItemUnitUsd(item: CartItem): number {
+    return item.addons.reduce(
+        (total, addon) => total + addon.price * addon.quantity,
+        item.unitUsd,
+    );
+}
+
+/** A stable signature for a set of add-ons, so identical selections share a key. */
+function addonsSignature(addons: CartAddon[]): string {
+    return addons
+        .filter((addon) => addon.quantity > 0)
+        .map((addon) => `${addon.name}x${addon.quantity}`)
+        .sort()
+        .join(',');
+}
 
 type CartContextValue = {
     items: CartItem[];
@@ -47,7 +74,15 @@ function readStoredItems(): CartItem[] {
     try {
         const raw = window.localStorage.getItem(STORAGE_KEY);
 
-        return raw ? (JSON.parse(raw) as CartItem[]) : [];
+        if (!raw) {
+            return [];
+        }
+
+        // Default `addons` for carts persisted before add-ons were introduced.
+        return (JSON.parse(raw) as CartItem[]).map((item) => ({
+            ...item,
+            addons: item.addons ?? [],
+        }));
     } catch {
         return [];
     }
@@ -68,7 +103,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     const value = useMemo<CartContextValue>(() => {
         const addItem = (input: AddToCartInput): void => {
-            const key = `${input.productId}:${input.variantIndex ?? 'base'}`;
+            const addons = (input.addons ?? []).filter(
+                (addon) => addon.quantity > 0,
+            );
+            const signature = addonsSignature(addons);
+            const key = `${input.productId}:${input.variantIndex ?? 'base'}${
+                signature ? `:${signature}` : ''
+            }`;
 
             setItems((previous) => {
                 const existing = previous.find((item) => item.key === key);
@@ -89,6 +130,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                         title: input.title,
                         variantName: input.variantName,
                         unitUsd: input.unitUsd,
+                        addons,
                         image: input.image,
                         quantity: 1,
                     },
@@ -130,7 +172,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
             items,
             count: items.reduce((total, item) => total + item.quantity, 0),
             subtotalUsd: items.reduce(
-                (total, item) => total + item.unitUsd * item.quantity,
+                (total, item) =>
+                    total + cartItemUnitUsd(item) * item.quantity,
                 0,
             ),
             open,

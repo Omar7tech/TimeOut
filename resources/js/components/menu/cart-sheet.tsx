@@ -6,7 +6,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { useCart } from '@/contexts/cart-context';
+import { cartItemUnitUsd, useCart } from '@/contexts/cart-context';
 import { usePricing } from '@/hooks/use-pricing';
 import { cn } from '@/lib/utils';
 
@@ -104,11 +104,28 @@ export function CartSheet() {
                                                 {item.variantName}
                                             </p>
                                         )}
+                                        {item.addons.length > 0 && (
+                                            <ul className="flex flex-wrap gap-1">
+                                                {item.addons.map((addon) => (
+                                                    <li
+                                                        key={addon.name}
+                                                        className="inline-flex items-center gap-1 rounded border border-black bg-brand-yellow px-1.5 py-0.5 text-[10px] font-extrabold tracking-wide text-black uppercase"
+                                                    >
+                                                        <span className="tabular-nums">
+                                                            {addon.quantity}×
+                                                        </span>
+                                                        <span className="max-w-[8rem] truncate normal-case">
+                                                            {addon.name}
+                                                        </span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
                                         <div className="flex flex-col text-xs leading-tight font-extrabold">
                                             {pricing.showUsd && (
                                                 <span>
                                                     {pricing.usd(
-                                                        item.unitUsd *
+                                                        cartItemUnitUsd(item) *
                                                             item.quantity,
                                                     )}
                                                 </span>
@@ -121,7 +138,7 @@ export function CartSheet() {
                                                     )}
                                                 >
                                                     {pricing.lbp(
-                                                        item.unitUsd *
+                                                        cartItemUnitUsd(item) *
                                                             item.quantity,
                                                     )}
                                                 </span>

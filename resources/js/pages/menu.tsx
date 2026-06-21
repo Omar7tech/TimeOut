@@ -77,16 +77,29 @@ export default function Menu({
     let heading = '';
     let products: Product[] = [];
     let activeCategory: Category | null = null;
+    // Each product's add-ons come from its own category, so the mixed "today"
+    // view can still surface the right extras per item.
+    const addonsByProduct = new Map<number, Category['addons']>();
 
     if (active === 'today') {
         heading = 'Today - اليوم';
-        products = categories
-            .flatMap((category) => category.products ?? [])
-            .filter((product) => product.available_today);
+
+        for (const category of categories) {
+            for (const product of category.products ?? []) {
+                if (product.available_today) {
+                    products.push(product);
+                    addonsByProduct.set(product.id, category.addons);
+                }
+            }
+        }
     } else if (typeof active === 'number') {
         activeCategory = categories.find((item) => item.id === active) ?? null;
         heading = activeCategory?.title ?? '';
         products = activeCategory?.products ?? [];
+
+        for (const product of products) {
+            addonsByProduct.set(product.id, activeCategory?.addons ?? null);
+        }
     }
 
     return (
@@ -158,6 +171,10 @@ export default function Menu({
                                     <ProductCard
                                         key={product.id}
                                         product={product}
+                                        addons={
+                                            addonsByProduct.get(product.id) ??
+                                            undefined
+                                        }
                                         enableCart={cartEnabled}
                                     />
                                 ))}

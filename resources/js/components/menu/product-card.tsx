@@ -3,11 +3,14 @@ import { useState } from 'react';
 import { ProductDialog } from '@/components/menu/product-dialog';
 import { ProductPrice } from '@/components/menu/product-price';
 import { VariantSelector } from '@/components/menu/variant-selector';
+import type { CartAddon } from '@/contexts/cart-context';
 import { useCart } from '@/contexts/cart-context';
-import type { Product } from '@/types';
+import type { CategoryAddon, Product } from '@/types';
 
 interface ProductCardProps {
     product: Product;
+    /** Add-ons from the product's category; empty when none are configured. */
+    addons?: CategoryAddon[];
     /** Whether add-to-cart actions are available (delivery menu only). */
     enableCart?: boolean;
 }
@@ -16,7 +19,11 @@ interface ProductCardProps {
  * Compact menu item card: thumbnail, single-line title/subtitle/description,
  * price, and quick actions. The "View" action opens the full details modal.
  */
-export function ProductCard({ product, enableCart = false }: ProductCardProps) {
+export function ProductCard({
+    product,
+    addons = [],
+    enableCart = false,
+}: ProductCardProps) {
     const { addItem } = useCart();
     const variants = product.variants ?? [];
     const hasVariants = variants.length > 0;
@@ -36,7 +43,7 @@ export function ProductCard({ product, enableCart = false }: ProductCardProps) {
 
     const image = product.thumb ?? product.image;
 
-    const handleAddToCart = (): void => {
+    const addToCart = (selectedAddons: CartAddon[] = []): void => {
         addItem({
             productId: product.id,
             variantIndex: hasVariants ? selectedIndex : null,
@@ -44,8 +51,21 @@ export function ProductCard({ product, enableCart = false }: ProductCardProps) {
             variantName: selectedVariant?.name ?? null,
             unitUsd: effectivePrice,
             image,
+            addons: selectedAddons,
         });
         setOpen(false);
+    };
+
+    // Quick add: when extras are available, open the dialog so they can be
+    // chosen instead of silently adding the item without them.
+    const handleQuickAdd = (): void => {
+        if (addons.length > 0) {
+            setOpen(true);
+
+            return;
+        }
+
+        addToCart();
     };
 
     return (
@@ -111,7 +131,7 @@ export function ProductCard({ product, enableCart = false }: ProductCardProps) {
                             {enableCart && (
                                 <button
                                     type="button"
-                                    onClick={handleAddToCart}
+                                    onClick={handleQuickAdd}
                                     aria-label="Add to cart"
                                     className="inline-flex size-8 items-center justify-center rounded-md border-2 border-black bg-brand-red text-white shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                 >
@@ -135,11 +155,12 @@ export function ProductCard({ product, enableCart = false }: ProductCardProps) {
 
             <ProductDialog
                 product={product}
+                addons={addons}
                 open={open}
                 onOpenChange={setOpen}
                 selectedIndex={selectedIndex}
                 onSelectVariant={setSelectedIndex}
-                onAddToCart={enableCart ? handleAddToCart : undefined}
+                onAddToCart={enableCart ? addToCart : undefined}
             />
         </div>
     );
