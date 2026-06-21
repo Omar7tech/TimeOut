@@ -1,6 +1,6 @@
+import { Head, Link } from '@inertiajs/react';
 import { BrandLogo } from '@/components/brand-logo';
 import { Button } from '@/components/ui/button';
-import { Head, Link } from '@inertiajs/react';
 
 interface ErrorPageProps {
     status: number;
