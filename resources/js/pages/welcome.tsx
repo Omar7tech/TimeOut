@@ -66,13 +66,16 @@ export default function Welcome() {
                     </div>
 
                     {!open && (
-                        <div className="flex w-full flex-col gap-1 border-t-2 border-dashed border-black/25 pt-4 text-center text-sm font-bold">
-                            <p>
+                        <div className="w-full rounded-xl border-2 border-black bg-card p-5 text-center shadow-[4px_4px_0_0_#000]">
+                            <p className="text-sm font-bold">
                                 We're closed
                                 <span className="text-brand-red">.</span> Fill
                                 your cart and order the moment we reopen.
                             </p>
-                            <p dir="rtl" className="text-muted-foreground">
+                            <p
+                                dir="rtl"
+                                className="mt-1 text-sm font-semibold text-muted-foreground"
+                            >
                                 نحن مغلقون
                                 <span className="text-brand-red">.</span> املأ
                                 سلتك واطلب فور أن نفتح.
