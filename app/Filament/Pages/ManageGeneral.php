@@ -38,6 +38,7 @@ class ManageGeneral extends SettingsPage
                             ->schema([
                                 Radio::make('status_mode')
                                     ->label('Status mode - وضع الحالة')
+                                    ->validationAttribute('status mode')
                                     ->options(ShopStatusMode::class)
                                     ->default(ShopStatusMode::MANUAL->value)
                                     ->required()
@@ -71,6 +72,7 @@ class ManageGeneral extends SettingsPage
 
                                         TimePicker::make('opens_at')
                                             ->label('Opens at - يفتح الساعة')
+                                            ->validationAttribute('opening time')
                                             ->seconds(false)
                                             ->default('09:00')
                                             ->required()
@@ -81,6 +83,7 @@ class ManageGeneral extends SettingsPage
 
                                         TimePicker::make('closes_at')
                                             ->label('Closes at - يغلق الساعة')
+                                            ->validationAttribute('closing time')
                                             ->seconds(false)
                                             ->default('17:00')
                                             ->required()
@@ -99,6 +102,7 @@ class ManageGeneral extends SettingsPage
                             ->schema([
                                 Toggle::make('show_lbp_prices')
                                     ->label('Enable LBP pricing - تفعيل التسعير بالليرة')
+                                    ->validationAttribute('enable LBP pricing')
                                     ->helperText('Turn on to allow prices to be displayed in Lebanese Pounds. - فعّله للسماح بعرض الأسعار بالليرة اللبنانية.')
                                     ->columnSpanFull()
                                     ->live()
@@ -110,6 +114,7 @@ class ManageGeneral extends SettingsPage
                                     }),
                                 TextInput::make('lbp_exchange_rate')
                                     ->label('LBP exchange rate - سعر صرف الليرة')
+                                    ->validationAttribute('LBP exchange rate')
                                     ->helperText('Amount of LBP per 1 USD. - قيمة الليرة اللبنانية مقابل 1 دولار.')
                                     ->numeric()
                                     ->minValue(0)
