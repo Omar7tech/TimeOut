@@ -31,15 +31,16 @@ export default function Welcome() {
                     </div>
 
                     {!open && (
-                        <div className="flex max-w-sm flex-col gap-1.5 border-t-2 border-dashed border-black/15 pt-4 text-center text-sm font-semibold text-muted-foreground">
+                        <div className="flex w-full flex-col gap-1 border-t-2 border-dashed border-black/25 pt-4 text-center text-sm font-bold">
                             <p>
-                                We're closed right now — browse the menu and fill
-                                your cart. You can place your order as soon as
-                                we're open again.
+                                We're closed
+                                <span className="text-brand-red">.</span> Fill
+                                your cart and order the moment we reopen.
                             </p>
-                            <p dir="rtl" className="leading-relaxed">
-                                نحن مغلقون حاليًا — تصفّح القائمة واملأ سلتك،
-                                وبإمكانك إتمام طلبك فور أن نفتح من جديد.
+                            <p dir="rtl" className="text-muted-foreground">
+                                نحن مغلقون
+                                <span className="text-brand-red">.</span> املأ
+                                سلتك واطلب فور أن نفتح.
                             </p>
                         </div>
                     )}
