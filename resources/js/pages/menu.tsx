@@ -121,7 +121,14 @@ export default function Menu({
 
                         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
                             <div className="flex items-center gap-3">
-                                <span className="h-7 w-1.5 rounded-full bg-brand-red md:h-9" />
+                                <span className="flex flex-col justify-center gap-[3px]">
+                                    {Array.from({ length: 5 }).map((_, i) => (
+                                        <span
+                                            key={i}
+                                            className="h-0.5 w-6 rounded-full bg-brand-red md:w-7"
+                                        />
+                                    ))}
+                                </span>
                                 <h2 className="text-2xl font-black uppercase md:text-4xl">
                                     {heading}
                                 </h2>
