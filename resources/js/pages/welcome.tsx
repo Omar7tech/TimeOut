@@ -1,6 +1,12 @@
 import { Head, Link } from '@inertiajs/react';
 import { BrandLogo } from '@/components/brand-logo';
-import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+
+const buttonClass = cn(
+    'inline-flex h-12 flex-1 items-center justify-center rounded-md border-2 border-black bg-brand-red text-base font-extrabold tracking-wide text-white uppercase',
+    'shadow-[4px_4px_0_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000]',
+    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+);
 
 export default function Welcome() {
     return (
@@ -11,21 +17,13 @@ export default function Welcome() {
                 <BrandLogo className="w-full max-w-xs" />
 
                 <div className="flex w-full max-w-xs items-center justify-center gap-4">
-                    <Button
-                        asChild
-                        size="lg"
-                        className="h-12 flex-1 bg-brand-red text-base font-bold text-white hover:bg-brand-red/90"
-                    >
-                        <Link href="/menu/dine-in">Dine In</Link>
-                    </Button>
+                    <Link href="/menu/dine-in" className={buttonClass}>
+                        Dine In
+                    </Link>
 
-                    <Button
-                        asChild
-                        size="lg"
-                        className="h-12 flex-1 bg-brand-red text-base font-bold text-white hover:bg-brand-red/90"
-                    >
-                        <Link href="/menu/delivery">Delivery</Link>
-                    </Button>
+                    <Link href="/menu/delivery" className={buttonClass}>
+                        Delivery
+                    </Link>
                 </div>
             </main>
         </>
