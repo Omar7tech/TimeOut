@@ -19,27 +19,17 @@ export function FooterHours() {
 
     return (
         <div>
-            <div className="mb-3 flex items-center gap-2">
-                <h3 className="text-xs font-black tracking-widest text-brand-red uppercase">
-                    Hours
-                </h3>
+            <h3 className="mb-3 flex items-baseline gap-2 text-xs font-black tracking-widest uppercase">
+                <span className="text-brand-red">Hours</span>
+                <span className="text-foreground/30">/</span>
                 <span
                     className={cn(
-                        'inline-flex items-center gap-1 rounded-full border border-black px-2 py-0.5 text-[10px] font-extrabold tracking-wide uppercase',
-                        open
-                            ? 'bg-brand-yellow text-black'
-                            : 'bg-foreground/10 text-muted-foreground',
+                        open ? 'text-foreground' : 'text-muted-foreground',
                     )}
                 >
-                    <span
-                        className={cn(
-                            'size-1.5 rounded-full',
-                            open ? 'bg-green-600' : 'bg-brand-red',
-                        )}
-                    />
-                    {open ? 'Open now' : 'Closed'}
+                    {open ? 'Open' : 'Closed'}
                 </span>
-            </div>
+            </h3>
 
             <ul className="flex flex-col gap-1">
                 {rows.map((row) => (
