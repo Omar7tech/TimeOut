@@ -21,13 +21,13 @@ enum Weekday: int implements HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::SUNDAY => 'Sunday',
-            self::MONDAY => 'Monday',
-            self::TUESDAY => 'Tuesday',
-            self::WEDNESDAY => 'Wednesday',
-            self::THURSDAY => 'Thursday',
-            self::FRIDAY => 'Friday',
-            self::SATURDAY => 'Saturday',
+            self::SUNDAY => 'Sunday - الأحد',
+            self::MONDAY => 'Monday - الإثنين',
+            self::TUESDAY => 'Tuesday - الثلاثاء',
+            self::WEDNESDAY => 'Wednesday - الأربعاء',
+            self::THURSDAY => 'Thursday - الخميس',
+            self::FRIDAY => 'Friday - الجمعة',
+            self::SATURDAY => 'Saturday - السبت',
         };
     }
 }

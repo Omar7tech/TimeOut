@@ -23,16 +23,16 @@ enum ShopStatusMode: string implements HasDescription, HasIcon, HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::MANUAL => 'Manual',
-            self::AUTOMATIC => 'Automatic',
+            self::MANUAL => 'Manual - يدوي',
+            self::AUTOMATIC => 'Automatic - تلقائي',
         };
     }
 
     public function getDescription(): string
     {
         return match ($this) {
-            self::MANUAL => 'Flip a switch yourself to open or close the shop.',
-            self::AUTOMATIC => 'Open and close the shop automatically based on a weekly schedule.',
+            self::MANUAL => 'Flip a switch yourself to open or close the shop. - افتح أو أغلق المحل يدويًا عبر مفتاح.',
+            self::AUTOMATIC => 'Open and close the shop automatically based on a weekly schedule. - يفتح المحل ويغلق تلقائيًا حسب جدول أسبوعي.',
         };
     }
 

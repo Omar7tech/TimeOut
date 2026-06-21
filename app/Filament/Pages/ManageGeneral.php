@@ -29,27 +29,27 @@ class ManageGeneral extends SettingsPage
     {
         return $schema
             ->components([
-                Section::make('Shop Status')
-                    ->description('Control whether the shop is open. When closed, the storefront shows the closed logo.')
+                Section::make('Shop Status - حالة المحل')
+                    ->description('Control whether the shop is open. When closed, the storefront shows the closed logo. - تحكّم بفتح المحل. عند الإغلاق يظهر شعار "مغلق" في الواجهة.')
                     ->icon(Heroicon::OutlinedBuildingStorefront)
                     ->schema([
                         Radio::make('status_mode')
-                            ->label('Status mode')
+                            ->label('Status mode - وضع الحالة')
                             ->options(ShopStatusMode::class)
                             ->default(ShopStatusMode::MANUAL->value)
                             ->required(),
 
                         Toggle::make('is_open')
-                            ->label('Shop is open')
-                            ->helperText('Turn off to switch the storefront to the closed logo.')
+                            ->label('Shop is open - المحل مفتوح')
+                            ->helperText('Turn off to switch the storefront to the closed logo. - أطفئه لإظهار شعار "مغلق" في الواجهة.')
                             ->default(true)
                             ->visibleJs(<<<'JS'
                                 $get('status_mode') === 'manual'
                                 JS),
 
                         Repeater::make('opening_hours')
-                            ->label('Weekly opening hours')
-                            ->helperText('The shop opens and closes automatically based on these hours.')
+                            ->label('Weekly opening hours - ساعات العمل الأسبوعية')
+                            ->helperText('The shop opens and closes automatically based on these hours. - يفتح المحل ويغلق تلقائيًا بناءً على هذه الساعات.')
                             ->default(GeneralSettings::defaultOpeningHours())
                             ->addable(false)
                             ->deletable(false)
@@ -60,12 +60,12 @@ class ManageGeneral extends SettingsPage
                                 Hidden::make('day'),
 
                                 Toggle::make('is_closed')
-                                    ->label('Closed (day off)')
+                                    ->label('Closed (day off) - مغلق (يوم عطلة)')
                                     ->default(false)
                                     ->columnSpanFull(),
 
                                 TimePicker::make('opens_at')
-                                    ->label('Opens at')
+                                    ->label('Opens at - يفتح الساعة')
                                     ->seconds(false)
                                     ->default('09:00')
                                     ->required()
@@ -74,7 +74,7 @@ class ManageGeneral extends SettingsPage
                                         JS),
 
                                 TimePicker::make('closes_at')
-                                    ->label('Closes at')
+                                    ->label('Closes at - يغلق الساعة')
                                     ->seconds(false)
                                     ->default('17:00')
                                     ->required()
@@ -87,13 +87,13 @@ class ManageGeneral extends SettingsPage
                                 JS),
                     ]),
 
-                Section::make('LBP Pricing')
-                    ->description('Configure whether prices are also shown in Lebanese Pounds.')
+                Section::make('LBP Pricing - التسعير بالليرة اللبنانية')
+                    ->description('Configure whether prices are also shown in Lebanese Pounds. - حدّد ما إذا كانت الأسعار تُعرض أيضًا بالليرة اللبنانية.')
                     ->icon(Heroicon::OutlinedCurrencyDollar)
                     ->schema([
                         Toggle::make('show_lbp_prices')
-                            ->label('Enable LBP pricing')
-                            ->helperText('Turn on to allow prices to be displayed in Lebanese Pounds.')
+                            ->label('Enable LBP pricing - تفعيل التسعير بالليرة')
+                            ->helperText('Turn on to allow prices to be displayed in Lebanese Pounds. - فعّله للسماح بعرض الأسعار بالليرة اللبنانية.')
                             ->live()
                             ->afterStateUpdated(function (bool $state, callable $set): void {
                                 // Fall back to USD-only when LBP pricing is turned off.
@@ -102,8 +102,8 @@ class ManageGeneral extends SettingsPage
                                 }
                             }),
                         TextInput::make('lbp_exchange_rate')
-                            ->label('LBP exchange rate')
-                            ->helperText('Amount of LBP per 1 USD.')
+                            ->label('LBP exchange rate - سعر صرف الليرة')
+                            ->helperText('Amount of LBP per 1 USD. - قيمة الليرة اللبنانية مقابل 1 دولار.')
                             ->numeric()
                             ->minValue(0)
                             ->suffix('LBP')
@@ -114,15 +114,15 @@ class ManageGeneral extends SettingsPage
                                 JS),
                     ]),
 
-                Section::make('Price Display')
-                    ->description('Choose which currency the storefront prices are shown in.')
+                Section::make('Price Display - عرض الأسعار')
+                    ->description('Choose which currency the storefront prices are shown in. - اختر العملة التي تُعرض بها أسعار الواجهة.')
                     ->icon(Heroicon::OutlinedBanknotes)
                     ->schema([
                         Radio::make('price_display')
                             ->hiddenLabel()
                             ->options(PriceDisplay::class)
                             ->default(PriceDisplay::USD->value)
-                            ->helperText('LBP and Both require LBP pricing to be enabled with a valid exchange rate.')
+                            ->helperText('LBP and Both require LBP pricing to be enabled with a valid exchange rate. - خيارا "الليرة" و"كلاهما" يتطلبان تفعيل التسعير بالليرة مع سعر صرف صالح.')
                             ->disableOptionWhen(function (string $value, Get $get): bool {
                                 // Only USD is available unless LBP pricing is enabled with a rate.
                                 $lbpReady = $get('show_lbp_prices') && (float) $get('lbp_exchange_rate') > 0;

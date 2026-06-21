@@ -16,9 +16,9 @@ enum PriceDisplay: string implements HasIcon, HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::USD => 'USD only',
-            self::LBP => 'LBP only',
-            self::BOTH => 'Both (USD & LBP)',
+            self::USD => 'USD only - دولار فقط',
+            self::LBP => 'LBP only - ليرة فقط',
+            self::BOTH => 'Both (USD & LBP) - كلاهما (دولار وليرة)',
         };
     }
 
