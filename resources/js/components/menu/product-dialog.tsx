@@ -1,5 +1,5 @@
 import { Minus, Plus, ShoppingCart, Star } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ProductPrice } from '@/components/menu/product-price';
 import { VariantSelector } from '@/components/menu/variant-selector';
 import {
@@ -52,11 +52,16 @@ export function ProductDialog({
     const [addonQuantities, setAddonQuantities] = useState<number[]>([]);
 
     // Reset the extras whenever the dialog opens, so it starts clean each time.
-    useEffect(() => {
+    // Done during render (not in an effect) by tracking the previous open state.
+    const [wasOpen, setWasOpen] = useState(open);
+
+    if (open !== wasOpen) {
+        setWasOpen(open);
+
         if (open) {
             setAddonQuantities(addons.map(() => 0));
         }
-    }, [open, addons]);
+    }
 
     const selectedAddons = useMemo<CartAddon[]>(
         () =>

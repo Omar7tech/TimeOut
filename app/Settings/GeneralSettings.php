@@ -28,8 +28,11 @@ class GeneralSettings extends Settings
      * The weekly opening-hours schedule used when the status mode is `AUTOMATIC`.
      * One entry per weekday, keyed by JS-style day number (0 = Sunday). Each entry
      * is shaped `['day' => int, 'is_closed' => bool, 'opens_at' => string, 'closes_at' => string]`.
+     *
+     * Note: no `@var` value type is declared because spatie/laravel-settings cannot
+     * resolve a complex array-shape docblock here (it would throw at runtime).
      */
-    public array $opening_hours;
+    public array $opening_hours; // @phpstan-ignore missingType.iterableValue
 
     /**
      * Whether to show a promotional banner above the storefront header.
