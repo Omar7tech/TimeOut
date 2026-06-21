@@ -27,6 +27,10 @@ export function CartSheet() {
         clear,
     } = useCart();
     const pricing = usePricing();
+    // Single-currency formatter for the per-item breakdown rows (USD when shown,
+    // otherwise LBP), keeping the breakdown compact.
+    const fmtPrimary = (usd: number): string =>
+        pricing.showUsd ? pricing.usd(usd) : pricing.lbp(usd);
     const [confirmingClear, setConfirmingClear] = useState(false);
 
     // Auto-dismiss the clear confirmation after a few seconds.
@@ -104,46 +108,80 @@ export function CartSheet() {
                                                 {item.variantName}
                                             </p>
                                         )}
-                                        {item.addons.length > 0 && (
-                                            <ul className="flex flex-wrap gap-1">
+                                        {item.addons.length > 0 ? (
+                                            <div className="mt-0.5 flex flex-col gap-0.5 rounded-md border border-dashed border-neutral-400 p-1.5 text-[11px] font-semibold text-muted-foreground">
+                                                <div className="flex items-center justify-between gap-2">
+                                                    <span>Item</span>
+                                                    <span className="tabular-nums">
+                                                        {fmtPrimary(
+                                                            item.unitUsd *
+                                                                item.quantity,
+                                                        )}
+                                                    </span>
+                                                </div>
+
                                                 {item.addons.map((addon) => (
-                                                    <li
+                                                    <div
                                                         key={addon.name}
-                                                        className="inline-flex items-center gap-1 rounded border border-black bg-brand-yellow px-1.5 py-0.5 text-[10px] font-extrabold tracking-wide text-black uppercase"
+                                                        className="flex items-center justify-between gap-2"
                                                     >
-                                                        <span className="tabular-nums">
-                                                            {addon.quantity}×
-                                                        </span>
-                                                        <span className="max-w-[8rem] truncate normal-case">
+                                                        <span className="min-w-0 truncate">
+                                                            <span className="tabular-nums">
+                                                                {addon.quantity *
+                                                                    item.quantity}
+                                                                ×
+                                                            </span>{' '}
                                                             {addon.name}
                                                         </span>
-                                                    </li>
+                                                        <span className="shrink-0 tabular-nums">
+                                                            +
+                                                            {fmtPrimary(
+                                                                addon.price *
+                                                                    addon.quantity *
+                                                                    item.quantity,
+                                                            )}
+                                                        </span>
+                                                    </div>
                                                 ))}
-                                            </ul>
+
+                                                <div className="mt-0.5 flex items-center justify-between gap-2 border-t border-neutral-300 pt-0.5 text-xs font-extrabold text-foreground">
+                                                    <span className="tracking-wide uppercase">
+                                                        Total
+                                                    </span>
+                                                    <span className="tabular-nums">
+                                                        {fmtPrimary(
+                                                            cartItemUnitUsd(
+                                                                item,
+                                                            ) * item.quantity,
+                                                        )}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-col text-xs leading-tight font-extrabold">
+                                                {pricing.showUsd && (
+                                                    <span>
+                                                        {pricing.usd(
+                                                            item.unitUsd *
+                                                                item.quantity,
+                                                        )}
+                                                    </span>
+                                                )}
+                                                {pricing.showLbp && (
+                                                    <span
+                                                        className={cn(
+                                                            pricing.showUsd &&
+                                                                'text-[11px] text-muted-foreground',
+                                                        )}
+                                                    >
+                                                        {pricing.lbp(
+                                                            item.unitUsd *
+                                                                item.quantity,
+                                                        )}
+                                                    </span>
+                                                )}
+                                            </div>
                                         )}
-                                        <div className="flex flex-col text-xs leading-tight font-extrabold">
-                                            {pricing.showUsd && (
-                                                <span>
-                                                    {pricing.usd(
-                                                        cartItemUnitUsd(item) *
-                                                            item.quantity,
-                                                    )}
-                                                </span>
-                                            )}
-                                            {pricing.showLbp && (
-                                                <span
-                                                    className={cn(
-                                                        pricing.showUsd &&
-                                                            'text-[11px] text-muted-foreground',
-                                                    )}
-                                                >
-                                                    {pricing.lbp(
-                                                        cartItemUnitUsd(item) *
-                                                            item.quantity,
-                                                    )}
-                                                </span>
-                                            )}
-                                        </div>
                                     </div>
 
                                     <div className="flex shrink-0 flex-col items-end gap-1.5">
