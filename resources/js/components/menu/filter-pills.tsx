@@ -47,7 +47,7 @@ export function FilterPills({
                     todayActive ? cn(pressed, stripesOnLight) : raised,
                 )}
             >
-                Available today
+                Today - اليوم
             </button>
 
             {categories.map((category) => {
