@@ -20,7 +20,7 @@
 
     @if ($lbpRate)
         <span style="font-size: 0.75rem; color: #6b7280;">
-            {{ \Illuminate\Support\Number::format($effectivePrice * $lbpRate) }} LBP
+            {{ \Illuminate\Support\Number::format(\App\Filament\Tables\Columns\PriceColumn::convertUsdToLbp($effectivePrice, $lbpRate)) }} LBP
         </span>
     @endif
 </div>
