@@ -79,7 +79,7 @@ export default function Menu({
     let activeCategory: Category | null = null;
 
     if (active === 'today') {
-        heading = 'Available today';
+        heading = 'Today - اليوم';
         products = categories
             .flatMap((category) => category.products ?? [])
             .filter((product) => product.available_today);
