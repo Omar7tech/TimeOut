@@ -45,6 +45,52 @@ export function isShopOpen(shop: Shop, now: Date = new Date()): boolean {
 /** Days in display order (Monday first), with short labels indexed by `Date.getDay()`. */
 const DISPLAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
 const SHORT_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const FULL_DAYS = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+];
+
+/** The full weekday name for a `Date.getDay()` index. */
+export function dayName(day: number): string {
+    return FULL_DAYS[day];
+}
+
+/**
+ * The next moment the shop opens, scanning today and the following week of the
+ * schedule. Returns null in manual mode or when no open day is configured.
+ */
+export function nextOpening(shop: Shop, now: Date = new Date()): Date | null {
+    if (shop.statusMode !== 'automatic') {
+        return null;
+    }
+
+    const byDay = new Map(shop.openingHours.map((hours) => [hours.day, hours]));
+
+    for (let ahead = 0; ahead < 8; ahead += 1) {
+        const date = new Date(now);
+        date.setDate(date.getDate() + ahead);
+
+        const hours = byDay.get(date.getDay());
+
+        if (!hours || hours.isClosed) {
+            continue;
+        }
+
+        const [openHour, openMinute] = hours.opensAt.split(':').map(Number);
+        date.setHours(openHour, openMinute ?? 0, 0, 0);
+
+        if (date.getTime() > now.getTime()) {
+            return date;
+        }
+    }
+
+    return null;
+}
 
 /** A row in the weekly schedule, with consecutive same-hours days grouped together. */
 export type HoursRow = {

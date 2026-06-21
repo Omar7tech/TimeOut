@@ -2,6 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import { Bike, UtensilsCrossed } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { BrandLogo } from '@/components/brand-logo';
+import { OpenCountdown } from '@/components/menu/open-countdown';
 import { useShopOpen } from '@/lib/shop';
 import { cn } from '@/lib/utils';
 
@@ -76,6 +77,8 @@ export default function Welcome() {
                                 <span className="text-brand-red">.</span> املأ
                                 سلتك واطلب فور أن نفتح.
                             </p>
+
+                            <OpenCountdown />
                         </div>
                     )}
                 </div>
