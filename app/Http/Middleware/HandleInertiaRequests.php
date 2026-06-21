@@ -65,6 +65,7 @@ class HandleInertiaRequests extends Middleware
             'pricing' => [
                 'display' => $settings->price_display->value,
                 'lbpRate' => $lbpEnabled ? (float) $settings->lbp_exchange_rate : null,
+                'deliveryFeeUsd' => $settings->charge_delivery ? (float) $settings->delivery_fee : null,
             ],
         ];
     }

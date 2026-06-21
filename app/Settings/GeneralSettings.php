@@ -44,6 +44,16 @@ class GeneralSettings extends Settings
      */
     public ?string $banner_text;
 
+    /**
+     * Whether a delivery charge is added to takeaway orders.
+     */
+    public bool $charge_delivery;
+
+    /**
+     * The delivery charge in USD, applied when {@see self::$charge_delivery} is on.
+     */
+    public ?float $delivery_fee;
+
     public ?float $lbp_exchange_rate;
 
     public bool $show_lbp_prices;

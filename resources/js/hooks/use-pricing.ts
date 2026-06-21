@@ -7,6 +7,8 @@ export type PriceParts = {
     showUsd: boolean;
     /** Whether the LBP price should be shown. */
     showLbp: boolean;
+    /** Delivery charge in USD added to takeaway orders, or null when not charged. */
+    deliveryFeeUsd: number | null;
     usd: (usd: number) => string;
     lbp: (usd: number) => string;
 };
@@ -24,6 +26,7 @@ export function usePricing(): PriceParts {
     return {
         showUsd: display === 'usd' || display === 'both',
         showLbp: (display === 'lbp' || display === 'both') && rate !== null,
+        deliveryFeeUsd: pricing?.deliveryFeeUsd ?? null,
         usd: (usd: number) => formatUsd(usd),
         lbp: (usd: number) =>
             rate === null ? '' : formatLbp(convertUsdToLbp(usd, rate)),

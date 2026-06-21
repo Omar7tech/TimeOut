@@ -31,6 +31,10 @@ export function CartSheet() {
     // otherwise LBP), keeping the breakdown compact.
     const fmtPrimary = (usd: number): string =>
         pricing.showUsd ? pricing.usd(usd) : pricing.lbp(usd);
+    // Delivery is only added when there are items in the cart to deliver.
+    const deliveryFeeUsd =
+        items.length > 0 ? pricing.deliveryFeeUsd : null;
+    const totalUsd = subtotalUsd + (deliveryFeeUsd ?? 0);
     const [confirmingClear, setConfirmingClear] = useState(false);
 
     // Auto-dismiss the clear confirmation after a few seconds.
@@ -225,13 +229,32 @@ export function CartSheet() {
                         </ul>
 
                         <div className="flex flex-col gap-3 border-t-2 border-neutral-700 p-4">
+                            {deliveryFeeUsd !== null && (
+                                <div className="flex flex-col gap-1.5 text-sm font-bold">
+                                    <div className="flex items-center justify-between text-muted-foreground">
+                                        <span>Subtotal</span>
+                                        <span className="tabular-nums">
+                                            {fmtPrimary(subtotalUsd)}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center justify-between text-muted-foreground">
+                                        <span>Delivery</span>
+                                        <span className="tabular-nums">
+                                            {fmtPrimary(deliveryFeeUsd)}
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="flex items-center justify-between">
                                 <span className="text-sm font-bold tracking-wide text-muted-foreground uppercase">
-                                    Subtotal
+                                    {deliveryFeeUsd !== null
+                                        ? 'Total'
+                                        : 'Subtotal'}
                                 </span>
                                 <span className="flex flex-col items-end text-lg leading-tight font-black">
                                     {pricing.showUsd && (
-                                        <span>{pricing.usd(subtotalUsd)}</span>
+                                        <span>{pricing.usd(totalUsd)}</span>
                                     )}
                                     {pricing.showLbp && (
                                         <span
@@ -240,7 +263,7 @@ export function CartSheet() {
                                                     'text-sm text-muted-foreground',
                                             )}
                                         >
-                                            {pricing.lbp(subtotalUsd)}
+                                            {pricing.lbp(totalUsd)}
                                         </span>
                                     )}
                                 </span>

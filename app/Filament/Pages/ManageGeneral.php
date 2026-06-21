@@ -117,6 +117,30 @@ class ManageGeneral extends SettingsPage
                                         JS),
                             ]),
 
+                        Tab::make('Delivery - التوصيل')
+                            ->icon(Heroicon::OutlinedTruck)
+                            ->schema([
+                                Toggle::make('charge_delivery')
+                                    ->label('Charge delivery - احتساب رسوم التوصيل')
+                                    ->helperText('Adds a delivery charge to the cart total on the takeaway menu. - يضيف رسوم توصيل إلى إجمالي السلة في قائمة التيك أواي.')
+                                    ->default(false)
+                                    ->columnSpanFull(),
+
+                                TextInput::make('delivery_fee')
+                                    ->label('Delivery charge - رسوم التوصيل')
+                                    ->validationAttribute('delivery charge')
+                                    ->helperText('Amount in USD. - المبلغ بالدولار.')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->prefix('$')
+                                    ->default(3)
+                                    ->requiredIf('charge_delivery', true)
+                                    ->columnSpanFull()
+                                    ->visibleJs(<<<'JS'
+                                        $get('charge_delivery')
+                                        JS),
+                            ]),
+
                         Tab::make('LBP Pricing - التسعير بالليرة اللبنانية')
                             ->icon(Heroicon::OutlinedCurrencyDollar)
                             ->schema([
