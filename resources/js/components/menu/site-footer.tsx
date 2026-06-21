@@ -1,4 +1,5 @@
 import { BrandLogo } from '@/components/brand-logo';
+import { FooterHours } from '@/components/menu/footer-hours';
 import type { Category } from '@/types';
 
 interface SiteFooterProps {
@@ -52,6 +53,9 @@ export function SiteFooter({ categories, onSelectCategory }: SiteFooterProps) {
                             ))}
                         </ul>
                     </nav>
+
+                    {/* Opening hours (automatic mode only) */}
+                    <FooterHours />
 
                     {/* Socials */}
                     <nav>
