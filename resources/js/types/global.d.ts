@@ -1,4 +1,5 @@
 import type { Auth } from '@/types/auth';
+import type { Banner } from '@/types/banner';
 import type { Pricing } from '@/types/pricing';
 import type { Shop } from '@/types/shop';
 
@@ -14,6 +15,7 @@ declare module '@inertiajs/core' {
         sharedPageProps: {
             name: string;
             auth: Auth;
+            banner: Banner;
             pricing: Pricing;
             shop: Shop;
             sidebarOpen: boolean;

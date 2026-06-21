@@ -45,6 +45,10 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'banner' => [
+                'show' => $settings->show_banner && filled($settings->banner_text),
+                'text' => $settings->banner_text,
+            ],
             'shop' => [
                 // Authoritative open/closed snapshot for this request (used for the
                 // initial render); the client can recompute live in automatic mode.

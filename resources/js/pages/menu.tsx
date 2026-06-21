@@ -7,6 +7,7 @@ import { FilterPills } from '@/components/menu/filter-pills';
 import type { MenuFilter } from '@/components/menu/filter-pills';
 import { OrderTypeSwitch } from '@/components/menu/order-type-switch';
 import { ProductCard } from '@/components/menu/product-card';
+import { SiteBanner } from '@/components/menu/site-banner';
 import { SiteFooter } from '@/components/menu/site-footer';
 import { SiteHeader } from '@/components/menu/site-header';
 import { CartProvider } from '@/contexts/cart-context';
@@ -91,6 +92,8 @@ export default function Menu({
     return (
         <CartProvider>
             <Head title={`${orderTypeLabel} Menu`} />
+
+            <SiteBanner />
 
             <SiteHeader showCart={cartEnabled} />
 
