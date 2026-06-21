@@ -31,6 +31,16 @@ class GeneralSettings extends Settings
      */
     public array $opening_hours;
 
+    /**
+     * Whether to show a promotional banner above the storefront header.
+     */
+    public bool $show_banner;
+
+    /**
+     * The banner message shown above the header when {@see self::$show_banner} is on.
+     */
+    public ?string $banner_text;
+
     public ?float $lbp_exchange_rate;
 
     public bool $show_lbp_prices;

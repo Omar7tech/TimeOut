@@ -97,6 +97,26 @@ class ManageGeneral extends SettingsPage
                                         JS),
                             ]),
 
+                        Tab::make('Banner - الشريط')
+                            ->icon(Heroicon::OutlinedMegaphone)
+                            ->schema([
+                                Toggle::make('show_banner')
+                                    ->label('Show banner - إظهار الشريط')
+                                    ->helperText('This will show above the header in the menu. - يظهر هذا أعلى الهيدر في القائمة.')
+                                    ->default(false)
+                                    ->columnSpanFull(),
+
+                                TextInput::make('banner_text')
+                                    ->label('Banner text - نص الشريط')
+                                    ->validationAttribute('banner text')
+                                    ->requiredIf('show_banner', true)
+                                    ->maxLength(255)
+                                    ->columnSpanFull()
+                                    ->visibleJs(<<<'JS'
+                                        $get('show_banner')
+                                        JS),
+                            ]),
+
                         Tab::make('LBP Pricing - التسعير بالليرة اللبنانية')
                             ->icon(Heroicon::OutlinedCurrencyDollar)
                             ->schema([
