@@ -26,13 +26,14 @@ export function SiteFooter({ categories, onSelectCategory }: SiteFooterProps) {
                     <div className="max-w-xs">
                         <BrandLogo className="h-12 md:h-14" />
                         <p className="mt-3 text-sm font-medium text-muted-foreground">
-                            Fresh snacks, made to order. Take a time out and treat yourself.
+                            Fresh snacks, made to order. Take a time out and
+                            treat yourself.
                         </p>
                     </div>
 
                     {/* Category quick-jump */}
                     <nav>
-                        <h3 className="mb-3 text-xs font-black uppercase tracking-widest text-brand-red">
+                        <h3 className="mb-3 text-xs font-black tracking-widest text-brand-red uppercase">
                             Categories
                         </h3>
                         <ul className="grid grid-cols-2 gap-x-8 gap-y-1.5">
@@ -40,8 +41,10 @@ export function SiteFooter({ categories, onSelectCategory }: SiteFooterProps) {
                                 <li key={category.id}>
                                     <button
                                         type="button"
-                                        onClick={() => onSelectCategory?.(category.id)}
-                                        className="text-sm font-bold uppercase tracking-wide text-foreground/70 transition-colors hover:text-foreground"
+                                        onClick={() =>
+                                            onSelectCategory?.(category.id)
+                                        }
+                                        className="text-sm font-bold tracking-wide text-foreground/70 uppercase transition-colors hover:text-foreground"
                                     >
                                         {category.title}
                                     </button>
@@ -52,7 +55,7 @@ export function SiteFooter({ categories, onSelectCategory }: SiteFooterProps) {
 
                     {/* Socials */}
                     <nav>
-                        <h3 className="mb-3 text-xs font-black uppercase tracking-widest text-brand-red">
+                        <h3 className="mb-3 text-xs font-black tracking-widest text-brand-red uppercase">
                             Follow
                         </h3>
                         <ul className="flex flex-col gap-1.5">
@@ -62,7 +65,7 @@ export function SiteFooter({ categories, onSelectCategory }: SiteFooterProps) {
                                         href={social.href}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="text-sm font-bold uppercase tracking-wide text-foreground/70 transition-colors hover:text-foreground"
+                                        className="text-sm font-bold tracking-wide text-foreground/70 uppercase transition-colors hover:text-foreground"
                                     >
                                         {social.label}
                                     </a>
@@ -72,7 +75,7 @@ export function SiteFooter({ categories, onSelectCategory }: SiteFooterProps) {
                     </nav>
                 </div>
 
-                <div className="mt-10 flex flex-col items-center justify-between gap-1 border-t-2 border-black/10 pt-4 text-xs font-bold uppercase tracking-wide text-muted-foreground md:flex-row">
+                <div className="mt-10 flex flex-col items-center justify-between gap-1 border-t-2 border-black/10 pt-4 text-xs font-bold tracking-wide text-muted-foreground uppercase md:flex-row">
                     <span>© {new Date().getFullYear()} Time Out Snack</span>
                     <span>All rights reserved</span>
                 </div>

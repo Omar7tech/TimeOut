@@ -7,7 +7,9 @@ function getInitialTheme(): Theme {
         return 'dark';
     }
 
-    return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    return document.documentElement.classList.contains('dark')
+        ? 'dark'
+        : 'light';
 }
 
 /**
@@ -27,7 +29,8 @@ export function useTheme(): { theme: Theme; toggle: () => void } {
         }
     }, [theme]);
 
-    const toggle = (): void => setTheme((current) => (current === 'dark' ? 'light' : 'dark'));
+    const toggle = (): void =>
+        setTheme((current) => (current === 'dark' ? 'light' : 'dark'));
 
     return { theme, toggle };
 }

@@ -9,10 +9,14 @@ interface VariantSelectorProps {
 }
 
 /** Joined segmented control for picking a product variant, with a clear hint. */
-export function VariantSelector({ variants, selectedIndex, onSelect }: VariantSelectorProps) {
+export function VariantSelector({
+    variants,
+    selectedIndex,
+    onSelect,
+}: VariantSelectorProps) {
     return (
         <div className="flex flex-col gap-1.5">
-            <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+            <span className="inline-flex items-center gap-1 text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
                 <Layers className="size-3" />
                 Choose an option
             </span>
@@ -32,8 +36,10 @@ export function VariantSelector({ variants, selectedIndex, onSelect }: VariantSe
                             aria-pressed={selected}
                             onClick={() => onSelect(index)}
                             className={cn(
-                                'min-w-0 flex-1 truncate px-2 py-1.5 text-xs font-bold uppercase tracking-wide transition-colors not-first:-ml-px not-first:border-l-2 not-first:border-black',
-                                selected ? 'bg-brand-yellow text-black' : 'bg-card text-card-foreground hover:bg-muted',
+                                'min-w-0 flex-1 truncate px-2 py-1.5 text-xs font-bold tracking-wide uppercase transition-colors not-first:-ml-px not-first:border-l-2 not-first:border-black',
+                                selected
+                                    ? 'bg-brand-yellow text-black'
+                                    : 'bg-card text-card-foreground hover:bg-muted',
                             )}
                         >
                             {variant.name}

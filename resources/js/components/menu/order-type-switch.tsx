@@ -4,7 +4,12 @@ import { cn } from '@/lib/utils';
 import type { OrderType } from '@/types';
 
 const options = [
-    { type: 'dine_in', label: 'Dine-in', href: '/menu/dine-in', icon: UtensilsCrossed },
+    {
+        type: 'dine_in',
+        label: 'Dine-in',
+        href: '/menu/dine-in',
+        icon: UtensilsCrossed,
+    },
     { type: 'takeaway', label: 'Delivery', href: '/menu/delivery', icon: Bike },
 ] as const;
 
@@ -26,8 +31,10 @@ export function OrderTypeSwitch({ current }: OrderTypeSwitchProps) {
                         href={option.href}
                         aria-current={active ? 'page' : undefined}
                         className={cn(
-                            'flex items-center gap-1.5 px-3 py-1.5 text-xs font-extrabold uppercase tracking-wide transition-colors not-first:-ml-px not-first:border-l-2 not-first:border-black',
-                            active ? 'bg-brand-red text-white' : 'bg-card text-card-foreground hover:bg-muted',
+                            'flex items-center gap-1.5 px-3 py-1.5 text-xs font-extrabold tracking-wide uppercase transition-colors not-first:-ml-px not-first:border-l-2 not-first:border-black',
+                            active
+                                ? 'bg-brand-red text-white'
+                                : 'bg-card text-card-foreground hover:bg-muted',
                         )}
                     >
                         <Icon className="size-3.5" />

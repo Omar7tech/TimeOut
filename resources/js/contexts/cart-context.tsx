@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useMemo, useState  } from 'react';
-import type {ReactNode} from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
 
 export type CartItem = {
     /** Unique per product + variant combination. */
@@ -75,7 +75,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
                 if (existing) {
                     return previous.map((item) =>
-                        item.key === key ? { ...item, quantity: item.quantity + 1 } : item,
+                        item.key === key
+                            ? { ...item, quantity: item.quantity + 1 }
+                            : item,
                     );
                 }
 
@@ -98,14 +100,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
         const increment = (key: string): void => {
             setItems((previous) =>
-                previous.map((item) => (item.key === key ? { ...item, quantity: item.quantity + 1 } : item)),
+                previous.map((item) =>
+                    item.key === key
+                        ? { ...item, quantity: item.quantity + 1 }
+                        : item,
+                ),
             );
         };
 
         const decrement = (key: string): void => {
             setItems((previous) =>
                 previous
-                    .map((item) => (item.key === key ? { ...item, quantity: item.quantity - 1 } : item))
+                    .map((item) =>
+                        item.key === key
+                            ? { ...item, quantity: item.quantity - 1 }
+                            : item,
+                    )
                     .filter((item) => item.quantity > 0),
             );
         };
@@ -119,7 +129,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return {
             items,
             count: items.reduce((total, item) => total + item.quantity, 0),
-            subtotalUsd: items.reduce((total, item) => total + item.unitUsd * item.quantity, 0),
+            subtotalUsd: items.reduce(
+                (total, item) => total + item.unitUsd * item.quantity,
+                0,
+            ),
             open,
             setOpen,
             addItem,

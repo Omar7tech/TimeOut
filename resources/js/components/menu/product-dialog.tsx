@@ -1,7 +1,12 @@
 import { ShoppingCart, Star } from 'lucide-react';
 import { ProductPrice } from '@/components/menu/product-price';
 import { VariantSelector } from '@/components/menu/variant-selector';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import type { Product } from '@/types';
 
 interface ProductDialogProps {
@@ -31,7 +36,9 @@ export function ProductDialog({
     const hasVariants = variants.length > 0;
     const selectedVariant = hasVariants ? variants[selectedIndex] : null;
     const basePrice = selectedVariant ? selectedVariant.price : product.price;
-    const discountPrice = selectedVariant ? selectedVariant.discount_price : product.discount_price;
+    const discountPrice = selectedVariant
+        ? selectedVariant.discount_price
+        : product.discount_price;
     const image = product.image ?? product.thumb;
 
     return (
@@ -39,9 +46,14 @@ export function ProductDialog({
             <DialogContent>
                 {image ? (
                     <div className="relative aspect-video w-full overflow-hidden rounded-xl border-2 border-black shadow-[3px_3px_0_0_#000]">
-                        <img src={image} alt={product.title} className="size-full object-cover" draggable={false} />
+                        <img
+                            src={image}
+                            alt={product.title}
+                            className="size-full object-cover"
+                            draggable={false}
+                        />
                         {product.available_today && (
-                            <span className="absolute left-2 top-2 rounded border border-black bg-brand-yellow px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-black">
+                            <span className="absolute top-2 left-2 rounded border border-black bg-brand-yellow px-1.5 py-0.5 text-[10px] font-extrabold tracking-wide text-black uppercase">
                                 Today
                             </span>
                         )}
@@ -58,24 +70,38 @@ export function ProductDialog({
                             <Star className="mt-1 size-5 shrink-0 fill-brand-yellow text-brand-yellow" />
                         )}
                     </DialogTitle>
-                    {product.subtitle && <p className="text-sm font-semibold text-muted-foreground">{product.subtitle}</p>}
+                    {product.subtitle && (
+                        <p className="text-sm font-semibold text-muted-foreground">
+                            {product.subtitle}
+                        </p>
+                    )}
                 </DialogHeader>
 
                 {product.description && (
-                    <p className="text-sm leading-relaxed text-muted-foreground">{product.description}</p>
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                        {product.description}
+                    </p>
                 )}
 
                 {hasVariants && (
-                    <VariantSelector variants={variants} selectedIndex={selectedIndex} onSelect={onSelectVariant} />
+                    <VariantSelector
+                        variants={variants}
+                        selectedIndex={selectedIndex}
+                        onSelect={onSelectVariant}
+                    />
                 )}
 
                 <div className="mt-1 flex items-center justify-between gap-3">
-                    <ProductPrice basePrice={basePrice} discountPrice={discountPrice} size="lg" />
+                    <ProductPrice
+                        basePrice={basePrice}
+                        discountPrice={discountPrice}
+                        size="lg"
+                    />
                     {onAddToCart && (
                         <button
                             type="button"
                             onClick={onAddToCart}
-                            className="inline-flex items-center gap-2 rounded-md border-2 border-black bg-brand-red px-4 py-2 font-extrabold uppercase tracking-wide text-white shadow-[3px_3px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            className="inline-flex items-center gap-2 rounded-md border-2 border-black bg-brand-red px-4 py-2 font-extrabold tracking-wide text-white uppercase shadow-[3px_3px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                         >
                             <ShoppingCart className="size-4" />
                             Add to cart

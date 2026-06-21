@@ -14,7 +14,11 @@ export function CategoryGrid({ categories, onSelect }: CategoryGridProps) {
     return (
         <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-5 xl:grid-cols-6">
             {categories.map((category) => (
-                <CategoryCard key={category.id} category={category} onSelect={onSelect} />
+                <CategoryCard
+                    key={category.id}
+                    category={category}
+                    onSelect={onSelect}
+                />
             ))}
         </div>
     );

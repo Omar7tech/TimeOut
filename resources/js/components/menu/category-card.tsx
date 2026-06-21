@@ -15,7 +15,7 @@ export function CategoryCard({ category, onSelect }: CategoryCardProps) {
         <button
             type="button"
             onClick={() => onSelect(category)}
-            className="group relative flex aspect-square flex-col items-center justify-center gap-1.5 rounded-md border-2 border-black bg-brand-red p-2.5 text-white shadow-[4px_4px_0_0_#000] transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+            className="group relative flex aspect-square flex-col items-center justify-center gap-1.5 rounded-md border-2 border-black bg-brand-red p-2.5 text-white shadow-[4px_4px_0_0_#000] transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000] focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 focus-visible:outline-none active:translate-x-[3px] active:translate-y-[3px] active:shadow-none"
         >
             {category.image ? (
                 <img
@@ -29,7 +29,7 @@ export function CategoryCard({ category, onSelect }: CategoryCardProps) {
                 <div className="aspect-square w-4/5 max-w-36 rounded-md bg-white/20" />
             )}
 
-            <span className="line-clamp-2 text-center text-sm font-black uppercase leading-tight tracking-wide sm:text-base lg:text-lg">
+            <span className="line-clamp-2 text-center text-sm leading-tight font-black tracking-wide uppercase sm:text-base lg:text-lg">
                 {category.title}
             </span>
         </button>

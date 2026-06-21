@@ -18,12 +18,14 @@ export type PriceParts = {
 export function usePricing(): PriceParts {
     const { pricing } = usePage().props;
     const rate = pricing?.lbpRate ?? null;
-    const display: Pricing['display'] = rate === null ? 'usd' : (pricing?.display ?? 'usd');
+    const display: Pricing['display'] =
+        rate === null ? 'usd' : (pricing?.display ?? 'usd');
 
     return {
         showUsd: display === 'usd' || display === 'both',
         showLbp: (display === 'lbp' || display === 'both') && rate !== null,
         usd: (usd: number) => formatUsd(usd),
-        lbp: (usd: number) => (rate === null ? '' : formatLbp(convertUsdToLbp(usd, rate))),
+        lbp: (usd: number) =>
+            rate === null ? '' : formatLbp(convertUsdToLbp(usd, rate)),
     };
 }

@@ -29,15 +29,23 @@ const stripesOnLight =
  * Neo-brutalist filter pills above the products: a yellow "Available today"
  * pill first, then one per category. Selecting one swaps the products client-side.
  */
-export function FilterPills({ categories, activeId, onSelect }: FilterPillsProps) {
+export function FilterPills({
+    categories,
+    activeId,
+    onSelect,
+}: FilterPillsProps) {
     const todayActive = activeId === 'today';
 
     return (
-        <div className="-mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto scroll-px-4 px-4 pb-2 [scrollbar-width:none] md:mx-0 md:flex-wrap md:overflow-visible md:px-0 md:pb-0 md:gap-3 [&::-webkit-scrollbar]:hidden">
+        <div className="-mx-4 flex snap-x snap-mandatory scroll-px-4 [scrollbar-width:none] gap-2 overflow-x-auto px-4 pb-2 md:mx-0 md:flex-wrap md:gap-3 md:overflow-visible md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden">
             <button
                 type="button"
                 onClick={() => onSelect('today')}
-                className={cn(base, 'bg-brand-yellow text-black', todayActive ? cn(pressed, stripesOnLight) : raised)}
+                className={cn(
+                    base,
+                    'bg-brand-yellow text-black',
+                    todayActive ? cn(pressed, stripesOnLight) : raised,
+                )}
             >
                 Available today
             </button>
@@ -52,7 +60,13 @@ export function FilterPills({ categories, activeId, onSelect }: FilterPillsProps
                         onClick={() => onSelect(category.id)}
                         className={cn(
                             base,
-                            active ? cn('bg-brand-red text-white', pressed, stripesOnDark) : cn('bg-white text-black', raised),
+                            active
+                                ? cn(
+                                      'bg-brand-red text-white',
+                                      pressed,
+                                      stripesOnDark,
+                                  )
+                                : cn('bg-white text-black', raised),
                         )}
                     >
                         {category.title}

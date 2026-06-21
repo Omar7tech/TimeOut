@@ -37,9 +37,6 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $settings = app(GeneralSettings::class);
-
-        // Only expose the LBP rate to the client when LBP pricing is actually
-        // enabled, so the front-end can safely convert prices on its own.
         $lbpEnabled = $settings->show_lbp_prices && (float) $settings->lbp_exchange_rate > 0;
 
         return [
@@ -49,7 +46,17 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'shop' => [
-                'isOpen' => $settings->is_open,
+                // Authoritative open/closed snapshot for this request (used for the
+                // initial render); the client can recompute live in automatic mode.
+                'isOpen' => $settings->isCurrentlyOpen(),
+                'statusMode' => $settings->status_mode->value,
+                'isManuallyOpen' => $settings->is_open,
+                'openingHours' => array_map(static fn (array $hours): array => [
+                    'day' => $hours['day'],
+                    'isClosed' => $hours['is_closed'],
+                    'opensAt' => $hours['opens_at'],
+                    'closesAt' => $hours['closes_at'],
+                ], array_values($settings->opening_hours)),
             ],
             'pricing' => [
                 'display' => $settings->price_display->value,

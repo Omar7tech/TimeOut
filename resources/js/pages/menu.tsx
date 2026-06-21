@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import { CartSheet } from '@/components/menu/cart-sheet';
 import { CategoryAddonsDialog } from '@/components/menu/category-addons-dialog';
 import { CategoryGrid } from '@/components/menu/category-grid';
-import { FilterPills  } from '@/components/menu/filter-pills';
-import type {MenuFilter} from '@/components/menu/filter-pills';
+import { FilterPills } from '@/components/menu/filter-pills';
+import type { MenuFilter } from '@/components/menu/filter-pills';
 import { OrderTypeSwitch } from '@/components/menu/order-type-switch';
 import { ProductCard } from '@/components/menu/product-card';
 import { SiteFooter } from '@/components/menu/site-footer';
@@ -39,11 +39,17 @@ function readFilterFromUrl(categories: Category[]): MenuFilter | null {
     return categories.find((category) => category.slug === param)?.id ?? null;
 }
 
-export default function Menu({ orderType, orderTypeLabel, categories }: MenuProps) {
+export default function Menu({
+    orderType,
+    orderTypeLabel,
+    categories,
+}: MenuProps) {
     // Cart/ordering is only available on the delivery (takeaway) menu.
     const cartEnabled = orderType === 'takeaway';
     const menuTitle = cartEnabled ? 'Delivery Menu' : 'Dine-In Menu';
-    const [active, setActive] = useState<MenuFilter | null>(() => readFilterFromUrl(categories));
+    const [active, setActive] = useState<MenuFilter | null>(() =>
+        readFilterFromUrl(categories),
+    );
 
     useEffect(() => {
         const url = new URL(window.location.href);
@@ -53,7 +59,9 @@ export default function Menu({ orderType, orderTypeLabel, categories }: MenuProp
         if (active === 'today') {
             value = TODAY_FILTER_SLUG;
         } else if (typeof active === 'number') {
-            value = categories.find((category) => category.id === active)?.slug ?? null;
+            value =
+                categories.find((category) => category.id === active)?.slug ??
+                null;
         }
 
         if (value === null) {
@@ -71,7 +79,9 @@ export default function Menu({ orderType, orderTypeLabel, categories }: MenuProp
 
     if (active === 'today') {
         heading = 'Available today';
-        products = categories.flatMap((category) => category.products ?? []).filter((product) => product.available_today);
+        products = categories
+            .flatMap((category) => category.products ?? [])
+            .filter((product) => product.available_today);
     } else if (typeof active === 'number') {
         activeCategory = categories.find((item) => item.id === active) ?? null;
         heading = activeCategory?.title ?? '';
@@ -86,42 +96,66 @@ export default function Menu({ orderType, orderTypeLabel, categories }: MenuProp
 
             <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6">
                 <div className="flex items-center justify-between gap-3">
-                    <h1 className="min-w-0 truncate text-xl font-black uppercase md:text-2xl">{menuTitle}</h1>
+                    <h1 className="min-w-0 truncate text-xl font-black uppercase md:text-2xl">
+                        {menuTitle}
+                    </h1>
 
                     <OrderTypeSwitch current={orderType} />
                 </div>
 
                 {active === null ? (
-                    <CategoryGrid categories={categories} onSelect={(category) => setActive(category.id)} />
+                    <CategoryGrid
+                        categories={categories}
+                        onSelect={(category) => setActive(category.id)}
+                    />
                 ) : (
                     <>
-                        <FilterPills categories={categories} activeId={active} onSelect={setActive} />
+                        <FilterPills
+                            categories={categories}
+                            activeId={active}
+                            onSelect={setActive}
+                        />
 
                         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
                             <div className="flex items-center gap-3">
                                 <span className="h-7 w-1.5 rounded-full bg-brand-red md:h-9" />
-                                <h2 className="text-2xl font-black uppercase md:text-4xl">{heading}</h2>
+                                <h2 className="text-2xl font-black uppercase md:text-4xl">
+                                    {heading}
+                                </h2>
                             </div>
                             <div className="flex items-center gap-3 sm:ml-auto">
                                 {products.length > 0 && (
                                     <span className="text-sm font-bold text-muted-foreground">
-                                        {products.length} {products.length === 1 ? 'item' : 'items'}
+                                        {products.length}{' '}
+                                        {products.length === 1
+                                            ? 'item'
+                                            : 'items'}
                                     </span>
                                 )}
-                                {activeCategory && activeCategory.addons && activeCategory.addons.length > 0 && (
-                                    <CategoryAddonsDialog category={activeCategory} />
-                                )}
+                                {activeCategory &&
+                                    activeCategory.addons &&
+                                    activeCategory.addons.length > 0 && (
+                                        <CategoryAddonsDialog
+                                            category={activeCategory}
+                                        />
+                                    )}
                             </div>
                         </div>
 
                         {products.length > 0 ? (
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                                 {products.map((product) => (
-                                    <ProductCard key={product.id} product={product} enableCart={cartEnabled} />
+                                    <ProductCard
+                                        key={product.id}
+                                        product={product}
+                                        enableCart={cartEnabled}
+                                    />
                                 ))}
                             </div>
                         ) : (
-                            <p className="text-sm text-muted-foreground">No items available.</p>
+                            <p className="text-sm text-muted-foreground">
+                                No items available.
+                            </p>
                         )}
                     </>
                 )}

@@ -13,7 +13,8 @@ const messages: Record<number, { title: string; description: string }> = {
     },
     404: {
         title: 'Page not found',
-        description: 'The page you’re looking for has moved or no longer exists.',
+        description:
+            'The page you’re looking for has moved or no longer exists.',
     },
     419: {
         title: 'Session expired',
@@ -21,11 +22,13 @@ const messages: Record<number, { title: string; description: string }> = {
     },
     500: {
         title: 'Something went wrong',
-        description: 'We hit an unexpected error. Please try again in a moment.',
+        description:
+            'We hit an unexpected error. Please try again in a moment.',
     },
     503: {
         title: 'Be right back',
-        description: 'We’re carrying out some quick maintenance. Check back soon.',
+        description:
+            'We’re carrying out some quick maintenance. Check back soon.',
     },
 };
 

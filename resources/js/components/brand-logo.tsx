@@ -1,5 +1,5 @@
-import { usePage } from '@inertiajs/react';
 import type { ComponentPropsWithoutRef } from 'react';
+import { useShopOpen } from '@/lib/shop';
 import { cn } from '@/lib/utils';
 
 const OPEN_LOGO = '/logos/timeout-logo.png';
@@ -15,8 +15,13 @@ type BrandLogoProps = Omit<ComponentPropsWithoutRef<'img'>, 'src'> & {
  * `shop.isOpen` setting, so it stays in sync everywhere it's used. Pass any
  * standard `<img>` props (className, alt, etc.) to size or style it per usage.
  */
-export function BrandLogo({ isOpen, alt = 'Time Out Snack', className, ...props }: BrandLogoProps) {
-    const shopOpen = usePage().props.shop?.isOpen ?? true;
+export function BrandLogo({
+    isOpen,
+    alt = 'Time Out Snack',
+    className,
+    ...props
+}: BrandLogoProps) {
+    const shopOpen = useShopOpen();
     const open = isOpen ?? shopOpen;
 
     return (

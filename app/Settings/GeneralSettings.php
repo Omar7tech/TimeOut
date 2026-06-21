@@ -3,16 +3,33 @@
 namespace App\Settings;
 
 use App\Enums\PriceDisplay;
+use App\Enums\ShopStatusMode;
+use App\Enums\Weekday;
+use Carbon\CarbonInterface;
+use Illuminate\Support\Carbon;
 use Spatie\LaravelSettings\Settings;
 use Spatie\LaravelSettings\SettingsCasts\EnumCast;
 
 class GeneralSettings extends Settings
 {
     /**
-     * Whether the shop is currently open. Drives the storefront logo (open vs.
-     * closed variant) and can gate ordering.
+     * How the shop's open/closed state is decided: by hand (`MANUAL`) or from
+     * the weekly {@see self::$opening_hours} schedule (`AUTOMATIC`).
+     */
+    public ShopStatusMode $status_mode;
+
+    /**
+     * The manual open/closed switch. Only authoritative when the status mode is
+     * `MANUAL`; drives the storefront logo (open vs. closed) and can gate ordering.
      */
     public bool $is_open;
+
+    /**
+     * The weekly opening-hours schedule used when the status mode is `AUTOMATIC`.
+     * One entry per weekday, keyed by JS-style day number (0 = Sunday). Each entry
+     * is shaped `['day' => int, 'is_closed' => bool, 'opens_at' => string, 'closes_at' => string]`.
+     */
+    public array $opening_hours;
 
     public ?float $lbp_exchange_rate;
 
@@ -34,7 +51,60 @@ class GeneralSettings extends Settings
     public static function casts(): array
     {
         return [
+            'status_mode' => new EnumCast(ShopStatusMode::class),
             'price_display' => new EnumCast(PriceDisplay::class),
         ];
+    }
+
+    /**
+     * The default weekly schedule: every day open from 09:00 to 17:00. Used as
+     * the baseline both when seeding settings and when resetting the schedule.
+     *
+     * @return array<int, array{day: int, is_closed: bool, opens_at: string, closes_at: string}>
+     */
+    public static function defaultOpeningHours(): array
+    {
+        return array_map(static fn (Weekday $day): array => [
+            'day' => $day->value,
+            'is_closed' => false,
+            'opens_at' => '09:00',
+            'closes_at' => '17:00',
+        ], Weekday::cases());
+    }
+
+    /**
+     * Whether the shop is open right now, resolving the active status mode.
+     */
+    public function isCurrentlyOpen(?CarbonInterface $now = null): bool
+    {
+        if ($this->status_mode === ShopStatusMode::MANUAL) {
+            return $this->is_open;
+        }
+
+        return $this->isWithinSchedule($now ?? Carbon::now());
+    }
+
+    /**
+     * Whether the given moment falls inside the opening hours for its weekday.
+     * Closing times at or before the opening time are treated as crossing
+     * midnight (e.g. open 18:00, close 02:00).
+     */
+    protected function isWithinSchedule(CarbonInterface $now): bool
+    {
+        $today = collect($this->opening_hours)
+            ->firstWhere('day', $now->dayOfWeek);
+
+        if ($today === null || ($today['is_closed'] ?? false)) {
+            return false;
+        }
+
+        $opensAt = $now->copy()->setTimeFromTimeString($today['opens_at']);
+        $closesAt = $now->copy()->setTimeFromTimeString($today['closes_at']);
+
+        if ($closesAt->lessThanOrEqualTo($opensAt)) {
+            $closesAt->addDay();
+        }
+
+        return $now->betweenIncluded($opensAt, $closesAt);
     }
 }

@@ -64,7 +64,9 @@ export function ResponsiveImage({
             return;
         }
 
-        setAutoSizes(`${Math.ceil((renderedWidth / window.innerWidth) * 100)}vw`);
+        setAutoSizes(
+            `${Math.ceil((renderedWidth / window.innerWidth) * 100)}vw`,
+        );
     }, [sizes]);
 
     useEffect(() => {
@@ -78,7 +80,8 @@ export function ResponsiveImage({
         return () => window.removeEventListener('resize', recomputeSizes);
     }, [recomputeSizes, sizes]);
 
-    const showPlaceholder = withPlaceholder && Boolean(media.placeholder) && !loaded;
+    const showPlaceholder =
+        withPlaceholder && Boolean(media.placeholder) && !loaded;
 
     return (
         <img
