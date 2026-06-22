@@ -66,8 +66,7 @@ export function CartSheet() {
     const fmtPrimary = (usd: number): string =>
         pricing.showUsd ? pricing.usd(usd) : pricing.lbp(usd);
     // Delivery is only added when there are items in the cart to deliver.
-    const deliveryFeeUsd =
-        items.length > 0 ? pricing.deliveryFeeUsd : null;
+    const deliveryFeeUsd = items.length > 0 ? pricing.deliveryFeeUsd : null;
     const totalUsd = subtotalUsd + (deliveryFeeUsd ?? 0);
     const [confirmingClear, setConfirmingClear] = useState(false);
     // The name-entry step shown before checkout when a full name is required.
@@ -396,8 +395,8 @@ export function CartSheet() {
                                             </span>
                                         </p>
                                         <p className="text-xs font-semibold text-muted-foreground">
-                                            Your cart is saved — order the moment
-                                            we reopen.
+                                            Your cart is saved — order the
+                                            moment we reopen.
                                         </p>
                                     </div>
 
