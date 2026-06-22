@@ -309,8 +309,13 @@ export function CartSheet() {
                                     </button>
                                     <button
                                         type="button"
-                                        className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                        className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                     >
+                                        <img
+                                            src="/social-icons/whatsapp.svg"
+                                            alt=""
+                                            className="size-5 brightness-0 invert"
+                                        />
                                         Checkout
                                     </button>
                                 </div>
