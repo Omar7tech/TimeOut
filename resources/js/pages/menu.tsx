@@ -10,17 +10,21 @@ import { ProductCard } from '@/components/menu/product-card';
 import { SiteBanner } from '@/components/menu/site-banner';
 import { SiteFooter } from '@/components/menu/site-footer';
 import { SiteHeader } from '@/components/menu/site-header';
+import { WeeklySchedule } from '@/components/menu/weekly-schedule';
 import { CartProvider } from '@/contexts/cart-context';
-import type { OrderType, Product } from '@/types';
+import type { OrderType, Product, ScheduleDay } from '@/types';
 import type { Category } from '@/types';
 
 interface MenuProps {
     orderType: OrderType;
     orderTypeLabel: string;
     categories: Category[];
+    showSchedule: boolean;
+    schedule: ScheduleDay[] | null;
 }
 
 const TODAY_FILTER_SLUG = 'available-today-7q2x';
+const SCHEDULE_FILTER_SLUG = 'weekly-schedule-3m8k';
 
 function readFilterFromUrl(categories: Category[]): MenuFilter | null {
     if (typeof window === 'undefined') {
@@ -37,6 +41,10 @@ function readFilterFromUrl(categories: Category[]): MenuFilter | null {
         return 'today';
     }
 
+    if (param === SCHEDULE_FILTER_SLUG) {
+        return 'schedule';
+    }
+
     return categories.find((category) => category.slug === param)?.id ?? null;
 }
 
@@ -44,6 +52,8 @@ export default function Menu({
     orderType,
     orderTypeLabel,
     categories,
+    showSchedule,
+    schedule,
 }: MenuProps) {
     // Cart/ordering is only available on the delivery (takeaway) menu.
     const cartEnabled = orderType === 'takeaway';
@@ -59,6 +69,8 @@ export default function Menu({
 
         if (active === 'today') {
             value = TODAY_FILTER_SLUG;
+        } else if (active === 'schedule') {
+            value = SCHEDULE_FILTER_SLUG;
         } else if (typeof active === 'number') {
             value =
                 categories.find((category) => category.id === active)?.slug ??
@@ -124,13 +136,53 @@ export default function Menu({
                         categories={categories}
                         onSelect={(category) => setActive(category.id)}
                         onSelectToday={() => setActive('today')}
+                        onSelectSchedule={
+                            showSchedule
+                                ? () => setActive('schedule')
+                                : undefined
+                        }
                     />
+                ) : active === 'schedule' ? (
+                    <>
+                        <FilterPills
+                            categories={categories}
+                            activeId={active}
+                            onSelect={setActive}
+                            showSchedule={showSchedule}
+                        />
+
+                        <div className="mt-4 flex items-center gap-3">
+                            <span className="flex flex-col justify-center gap-[3px]">
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                    <span
+                                        key={i}
+                                        className="h-0.5 w-6 rounded-full bg-brand-red md:w-7"
+                                    />
+                                ))}
+                            </span>
+                            <h2 className="text-2xl font-black uppercase md:text-4xl">
+                                Weekly Schedule - الجدول الأسبوعي
+                            </h2>
+                        </div>
+
+                        {schedule && schedule.length > 0 ? (
+                            <WeeklySchedule
+                                schedule={schedule}
+                                enableCart={cartEnabled}
+                            />
+                        ) : (
+                            <p className="text-sm text-muted-foreground">
+                                No scheduled items.
+                            </p>
+                        )}
+                    </>
                 ) : (
                     <>
                         <FilterPills
                             categories={categories}
                             activeId={active}
                             onSelect={setActive}
+                            showSchedule={showSchedule}
                         />
 
                         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">

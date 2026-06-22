@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Enums\OrderType;
 use App\Http\Resources\CategoryResource;
+use App\Http\Resources\ProductResource;
 use App\Models\Category;
+use App\Models\Product;
 use App\Settings\GeneralSettings;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -43,11 +45,43 @@ class MenuController extends Controller
             ->filter(fn (Category $category): bool => $category->products->isNotEmpty())
             ->values();
 
+        $settings = app(GeneralSettings::class);
+
         return Inertia::render('menu', [
             'orderType' => $orderType->value,
             'orderTypeLabel' => $orderType->getLabel(),
             'categories' => CategoryResource::collection($categories)->resolve(),
+            'showSchedule' => $settings->show_product_schedule,
+            // The weekly schedule is only built (and queried) when the feature is on.
+            'schedule' => $settings->show_product_schedule
+                ? $this->weeklySchedule($orderType)
+                : null,
         ]);
+    }
+
+    /**
+     * The scheduled products grouped by ISO weekday (1 = Monday .. 7 = Sunday),
+     * so the storefront can show what's available on each day of the week.
+     *
+     * @return array<int, array{day: int, products: array<int, array<string, mixed>>}>
+     */
+    private function weeklySchedule(OrderType $orderType): array
+    {
+        $products = Product::query()
+            ->where('is_active', true)
+            ->where('has_schedule', true)
+            ->whereIn('order_type', [$orderType->value, OrderType::BOTH->value])
+            ->whereHas('category', fn (Builder $category): Builder => $category->where('is_active', true))
+            ->with('media')
+            ->orderBy('sort_order')
+            ->get();
+
+        return array_map(static fn (int $isoDay): array => [
+            'day' => $isoDay,
+            'products' => ProductResource::collection(
+                $products->filter(fn (Product $product): bool => in_array($isoDay, $product->available_days ?? [], true))
+            )->resolve(),
+        ], range(1, 7));
     }
 
     private function productsConstraint(OrderType $orderType): \Closure

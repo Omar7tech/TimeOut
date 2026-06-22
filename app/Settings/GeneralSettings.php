@@ -111,6 +111,12 @@ class GeneralSettings extends Settings
      */
     public bool $get_client_location;
 
+    /**
+     * Whether the storefront shows a weekly schedule of scheduled products, so
+     * customers can see which items are available on each day.
+     */
+    public bool $show_product_schedule;
+
     public static function group(): string
     {
         return 'general';

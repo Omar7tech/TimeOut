@@ -29,6 +29,12 @@ export type CategoryAddon = {
     price: number;
 };
 
+/** Products available on a single weekday. `day` is ISO (1 = Monday .. 7 = Sunday). */
+export type ScheduleDay = {
+    day: number;
+    products: Product[];
+};
+
 export type Category = {
     id: number;
     title: string;

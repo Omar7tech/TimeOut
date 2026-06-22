@@ -267,6 +267,16 @@ class ManageGeneral extends SettingsPage
                                         JS),
                             ]),
 
+                        Tab::make('Menu - القائمة')
+                            ->icon(Heroicon::OutlinedListBullet)
+                            ->schema([
+                                Toggle::make('show_product_schedule')
+                                    ->label('Show weekly product schedule - عرض جدول المنتجات الأسبوعي')
+                                    ->helperText('Adds a schedule view to the menu so customers can see which scheduled items are available each day. - يضيف عرض جدول إلى القائمة ليرى الزبائن المنتجات المتاحة في كل يوم.')
+                                    ->default(false)
+                                    ->columnSpanFull(),
+                            ]),
+
                         Tab::make('Social - التواصل')
                             ->icon(Heroicon::OutlinedShare)
                             ->schema([

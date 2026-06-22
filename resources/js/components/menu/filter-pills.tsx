@@ -1,12 +1,15 @@
+import { CalendarRange } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Category } from '@/types';
 
-export type MenuFilter = number | 'today';
+export type MenuFilter = number | 'today' | 'schedule';
 
 interface FilterPillsProps {
     categories: Category[];
     activeId: MenuFilter;
     onSelect: (id: MenuFilter) => void;
+    /** Whether to show the weekly schedule pill. */
+    showSchedule?: boolean;
 }
 
 const base =
@@ -33,8 +36,10 @@ export function FilterPills({
     categories,
     activeId,
     onSelect,
+    showSchedule = false,
 }: FilterPillsProps) {
     const todayActive = activeId === 'today';
+    const scheduleActive = activeId === 'schedule';
 
     return (
         <div className="-mx-4 flex snap-x snap-mandatory scroll-px-4 [scrollbar-width:none] gap-2 overflow-x-auto px-4 pb-2 md:mx-0 md:flex-wrap md:gap-3 md:overflow-visible md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden">
@@ -49,6 +54,23 @@ export function FilterPills({
             >
                 Today - اليوم
             </button>
+
+            {showSchedule && (
+                <button
+                    type="button"
+                    onClick={() => onSelect('schedule')}
+                    className={cn(
+                        base,
+                        'inline-flex items-center gap-1.5',
+                        scheduleActive
+                            ? cn('bg-brand-red text-white', pressed, stripesOnDark)
+                            : cn('bg-white text-black', raised),
+                    )}
+                >
+                    <CalendarRange className="size-4" />
+                    Schedule - الجدول
+                </button>
+            )}
 
             {categories.map((category) => {
                 const active = category.id === activeId;
