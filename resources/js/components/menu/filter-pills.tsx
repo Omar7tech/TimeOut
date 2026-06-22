@@ -46,8 +46,8 @@ export function FilterPills({
         // Desktop: both groups collapse (md:contents) into one wrapping row, with
         // Today/Schedule first — exactly as before.
         <div className="flex flex-col gap-2 md:flex-row md:flex-wrap md:items-start md:gap-3">
-            {/* Today + Schedule — below the categories on mobile, first on desktop. */}
-            <div className="order-2 flex gap-2 md:contents">
+            {/* Today + Schedule — above the categories on mobile, first on desktop. */}
+            <div className="order-1 flex gap-2 md:contents">
                 <button
                     type="button"
                     onClick={() => onSelect('today')}
@@ -84,7 +84,7 @@ export function FilterPills({
             </div>
 
             {/* Categories — horizontal scroll row on mobile, inline-wrapped on desktop. */}
-            <div className="order-1 -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:mx-0 md:contents md:overflow-visible md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden">
+            <div className="order-2 -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:mx-0 md:contents md:overflow-visible md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden">
                 {categories.map((category) => {
                     const active = category.id === activeId;
 
