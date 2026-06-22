@@ -123,6 +123,7 @@ export default function Menu({
                     <CategoryGrid
                         categories={categories}
                         onSelect={(category) => setActive(category.id)}
+                        onSelectToday={() => setActive('today')}
                     />
                 ) : (
                     <>
