@@ -5,6 +5,7 @@ import { ProductPrice } from '@/components/menu/product-price';
 import { VariantSelector } from '@/components/menu/variant-selector';
 import type { CartAddon } from '@/contexts/cart-context';
 import { useCart } from '@/contexts/cart-context';
+import { cn, isArabic } from '@/lib/utils';
 import type { CategoryAddon, Product } from '@/types';
 
 interface ProductCardProps {
@@ -42,6 +43,9 @@ export function ProductCard({
     const effectivePrice = discountPrice ?? basePrice;
 
     const image = product.thumb ?? product.image;
+
+    // Right-align and flip the text block to RTL when the title is Arabic.
+    const rtl = isArabic(product.title);
 
     const addToCart = (selectedAddons: CartAddon[] = []): void => {
         addItem({
@@ -92,8 +96,19 @@ export function ProductCard({
                 </div>
 
                 <div className="flex min-w-0 flex-1 flex-col">
-                    <div className="flex items-center gap-1.5">
-                        <h3 className="min-w-0 flex-1 truncate text-sm leading-tight font-black">
+                    <div
+                        className={cn(
+                            'flex items-center gap-1.5',
+                            rtl && 'flex-row-reverse',
+                        )}
+                    >
+                        <h3
+                            dir={rtl ? 'rtl' : undefined}
+                            className={cn(
+                                'min-w-0 flex-1 truncate text-sm leading-tight font-black',
+                                rtl && 'text-right',
+                            )}
+                        >
                             {product.title}
                         </h3>
                         {product.is_featured && (
@@ -102,13 +117,25 @@ export function ProductCard({
                     </div>
 
                     {product.subtitle && (
-                        <p className="truncate text-xs text-muted-foreground">
+                        <p
+                            dir={rtl ? 'rtl' : undefined}
+                            className={cn(
+                                'truncate text-xs text-muted-foreground',
+                                rtl && 'text-right',
+                            )}
+                        >
                             {product.subtitle}
                         </p>
                     )}
 
                     {product.description && (
-                        <p className="truncate text-xs text-muted-foreground/80">
+                        <p
+                            dir={rtl ? 'rtl' : undefined}
+                            className={cn(
+                                'truncate text-xs text-muted-foreground/80',
+                                rtl && 'text-right',
+                            )}
+                        >
                             {product.description}
                         </p>
                     )}
