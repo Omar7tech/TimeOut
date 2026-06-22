@@ -68,6 +68,9 @@ class HandleInertiaRequests extends Middleware
                 'lbpRate' => $lbpEnabled ? (float) $settings->lbp_exchange_rate : null,
                 'deliveryFeeUsd' => $settings->charge_delivery ? (float) $settings->delivery_fee : null,
             ],
+            // Whether the delivery (online ordering) menu is available; when off the
+            // storefront is dine-in only.
+            'onlineOrderingActive' => $settings->online_ordering_active,
             'socials' => collect($settings->social_links)
                 ->map(fn (array $link): ?array => ($platform = SocialPlatform::tryFrom($link['platform'] ?? ''))
                     ? [

@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { Bike, UtensilsCrossed } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { BrandLogo } from '@/components/brand-logo';
@@ -42,6 +42,7 @@ function MenuLink({
 
 export default function Welcome() {
     const open = useShopOpen();
+    const onlineOrderingActive = usePage().props.onlineOrderingActive;
 
     return (
         <>
@@ -58,11 +59,13 @@ export default function Welcome() {
                             icon={UtensilsCrossed}
                         />
 
-                        <MenuLink
-                            href="/menu/delivery"
-                            label="Delivery"
-                            icon={Bike}
-                        />
+                        {onlineOrderingActive && (
+                            <MenuLink
+                                href="/menu/delivery"
+                                label="Delivery"
+                                icon={Bike}
+                            />
+                        )}
                     </div>
 
                     {!open && (

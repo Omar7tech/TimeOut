@@ -20,6 +20,7 @@ declare module '@inertiajs/core' {
             pricing: Pricing;
             shop: Shop;
             socials: Social[];
+            onlineOrderingActive: boolean;
             sidebarOpen: boolean;
             [key: string]: unknown;
         };
