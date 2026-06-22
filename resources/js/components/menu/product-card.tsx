@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { ProductDialog } from '@/components/menu/product-dialog';
 import { ProductPrice } from '@/components/menu/product-price';
 import { VariantSelector } from '@/components/menu/variant-selector';
+import { SmartImage } from '@/components/smart-image';
 import type { CartAddon } from '@/contexts/cart-context';
 import { useCart } from '@/contexts/cart-context';
 import { cn, isArabic } from '@/lib/utils';
@@ -75,25 +76,29 @@ export function ProductCard({
     return (
         <div className="group flex min-w-0 flex-col rounded-lg border-2 border-neutral-700 bg-card p-2.5 text-card-foreground shadow-[4px_4px_0_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000]">
             <div className="flex gap-3">
-                <div className="relative size-20 shrink-0 overflow-hidden rounded-md md:size-28">
-                    {image ? (
-                        <img
-                            src={image}
-                            alt={product.title}
-                            className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
-                            draggable={false}
-                            loading="lazy"
-                        />
-                    ) : (
-                        <div className="size-full bg-muted" />
-                    )}
-
-                    {product.available_today && (
-                        <span className="absolute top-1 left-1 rounded border border-black bg-brand-yellow px-1 py-0.5 text-[9px] font-extrabold tracking-wide text-black uppercase">
-                            Today
-                        </span>
-                    )}
-                </div>
+                {image ? (
+                    <SmartImage
+                        src={image}
+                        alt={product.title}
+                        className="size-20 shrink-0 rounded-md md:size-28"
+                        imgClassName="object-cover transition-transform duration-300 group-hover:scale-105"
+                        draggable={false}
+                    >
+                        {product.available_today && (
+                            <span className="absolute top-1 left-1 rounded border border-black bg-brand-yellow px-1 py-0.5 text-[9px] font-extrabold tracking-wide text-black uppercase">
+                                Today
+                            </span>
+                        )}
+                    </SmartImage>
+                ) : (
+                    <div className="relative size-20 shrink-0 overflow-hidden rounded-md bg-muted md:size-28">
+                        {product.available_today && (
+                            <span className="absolute top-1 left-1 rounded border border-black bg-brand-yellow px-1 py-0.5 text-[9px] font-extrabold tracking-wide text-black uppercase">
+                                Today
+                            </span>
+                        )}
+                    </div>
+                )}
 
                 <div className="flex min-w-0 flex-1 flex-col">
                     <div

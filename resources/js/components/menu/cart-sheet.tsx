@@ -7,6 +7,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { SmartImage } from '@/components/smart-image';
 import { cartItemUnitUsd, useCart } from '@/contexts/cart-context';
 import { usePricing } from '@/hooks/use-pricing';
 import { getBestLocation } from '@/lib/geolocation';
@@ -204,18 +205,17 @@ export function CartSheet() {
                                     key={item.key}
                                     className="flex items-center gap-3 p-3"
                                 >
-                                    <div className="size-14 shrink-0 overflow-hidden rounded-md border-2 border-black">
-                                        {item.image ? (
-                                            <img
-                                                src={item.image}
-                                                alt={item.title}
-                                                className="size-full object-cover"
-                                                draggable={false}
-                                            />
-                                        ) : (
-                                            <div className="size-full bg-muted" />
-                                        )}
-                                    </div>
+                                    {item.image ? (
+                                        <SmartImage
+                                            src={item.image}
+                                            alt={item.title}
+                                            className="size-14 shrink-0 rounded-md border-2 border-black"
+                                            imgClassName="object-cover"
+                                            draggable={false}
+                                        />
+                                    ) : (
+                                        <div className="size-14 shrink-0 overflow-hidden rounded-md border-2 border-black bg-muted" />
+                                    )}
 
                                     <div className="flex min-w-0 flex-1 flex-col gap-1">
                                         <p className="truncate text-sm leading-tight font-bold">

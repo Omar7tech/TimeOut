@@ -2,6 +2,7 @@ import { Minus, Plus, ShoppingCart, Star } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { ProductPrice } from '@/components/menu/product-price';
 import { VariantSelector } from '@/components/menu/variant-selector';
+import { SmartImage } from '@/components/smart-image';
 import {
     Dialog,
     DialogContent,
@@ -93,19 +94,19 @@ export function ProductDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 {image ? (
-                    <div className="relative aspect-video w-full overflow-hidden rounded-xl border-2 border-black shadow-[3px_3px_0_0_#000]">
-                        <img
-                            src={image}
-                            alt={product.title}
-                            className="size-full object-cover"
-                            draggable={false}
-                        />
+                    <SmartImage
+                        src={image}
+                        alt={product.title}
+                        className="aspect-video w-full rounded-xl border-2 border-black shadow-[3px_3px_0_0_#000]"
+                        imgClassName="object-cover"
+                        draggable={false}
+                    >
                         {product.available_today && (
                             <span className="absolute top-2 left-2 rounded border border-black bg-brand-yellow px-1.5 py-0.5 text-[10px] font-extrabold tracking-wide text-black uppercase">
                                 Today
                             </span>
                         )}
-                    </div>
+                    </SmartImage>
                 ) : (
                     // Keep the close button clear of the title when there's no image.
                     <div className="h-2" />
