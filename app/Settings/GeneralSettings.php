@@ -117,6 +117,16 @@ class GeneralSettings extends Settings
      */
     public bool $show_product_schedule;
 
+    /**
+     * Whether the floating WhatsApp chat badge is shown on the storefront.
+     */
+    public bool $show_whatsapp_badge;
+
+    /**
+     * The WhatsApp number the chat badge sends messages to.
+     */
+    public ?string $whatsapp_badge_number;
+
     public static function group(): string
     {
         return 'general';

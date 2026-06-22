@@ -78,6 +78,11 @@ class HandleInertiaRequests extends Middleware
             'requireFullName' => $settings->require_full_name,
             // Whether to request the customer's location and attach it to the order.
             'getClientLocation' => $settings->get_client_location,
+            // Floating WhatsApp chat badge config for the storefront.
+            'whatsappBadge' => [
+                'show' => $settings->show_whatsapp_badge && filled($settings->whatsapp_badge_number),
+                'number' => $settings->whatsapp_badge_number,
+            ],
             'socials' => collect($settings->social_links)
                 ->map(fn (array $link): ?array => ($platform = SocialPlatform::tryFrom($link['platform'] ?? ''))
                     ? [

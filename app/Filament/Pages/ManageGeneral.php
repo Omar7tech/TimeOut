@@ -267,6 +267,29 @@ class ManageGeneral extends SettingsPage
                                         JS),
                             ]),
 
+                        Tab::make('WhatsApp Badge - زر واتساب')
+                            ->icon(Heroicon::OutlinedChatBubbleLeftRight)
+                            ->schema([
+                                Toggle::make('show_whatsapp_badge')
+                                    ->label('Show WhatsApp badge - إظهار زر واتساب')
+                                    ->helperText('Shows a floating WhatsApp button on the storefront for customers to message you. - يُظهر زر واتساب عائمًا في الواجهة ليراسلك الزبائن.')
+                                    ->default(false)
+                                    ->columnSpanFull(),
+
+                                TextInput::make('whatsapp_badge_number')
+                                    ->label('WhatsApp number - رقم واتساب')
+                                    ->validationAttribute('WhatsApp number')
+                                    ->helperText('Messages from the badge are sent to this number. Include the country code. - تُرسل الرسائل إلى هذا الرقم. أدخل رمز الدولة.')
+                                    ->tel()
+                                    ->default('+9613150099')
+                                    ->maxLength(255)
+                                    ->requiredIf('show_whatsapp_badge', true)
+                                    ->columnSpanFull()
+                                    ->visibleJs(<<<'JS'
+                                        $get('show_whatsapp_badge')
+                                        JS),
+                            ]),
+
                         Tab::make('Menu - القائمة')
                             ->icon(Heroicon::OutlinedListBullet)
                             ->schema([

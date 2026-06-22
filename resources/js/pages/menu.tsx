@@ -11,6 +11,7 @@ import { SiteBanner } from '@/components/menu/site-banner';
 import { SiteFooter } from '@/components/menu/site-footer';
 import { SiteHeader } from '@/components/menu/site-header';
 import { WeeklySchedule } from '@/components/menu/weekly-schedule';
+import { WhatsAppFab } from '@/components/menu/whatsapp-fab';
 import { CartProvider } from '@/contexts/cart-context';
 import type { OrderType, Product, ScheduleDay } from '@/types';
 import type { Category } from '@/types';
@@ -250,6 +251,8 @@ export default function Menu({
             />
 
             {cartEnabled && <CartSheet />}
+
+            <WhatsAppFab />
         </CartProvider>
     );
 }

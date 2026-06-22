@@ -24,6 +24,7 @@ declare module '@inertiajs/core' {
             whatsappNumber: string | null;
             requireFullName: boolean;
             getClientLocation: boolean;
+            whatsappBadge: { show: boolean; number: string | null };
             sidebarOpen: boolean;
             [key: string]: unknown;
         };
