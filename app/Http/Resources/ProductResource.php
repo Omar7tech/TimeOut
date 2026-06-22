@@ -29,6 +29,8 @@ class ProductResource extends JsonResource
             'order_type' => $this->order_type->value,
             'preparation_time' => $this->preparation_time,
             'is_featured' => (bool) $this->is_featured,
+            'is_spicy' => (bool) $this->is_spicy,
+            'is_vegan' => (bool) $this->is_vegan,
             'variants' => $this->variants,
             'available_today' => $this->has_schedule
                 && in_array(now()->dayOfWeekIso, $this->available_days ?? [], true),

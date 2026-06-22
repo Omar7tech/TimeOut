@@ -29,6 +29,8 @@ class Product extends Model implements HasMedia
         'order_type' => OrderType::class,
         'variants' => 'array',
         'has_schedule' => 'boolean',
+        'is_spicy' => 'boolean',
+        'is_vegan' => 'boolean',
     ];
 
     public function getRouteKeyName(): string

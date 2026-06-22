@@ -10,6 +10,8 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
@@ -71,6 +73,22 @@ class ProductsTable
                     ->color(fn (Product $record): string => $record->has_schedule ? 'warning' : 'gray')
                     ->placeholder('Always')
                     ->formatStateUsing(fn (int $state): string => self::DAYS[$state] ?? (string) $state),
+                IconColumn::make('is_spicy')
+                    ->label('Spicy')
+                    ->boolean()
+                    ->trueIcon(Heroicon::Fire)
+                    ->trueColor('danger')
+                    ->falseIcon(Heroicon::Minus)
+                    ->falseColor('gray')
+                    ->sortable(),
+                IconColumn::make('is_vegan')
+                    ->label('Vegan')
+                    ->boolean()
+                    ->trueIcon(Heroicon::Sparkles)
+                    ->trueColor('success')
+                    ->falseIcon(Heroicon::Minus)
+                    ->falseColor('gray')
+                    ->sortable(),
                 ToggleColumn::make('is_active')
                     ->label('Active')
                     ->sortable(),
@@ -90,6 +108,10 @@ class ProductsTable
                     ->label('Active'),
                 TernaryFilter::make('is_featured')
                     ->label('Featured'),
+                TernaryFilter::make('is_spicy')
+                    ->label('Spicy'),
+                TernaryFilter::make('is_vegan')
+                    ->label('Vegan'),
                 TernaryFilter::make('discount_price')
                     ->label('Discount')
                     ->placeholder('All products')

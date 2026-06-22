@@ -86,6 +86,14 @@ class ProductForm
                                     ->label('Featured')
                                     ->default(false)
                                     ->inline(false),
+                                Toggle::make('is_spicy')
+                                    ->label('Spicy')
+                                    ->default(false)
+                                    ->inline(false),
+                                Toggle::make('is_vegan')
+                                    ->label('Vegan')
+                                    ->default(false)
+                                    ->inline(false),
                             ]),
 
                         Tab::make('Availability')

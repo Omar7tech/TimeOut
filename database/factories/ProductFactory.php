@@ -39,6 +39,8 @@ class ProductFactory extends Factory
             'description' => $this->faker->boolean(80) ? $this->faker->paragraph() : null,
             'is_active' => $this->faker->boolean(85),
             'is_featured' => $this->faker->boolean(20),
+            'is_spicy' => $this->faker->boolean(25),
+            'is_vegan' => $this->faker->boolean(20),
             'sort_order' => $this->faker->numberBetween(0, 100),
             'price' => $price,
             'discount_price' => $hasDiscount ? round($price * $this->faker->randomFloat(2, 0.5, 0.9), 2) : null,

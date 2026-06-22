@@ -17,6 +17,8 @@ export type Product = {
     order_type: OrderType;
     preparation_time: number | null;
     is_featured: boolean;
+    is_spicy: boolean;
+    is_vegan: boolean;
     variants: ProductVariant[] | null;
     /** True when the product is scheduled and available on the current weekday. */
     available_today: boolean;

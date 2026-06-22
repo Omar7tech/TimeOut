@@ -1,5 +1,6 @@
 import { Clock, Minus, Plus, ShoppingCart, Star } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { DietIcons } from '@/components/menu/diet-icons';
 import { ProductPrice } from '@/components/menu/product-price';
 import { VariantSelector } from '@/components/menu/variant-selector';
 import { SmartImage } from '@/components/smart-image';
@@ -126,6 +127,11 @@ export function ProductDialog({
                             {product.is_featured && (
                                 <Star className="mt-1 size-5 shrink-0 fill-brand-yellow text-brand-yellow" />
                             )}
+                            <DietIcons
+                                product={product}
+                                iconClassName="size-5"
+                                className="mt-0.5 gap-1.5"
+                            />
                         </DialogTitle>
                         {product.subtitle && (
                             <p className="text-sm font-semibold text-muted-foreground">

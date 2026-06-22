@@ -1,5 +1,6 @@
 import { Eye, ShoppingCart, Star } from 'lucide-react';
 import { useState } from 'react';
+import { DietIcons } from '@/components/menu/diet-icons';
 import { ProductDialog } from '@/components/menu/product-dialog';
 import { ProductPrice } from '@/components/menu/product-price';
 import { VariantSelector } from '@/components/menu/variant-selector';
@@ -116,6 +117,7 @@ export function ProductCard({
                         {product.is_featured && (
                             <Star className="size-3.5 shrink-0 fill-brand-yellow text-brand-yellow" />
                         )}
+                        <DietIcons product={product} />
                     </div>
 
                     {product.subtitle && (
