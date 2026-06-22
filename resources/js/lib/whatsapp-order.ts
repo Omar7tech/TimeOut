@@ -1,5 +1,6 @@
 import { cartItemUnitUsd } from '@/contexts/cart-context';
 import type { CartItem } from '@/contexts/cart-context';
+import type { LocationResult } from '@/lib/geolocation';
 import type { PriceParts } from '@/hooks/use-pricing';
 
 type OrderSummary = {
@@ -11,6 +12,8 @@ type OrderSummary = {
     totalUsd: number;
     /** The customer's name, included when full name is required. */
     customerName?: string | null;
+    /** The customer's coordinates, included when location sharing is on. */
+    location?: LocationResult | null;
 };
 
 /**
@@ -45,12 +48,31 @@ export function buildOrderMessage({
     deliveryFeeUsd,
     totalUsd,
     customerName,
+    location,
 }: OrderSummary): string {
     const divider = '———————————————';
     const lines: string[] = ['🛒 *New Order — Time Out Snack*', ''];
 
     if (customerName && customerName.trim() !== '') {
-        lines.push(`👤 *Name:* ${customerName.trim()}`, '');
+        lines.push(`👤 *Name:* ${customerName.trim()}`);
+    }
+
+    if (location) {
+        const accuracy = Math.round(location.accuracy);
+        // Flag coarse fixes so the shop knows the pin may be approximate.
+        const precision =
+            accuracy > 100 ? ` (approx. ±${accuracy}m)` : ` (±${accuracy}m)`;
+
+        lines.push(
+            `📍 *Location:* https://maps.google.com/?q=${location.latitude},${location.longitude}${precision}`,
+        );
+    }
+
+    if (
+        (customerName && customerName.trim() !== '') ||
+        location
+    ) {
+        lines.push('');
     }
 
     items.forEach((item, index) => {

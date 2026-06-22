@@ -23,6 +23,7 @@ declare module '@inertiajs/core' {
             onlineOrderingActive: boolean;
             whatsappNumber: string | null;
             requireFullName: boolean;
+            getClientLocation: boolean;
             sidebarOpen: boolean;
             [key: string]: unknown;
         };

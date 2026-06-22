@@ -1,5 +1,5 @@
 import { usePage } from '@inertiajs/react';
-import { Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
+import { MapPin, Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import {
     Dialog,
@@ -9,6 +9,8 @@ import {
 } from '@/components/ui/dialog';
 import { cartItemUnitUsd, useCart } from '@/contexts/cart-context';
 import { usePricing } from '@/hooks/use-pricing';
+import { getBestLocation } from '@/lib/geolocation';
+import type { LocationResult } from '@/lib/geolocation';
 import { cn } from '@/lib/utils';
 import { buildOrderMessage, buildWhatsAppUrl } from '@/lib/whatsapp-order';
 
@@ -53,7 +55,8 @@ export function CartSheet() {
         clear,
     } = useCart();
     const pricing = usePricing();
-    const { whatsappNumber, requireFullName } = usePage().props;
+    const { whatsappNumber, requireFullName, getClientLocation } =
+        usePage().props;
     // Single-currency formatter for the per-item breakdown rows (USD when shown,
     // otherwise LBP), keeping the breakdown compact.
     const fmtPrimary = (usd: number): string =>
@@ -66,6 +69,8 @@ export function CartSheet() {
     // The name-entry step shown before checkout when a full name is required.
     const [enteringName, setEnteringName] = useState(false);
     const [name, setName] = useState<string>(readStoredName);
+    // True while waiting on the browser's geolocation prompt.
+    const [locating, setLocating] = useState(false);
 
     // Auto-dismiss the clear confirmation after a few seconds.
     useEffect(() => {
@@ -87,10 +92,14 @@ export function CartSheet() {
         if (!next) {
             setConfirmingClear(false);
             setEnteringName(false);
+            setLocating(false);
         }
     };
 
-    const sendOrder = (customerName?: string | null): void => {
+    const sendOrder = (
+        customerName?: string | null,
+        location?: LocationResult | null,
+    ): void => {
         if (!whatsappNumber || items.length === 0) {
             return;
         }
@@ -102,6 +111,7 @@ export function CartSheet() {
             deliveryFeeUsd,
             totalUsd,
             customerName,
+            location,
         });
 
         window.open(
@@ -109,6 +119,31 @@ export function CartSheet() {
             '_blank',
             'noopener,noreferrer',
         );
+    };
+
+    // Resolve the customer's location (when enabled) then open WhatsApp. The order
+    // is never blocked: if location is denied or unavailable, it sends without it.
+    const beginSend = (customerName?: string | null): void => {
+        if (!getClientLocation || !('geolocation' in navigator)) {
+            sendOrder(customerName);
+
+            return;
+        }
+
+        setLocating(true);
+
+        getBestLocation()
+            .then((location) => {
+                setLocating(false);
+                setEnteringName(false);
+                sendOrder(customerName, location);
+            })
+            .catch(() => {
+                // Denied or unavailable — send the order without a location.
+                setLocating(false);
+                setEnteringName(false);
+                sendOrder(customerName, null);
+            });
     };
 
     const handleCheckout = (): void => {
@@ -123,7 +158,7 @@ export function CartSheet() {
             return;
         }
 
-        sendOrder();
+        beginSend();
     };
 
     const handleConfirmName = (): void => {
@@ -135,8 +170,7 @@ export function CartSheet() {
 
         storeName(trimmed);
         setName(trimmed);
-        setEnteringName(false);
-        sendOrder(trimmed);
+        beginSend(trimmed);
     };
 
     return (
@@ -414,15 +448,26 @@ export function CartSheet() {
                                         </button>
                                         <button
                                             type="submit"
-                                            disabled={name.trim() === ''}
+                                            disabled={
+                                                name.trim() === '' || locating
+                                            }
                                             className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_#000]"
                                         >
-                                            <img
-                                                src="/social-icons/whatsapp.svg"
-                                                alt=""
-                                                className="size-5 brightness-0 invert"
-                                            />
-                                            Send order
+                                            {locating ? (
+                                                <>
+                                                    <MapPin className="size-5 animate-pulse" />
+                                                    Getting location…
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <img
+                                                        src="/social-icons/whatsapp.svg"
+                                                        alt=""
+                                                        className="size-5 brightness-0 invert"
+                                                    />
+                                                    Send order
+                                                </>
+                                            )}
                                         </button>
                                     </div>
                                 </form>
@@ -439,14 +484,24 @@ export function CartSheet() {
                                     <button
                                         type="button"
                                         onClick={handleCheckout}
-                                        className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                        disabled={locating}
+                                        className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_#000]"
                                     >
-                                        <img
-                                            src="/social-icons/whatsapp.svg"
-                                            alt=""
-                                            className="size-5 brightness-0 invert"
-                                        />
-                                        Checkout
+                                        {locating ? (
+                                            <>
+                                                <MapPin className="size-5 animate-pulse" />
+                                                Getting location…
+                                            </>
+                                        ) : (
+                                            <>
+                                                <img
+                                                    src="/social-icons/whatsapp.svg"
+                                                    alt=""
+                                                    className="size-5 brightness-0 invert"
+                                                />
+                                                Checkout
+                                            </>
+                                        )}
                                     </button>
                                 </div>
                             )}

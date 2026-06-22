@@ -88,6 +88,11 @@ class GeneralSettings extends Settings
      */
     public bool $require_full_name;
 
+    /**
+     * Whether to request the customer's location and attach it to their order.
+     */
+    public bool $get_client_location;
+
     public static function group(): string
     {
         return 'general';

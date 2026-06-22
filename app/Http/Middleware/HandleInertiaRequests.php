@@ -75,6 +75,8 @@ class HandleInertiaRequests extends Middleware
             'whatsappNumber' => $settings->online_ordering_active ? $settings->whatsapp_number : null,
             // Whether the customer must provide their full name before ordering.
             'requireFullName' => $settings->require_full_name,
+            // Whether to request the customer's location and attach it to the order.
+            'getClientLocation' => $settings->get_client_location,
             'socials' => collect($settings->social_links)
                 ->map(fn (array $link): ?array => ($platform = SocialPlatform::tryFrom($link['platform'] ?? ''))
                     ? [

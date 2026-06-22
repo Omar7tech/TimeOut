@@ -220,6 +220,15 @@ class ManageGeneral extends SettingsPage
                                     ->visibleJs(<<<'JS'
                                         $get('online_ordering_active')
                                         JS),
+
+                                Toggle::make('get_client_location')
+                                    ->label('Get customer location - تحديد موقع الزبون')
+                                    ->helperText('Ask for the customer\'s location and attach a map link to the order. - اطلب موقع الزبون وأرفق رابط الخريطة مع الطلب.')
+                                    ->default(false)
+                                    ->columnSpanFull()
+                                    ->visibleJs(<<<'JS'
+                                        $get('online_ordering_active')
+                                        JS),
                             ]),
 
                         Tab::make('Social - التواصل')
