@@ -42,47 +42,33 @@ export function FilterPills({
     const scheduleActive = activeId === 'schedule';
 
     return (
-        <div className="-mx-4 flex snap-x snap-mandatory scroll-px-4 [scrollbar-width:none] gap-2 overflow-x-auto px-4 pb-2 md:mx-0 md:flex-wrap md:gap-3 md:overflow-visible md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden">
-            <button
-                type="button"
-                onClick={() => onSelect('today')}
-                className={cn(
-                    base,
-                    'bg-brand-yellow text-black',
-                    todayActive ? cn(pressed, stripesOnLight) : raised,
-                )}
-            >
-                Today - اليوم
-            </button>
-
-            {showSchedule && (
+        // Mobile: categories scroll on top, Today/Schedule sit in a row underneath.
+        // Desktop: both groups collapse (md:contents) into one wrapping row, with
+        // Today/Schedule first — exactly as before.
+        <div className="flex flex-col gap-2 md:flex-row md:flex-wrap md:items-start md:gap-3">
+            {/* Today + Schedule — below the categories on mobile, first on desktop. */}
+            <div className="order-2 flex gap-2 md:contents">
                 <button
                     type="button"
-                    onClick={() => onSelect('schedule')}
+                    onClick={() => onSelect('today')}
                     className={cn(
                         base,
-                        'inline-flex items-center gap-1.5',
-                        scheduleActive
-                            ? cn('bg-brand-red text-white', pressed, stripesOnDark)
-                            : cn('bg-white text-black', raised),
+                        'flex-1 text-center md:flex-none',
+                        'bg-brand-yellow text-black',
+                        todayActive ? cn(pressed, stripesOnLight) : raised,
                     )}
                 >
-                    <CalendarRange className="size-4" />
-                    Schedule - الجدول
+                    Today - اليوم
                 </button>
-            )}
 
-            {categories.map((category) => {
-                const active = category.id === activeId;
-
-                return (
+                {showSchedule && (
                     <button
-                        key={category.id}
                         type="button"
-                        onClick={() => onSelect(category.id)}
+                        onClick={() => onSelect('schedule')}
                         className={cn(
                             base,
-                            active
+                            'inline-flex flex-1 items-center justify-center gap-1.5 md:flex-none',
+                            scheduleActive
                                 ? cn(
                                       'bg-brand-red text-white',
                                       pressed,
@@ -91,10 +77,38 @@ export function FilterPills({
                                 : cn('bg-white text-black', raised),
                         )}
                     >
-                        {category.title}
+                        <CalendarRange className="size-4" />
+                        Schedule - الجدول
                     </button>
-                );
-            })}
+                )}
+            </div>
+
+            {/* Categories — horizontal scroll row on mobile, inline-wrapped on desktop. */}
+            <div className="order-1 -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:mx-0 md:contents md:overflow-visible md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden">
+                {categories.map((category) => {
+                    const active = category.id === activeId;
+
+                    return (
+                        <button
+                            key={category.id}
+                            type="button"
+                            onClick={() => onSelect(category.id)}
+                            className={cn(
+                                base,
+                                active
+                                    ? cn(
+                                          'bg-brand-red text-white',
+                                          pressed,
+                                          stripesOnDark,
+                                      )
+                                    : cn('bg-white text-black', raised),
+                            )}
+                        >
+                            {category.title}
+                        </button>
+                    );
+                })}
+            </div>
         </div>
     );
 }
