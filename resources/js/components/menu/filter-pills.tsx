@@ -1,4 +1,5 @@
 import { CalendarRange } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import type { Category } from '@/types';
 
@@ -40,6 +41,55 @@ export function FilterPills({
 }: FilterPillsProps) {
     const todayActive = activeId === 'today';
     const scheduleActive = activeId === 'schedule';
+
+    // Fade whichever edge of the category row still has hidden pills, so it reads
+    // as scrollable on mobile (a right-edge fade on load is the "scroll me" cue).
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [edges, setEdges] = useState({ start: false, end: false });
+
+    const updateEdges = useCallback((): void => {
+        const el = scrollRef.current;
+
+        if (!el) {
+            return;
+        }
+
+        const max = el.scrollWidth - el.clientWidth;
+
+        setEdges({
+            start: el.scrollLeft > 1,
+            end: el.scrollLeft < max - 1,
+        });
+    }, []);
+
+    useEffect(() => {
+        const el = scrollRef.current;
+
+        if (!el) {
+            return;
+        }
+
+        updateEdges();
+        el.addEventListener('scroll', updateEdges, { passive: true });
+
+        const observer = new ResizeObserver(updateEdges);
+        observer.observe(el);
+
+        return () => {
+            el.removeEventListener('scroll', updateEdges);
+            observer.disconnect();
+        };
+    }, [updateEdges, categories]);
+
+    const fade = '2rem';
+    const maskImage =
+        edges.start && edges.end
+            ? `linear-gradient(to right, transparent, #000 ${fade}, #000 calc(100% - ${fade}), transparent)`
+            : edges.end
+              ? `linear-gradient(to right, #000 calc(100% - ${fade}), transparent)`
+              : edges.start
+                ? `linear-gradient(to right, transparent, #000 ${fade})`
+                : undefined;
 
     return (
         // Mobile: categories scroll on top, Today/Schedule sit in a row underneath.
@@ -84,7 +134,10 @@ export function FilterPills({
             </div>
 
             {/* Categories — horizontal scroll row on mobile, inline-wrapped on desktop. */}
-            <div className="order-2 -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:mx-0 md:contents md:overflow-visible md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden">
+            <div
+                ref={scrollRef}
+                style={{ maskImage, WebkitMaskImage: maskImage }}
+                className="order-2 -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:mx-0 md:contents md:overflow-visible md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden">
                 {categories.map((category) => {
                     const active = category.id === activeId;
 
