@@ -190,6 +190,29 @@ class ManageGeneral extends SettingsPage
                                     }),
                             ]),
 
+                        Tab::make('Online Ordering - الطلب أونلاين')
+                            ->icon(Heroicon::OutlinedShoppingBag)
+                            ->schema([
+                                Toggle::make('online_ordering_active')
+                                    ->label('Online ordering active - تفعيل الطلب أونلاين')
+                                    ->helperText('Turn on to let customers send their orders to WhatsApp. - فعّله للسماح للزبائن بإرسال طلباتهم عبر واتساب.')
+                                    ->default(true)
+                                    ->columnSpanFull(),
+
+                                TextInput::make('whatsapp_number')
+                                    ->label('WhatsApp number - رقم واتساب')
+                                    ->validationAttribute('WhatsApp number')
+                                    ->helperText('Orders are sent to this number. Include the country code. - تُرسل الطلبات إلى هذا الرقم. أدخل رمز الدولة.')
+                                    ->tel()
+                                    ->default('+9613150099')
+                                    ->maxLength(255)
+                                    ->requiredIf('online_ordering_active', true)
+                                    ->columnSpanFull()
+                                    ->visibleJs(<<<'JS'
+                                        $get('online_ordering_active')
+                                        JS),
+                            ]),
+
                         Tab::make('Social - التواصل')
                             ->icon(Heroicon::OutlinedShare)
                             ->schema([

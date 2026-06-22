@@ -73,6 +73,16 @@ class GeneralSettings extends Settings
      */
     public array $social_links; // @phpstan-ignore missingType.iterableValue
 
+    /**
+     * Whether customers can place orders online via WhatsApp.
+     */
+    public bool $online_ordering_active;
+
+    /**
+     * The WhatsApp number that online orders are sent to.
+     */
+    public ?string $whatsapp_number;
+
     public static function group(): string
     {
         return 'general';
