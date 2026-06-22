@@ -69,7 +69,7 @@ export function SiteFooter({ categories, onSelectCategory }: SiteFooterProps) {
                                             rel="noreferrer"
                                             aria-label={social.label}
                                             title={social.label}
-                                            className="flex size-10 items-center justify-center rounded-full bg-foreground/5 transition-colors hover:bg-foreground/10"
+                                            className="flex size-11 items-center justify-center rounded-md border-2 border-black bg-white shadow-[3px_3px_0_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 focus-visible:outline-none active:translate-x-[3px] active:translate-y-[3px] active:shadow-none"
                                         >
                                             <img
                                                 src={social.icon}
