@@ -2,6 +2,7 @@
 
 namespace App\Settings;
 
+use App\Enums\BannerMode;
 use App\Enums\PriceDisplay;
 use App\Enums\ShopStatusMode;
 use App\Enums\Weekday;
@@ -40,9 +41,26 @@ class GeneralSettings extends Settings
     public bool $show_banner;
 
     /**
-     * The banner message shown above the header when {@see self::$show_banner} is on.
+     * How the banner sentence is chosen: a single fixed message (`FIXED`) or a
+     * per-weekday message from {@see self::$banner_schedule} (`SCHEDULED`).
+     */
+    public BannerMode $banner_mode;
+
+    /**
+     * The banner message shown above the header when {@see self::$show_banner} is on
+     * and the mode is `FIXED`.
      */
     public ?string $banner_text;
+
+    /**
+     * The per-weekday banner sentences used when the mode is `SCHEDULED`. One entry
+     * per weekday, keyed by JS-style day number (0 = Sunday), shaped
+     * `['day' => int, 'text' => string]`.
+     *
+     * Note: no `@var` value type is declared because spatie/laravel-settings cannot
+     * resolve a complex array-shape docblock here (it would throw at runtime).
+     */
+    public array $banner_schedule; // @phpstan-ignore missingType.iterableValue
 
     /**
      * Whether a delivery charge is added to takeaway orders.
@@ -106,7 +124,38 @@ class GeneralSettings extends Settings
         return [
             'status_mode' => new EnumCast(ShopStatusMode::class),
             'price_display' => new EnumCast(PriceDisplay::class),
+            'banner_mode' => new EnumCast(BannerMode::class),
         ];
+    }
+
+    /**
+     * The default per-weekday banner schedule: the same welcome message on every
+     * day, ready for the shop to customise per day.
+     *
+     * @return array<int, array{day: int, text: string}>
+     */
+    public static function defaultBannerSchedule(): array
+    {
+        return array_map(static fn (Weekday $day): array => [
+            'day' => $day->value,
+            'text' => 'Welcome To Time Out Snack',
+        ], Weekday::cases());
+    }
+
+    /**
+     * The banner sentence to show right now, resolving the active banner mode.
+     * Returns the fixed text, or the scheduled text for the given weekday.
+     */
+    public function currentBannerText(?CarbonInterface $now = null): ?string
+    {
+        if ($this->banner_mode === BannerMode::FIXED) {
+            return $this->banner_text;
+        }
+
+        $today = collect($this->banner_schedule)
+            ->firstWhere('day', ($now ?? Carbon::now())->dayOfWeek);
+
+        return $today['text'] ?? null;
     }
 
     /**

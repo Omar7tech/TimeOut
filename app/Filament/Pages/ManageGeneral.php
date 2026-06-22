@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Enums\BannerMode;
 use App\Enums\PriceDisplay;
 use App\Enums\ShopStatusMode;
 use App\Enums\SocialPlatform;
@@ -108,14 +109,49 @@ class ManageGeneral extends SettingsPage
                                     ->default(false)
                                     ->columnSpanFull(),
 
+                                Radio::make('banner_mode')
+                                    ->label('Banner mode - وضع الشريط')
+                                    ->validationAttribute('banner mode')
+                                    ->options(BannerMode::class)
+                                    ->default(BannerMode::FIXED->value)
+                                    ->required()
+                                    ->columnSpanFull()
+                                    ->visibleJs(<<<'JS'
+                                        $get('show_banner')
+                                        JS),
+
                                 TextInput::make('banner_text')
                                     ->label('Banner text - نص الشريط')
                                     ->validationAttribute('banner text')
+                                    ->default('Welcome To Time Out Snack')
                                     ->requiredIf('show_banner', true)
                                     ->maxLength(255)
                                     ->columnSpanFull()
                                     ->visibleJs(<<<'JS'
-                                        $get('show_banner')
+                                        $get('show_banner') && $get('banner_mode') === 'fixed'
+                                        JS),
+
+                                Repeater::make('banner_schedule')
+                                    ->label('Daily banner sentences - جمل الشريط اليومية')
+                                    ->helperText('Each day shows its own sentence automatically. - يظهر لكل يوم جملته الخاصة تلقائيًا.')
+                                    ->default(GeneralSettings::defaultBannerSchedule())
+                                    ->addable(false)
+                                    ->deletable(false)
+                                    ->reorderable(false)
+                                    ->columnSpanFull()
+                                    ->itemLabel(fn (array $state): ?string => Weekday::tryFrom($state['day'] ?? -1)?->getLabel())
+                                    ->schema([
+                                        Hidden::make('day'),
+
+                                        TextInput::make('text')
+                                            ->label('Sentence - الجملة')
+                                            ->validationAttribute('sentence')
+                                            ->default('Welcome To Time Out Snack')
+                                            ->maxLength(255)
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->visibleJs(<<<'JS'
+                                        $get('show_banner') && $get('banner_mode') === 'scheduled'
                                         JS),
                             ]),
 

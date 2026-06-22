@@ -39,6 +39,7 @@ class HandleInertiaRequests extends Middleware
     {
         $settings = app(GeneralSettings::class);
         $lbpEnabled = $settings->show_lbp_prices && (float) $settings->lbp_exchange_rate > 0;
+        $bannerText = $settings->currentBannerText();
 
         return [
             ...parent::share($request),
@@ -47,8 +48,8 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'banner' => [
-                'show' => $settings->show_banner && filled($settings->banner_text),
-                'text' => $settings->banner_text,
+                'show' => $settings->show_banner && filled($bannerText),
+                'text' => $bannerText,
             ],
             'shop' => [
                 // Authoritative open/closed snapshot for this request (used for the
