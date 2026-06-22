@@ -76,7 +76,7 @@ export function ProductCard({
     return (
         <div className="group flex min-w-0 flex-col rounded-lg border-2 border-neutral-700 bg-card p-2.5 text-card-foreground shadow-[4px_4px_0_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000]">
             <div className="flex gap-3">
-                {image ? (
+                {image && (
                     <SmartImage
                         src={image}
                         alt={product.title}
@@ -90,14 +90,6 @@ export function ProductCard({
                             </span>
                         )}
                     </SmartImage>
-                ) : (
-                    <div className="relative size-20 shrink-0 overflow-hidden rounded-md bg-muted md:size-28">
-                        {product.available_today && (
-                            <span className="absolute top-1 left-1 rounded border border-black bg-brand-yellow px-1 py-0.5 text-[9px] font-extrabold tracking-wide text-black uppercase">
-                                Today
-                            </span>
-                        )}
-                    </div>
                 )}
 
                 <div className="flex min-w-0 flex-1 flex-col">
@@ -116,6 +108,11 @@ export function ProductCard({
                         >
                             {product.title}
                         </h3>
+                        {!image && product.available_today && (
+                            <span className="shrink-0 rounded border border-black bg-brand-yellow px-1 py-0.5 text-[9px] font-extrabold tracking-wide text-black uppercase">
+                                Today
+                            </span>
+                        )}
                         {product.is_featured && (
                             <Star className="size-3.5 shrink-0 fill-brand-yellow text-brand-yellow" />
                         )}

@@ -205,7 +205,7 @@ export function CartSheet() {
                                     key={item.key}
                                     className="flex items-center gap-3 p-3"
                                 >
-                                    {item.image ? (
+                                    {item.image && (
                                         <SmartImage
                                             src={item.image}
                                             alt={item.title}
@@ -213,8 +213,6 @@ export function CartSheet() {
                                             imgClassName="object-cover"
                                             draggable={false}
                                         />
-                                    ) : (
-                                        <div className="size-14 shrink-0 overflow-hidden rounded-md border-2 border-black bg-muted" />
                                     )}
 
                                     <div className="flex min-w-0 flex-1 flex-col gap-1">
