@@ -71,6 +71,8 @@ class HandleInertiaRequests extends Middleware
             // Whether the delivery (online ordering) menu is available; when off the
             // storefront is dine-in only.
             'onlineOrderingActive' => $settings->online_ordering_active,
+            // The WhatsApp number orders are sent to (only while ordering is active).
+            'whatsappNumber' => $settings->online_ordering_active ? $settings->whatsapp_number : null,
             'socials' => collect($settings->social_links)
                 ->map(fn (array $link): ?array => ($platform = SocialPlatform::tryFrom($link['platform'] ?? ''))
                     ? [

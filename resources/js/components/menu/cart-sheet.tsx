@@ -1,3 +1,4 @@
+import { usePage } from '@inertiajs/react';
 import { Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import {
@@ -9,6 +10,7 @@ import {
 import { cartItemUnitUsd, useCart } from '@/contexts/cart-context';
 import { usePricing } from '@/hooks/use-pricing';
 import { cn } from '@/lib/utils';
+import { buildOrderMessage, buildWhatsAppUrl } from '@/lib/whatsapp-order';
 
 /**
  * Responsive cart: a bottom sheet on mobile and a centered modal on desktop.
@@ -27,6 +29,7 @@ export function CartSheet() {
         clear,
     } = useCart();
     const pricing = usePricing();
+    const whatsappNumber = usePage().props.whatsappNumber;
     // Single-currency formatter for the per-item breakdown rows (USD when shown,
     // otherwise LBP), keeping the breakdown compact.
     const fmtPrimary = (usd: number): string =>
@@ -57,6 +60,26 @@ export function CartSheet() {
         if (!next) {
             setConfirmingClear(false);
         }
+    };
+
+    const handleCheckout = (): void => {
+        if (!whatsappNumber || items.length === 0) {
+            return;
+        }
+
+        const message = buildOrderMessage({
+            items,
+            pricing,
+            subtotalUsd,
+            deliveryFeeUsd,
+            totalUsd,
+        });
+
+        window.open(
+            buildWhatsAppUrl(whatsappNumber, message),
+            '_blank',
+            'noopener,noreferrer',
+        );
     };
 
     return (
@@ -309,6 +332,7 @@ export function CartSheet() {
                                     </button>
                                     <button
                                         type="button"
+                                        onClick={handleCheckout}
                                         className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                     >
                                         <img
