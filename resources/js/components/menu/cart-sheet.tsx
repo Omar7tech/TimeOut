@@ -7,11 +7,13 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { OpenCountdown } from '@/components/menu/open-countdown';
 import { SmartImage } from '@/components/smart-image';
 import { cartItemUnitUsd, useCart } from '@/contexts/cart-context';
 import { usePricing } from '@/hooks/use-pricing';
 import { getBestLocation } from '@/lib/geolocation';
 import type { LocationResult } from '@/lib/geolocation';
+import { useShopOpen } from '@/lib/shop';
 import { cn } from '@/lib/utils';
 import { buildOrderMessage, buildWhatsAppUrl } from '@/lib/whatsapp-order';
 
@@ -56,6 +58,7 @@ export function CartSheet() {
         clear,
     } = useCart();
     const pricing = usePricing();
+    const isOpen = useShopOpen();
     const { whatsappNumber, requireFullName, getClientLocation } =
         usePage().props;
     // Single-currency formatter for the per-item breakdown rows (USD when shown,
@@ -148,7 +151,9 @@ export function CartSheet() {
     };
 
     const handleCheckout = (): void => {
-        if (!whatsappNumber || items.length === 0) {
+        // The shop must be open to send an order; the closed state shows a
+        // countdown instead of the checkout button.
+        if (!whatsappNumber || items.length === 0 || !isOpen) {
             return;
         }
 
@@ -381,7 +386,58 @@ export function CartSheet() {
                                 </span>
                             </div>
 
-                            {confirmingClear ? (
+                            {!isOpen ? (
+                                <div className="flex flex-col gap-3 rounded-md border-2 border-dashed border-brand-red/60 p-3">
+                                    <div className="flex flex-col items-center gap-1 text-center">
+                                        <p className="text-sm font-extrabold tracking-wide uppercase">
+                                            We're closed
+                                            <span className="text-brand-red">
+                                                .
+                                            </span>
+                                        </p>
+                                        <p className="text-xs font-semibold text-muted-foreground">
+                                            Your cart is saved — order the moment
+                                            we reopen.
+                                        </p>
+                                    </div>
+
+                                    <OpenCountdown className="" />
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setConfirmingClear(true)}
+                                        className="inline-flex items-center justify-center gap-1.5 self-center text-xs font-extrabold tracking-wide text-muted-foreground uppercase transition-colors hover:text-brand-red"
+                                    >
+                                        <Trash2 className="size-3.5" />
+                                        Clear cart
+                                    </button>
+
+                                    {confirmingClear && (
+                                        <div className="flex gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setConfirmingClear(false)
+                                                }
+                                                className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    clear();
+                                                    setConfirmingClear(false);
+                                                }}
+                                                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                            >
+                                                <Trash2 className="size-4" />
+                                                Clear
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : confirmingClear ? (
                                 <div className="flex flex-col gap-2 rounded-md border-2 border-dashed border-brand-red/60 p-2.5">
                                     <p className="text-center text-sm font-bold">
                                         Clear all items from your cart?

@@ -6,6 +6,7 @@ import {
     nextOpening,
     useShop,
 } from '@/lib/shop';
+import { cn } from '@/lib/utils';
 
 /** Pad a number to two digits for the clock. */
 function pad(value: number): string {
@@ -53,11 +54,11 @@ function Colon() {
 }
 
 /**
- * Live "opens in…" clock for the landing page. Renders only when the shop runs
- * on the automatic schedule and is currently closed, ticking down to the next
- * opening time.
+ * Live "opens in…" clock. Renders only when the shop runs on the automatic
+ * schedule and is currently closed, ticking down to the next opening time.
+ * Pass `className` to override the default landing-page container styling.
  */
-export function OpenCountdown() {
+export function OpenCountdown({ className }: { className?: string }) {
     const shop = useShop();
     const [now, setNow] = useState(() => new Date());
 
@@ -87,7 +88,13 @@ export function OpenCountdown() {
     const seconds = totalSeconds % 60;
 
     return (
-        <div className="mt-4 flex flex-col items-center gap-2 border-t-2 border-dashed border-black/15 pt-4">
+        <div
+            className={cn(
+                'flex flex-col items-center gap-2',
+                className ??
+                    'mt-4 border-t-2 border-dashed border-black/15 pt-4',
+            )}
+        >
             <p className="text-[11px] font-black tracking-widest text-brand-red uppercase">
                 Opens {whenLabel(target, now)} ·{' '}
                 {formatTime(`${target.getHours()}:${pad(target.getMinutes())}`)}
