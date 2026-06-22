@@ -22,6 +22,7 @@ declare module '@inertiajs/core' {
             socials: Social[];
             onlineOrderingActive: boolean;
             whatsappNumber: string | null;
+            requireFullName: boolean;
             sidebarOpen: boolean;
             [key: string]: unknown;
         };

@@ -83,6 +83,11 @@ class GeneralSettings extends Settings
      */
     public ?string $whatsapp_number;
 
+    /**
+     * Whether customers must provide their full name before sending an order.
+     */
+    public bool $require_full_name;
+
     public static function group(): string
     {
         return 'general';

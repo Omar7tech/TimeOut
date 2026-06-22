@@ -211,6 +211,15 @@ class ManageGeneral extends SettingsPage
                                     ->visibleJs(<<<'JS'
                                         $get('online_ordering_active')
                                         JS),
+
+                                Toggle::make('require_full_name')
+                                    ->label('Require full name - طلب الاسم الكامل')
+                                    ->helperText('Ask the customer for their name before sending the order. - اطلب اسم الزبون قبل إرسال الطلب.')
+                                    ->default(false)
+                                    ->columnSpanFull()
+                                    ->visibleJs(<<<'JS'
+                                        $get('online_ordering_active')
+                                        JS),
                             ]),
 
                         Tab::make('Social - التواصل')

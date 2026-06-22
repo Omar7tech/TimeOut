@@ -12,6 +12,30 @@ import { usePricing } from '@/hooks/use-pricing';
 import { cn } from '@/lib/utils';
 import { buildOrderMessage, buildWhatsAppUrl } from '@/lib/whatsapp-order';
 
+const NAME_STORAGE_KEY = 'timeout-customer-name';
+
+/** The customer name remembered from a previous order, if any. */
+function readStoredName(): string {
+    if (typeof window === 'undefined') {
+        return '';
+    }
+
+    try {
+        return window.localStorage.getItem(NAME_STORAGE_KEY) ?? '';
+    } catch {
+        return '';
+    }
+}
+
+/** Remember the customer name so it can be pre-filled on the next order. */
+function storeName(name: string): void {
+    try {
+        window.localStorage.setItem(NAME_STORAGE_KEY, name);
+    } catch {
+        // Ignore storage failures (e.g. private mode quota).
+    }
+}
+
 /**
  * Responsive cart: a bottom sheet on mobile and a centered modal on desktop.
  * Lists items with quantity steppers and a currency-aware subtotal.
@@ -29,7 +53,7 @@ export function CartSheet() {
         clear,
     } = useCart();
     const pricing = usePricing();
-    const whatsappNumber = usePage().props.whatsappNumber;
+    const { whatsappNumber, requireFullName } = usePage().props;
     // Single-currency formatter for the per-item breakdown rows (USD when shown,
     // otherwise LBP), keeping the breakdown compact.
     const fmtPrimary = (usd: number): string =>
@@ -39,6 +63,9 @@ export function CartSheet() {
         items.length > 0 ? pricing.deliveryFeeUsd : null;
     const totalUsd = subtotalUsd + (deliveryFeeUsd ?? 0);
     const [confirmingClear, setConfirmingClear] = useState(false);
+    // The name-entry step shown before checkout when a full name is required.
+    const [enteringName, setEnteringName] = useState(false);
+    const [name, setName] = useState<string>(readStoredName);
 
     // Auto-dismiss the clear confirmation after a few seconds.
     useEffect(() => {
@@ -59,10 +86,11 @@ export function CartSheet() {
 
         if (!next) {
             setConfirmingClear(false);
+            setEnteringName(false);
         }
     };
 
-    const handleCheckout = (): void => {
+    const sendOrder = (customerName?: string | null): void => {
         if (!whatsappNumber || items.length === 0) {
             return;
         }
@@ -73,6 +101,7 @@ export function CartSheet() {
             subtotalUsd,
             deliveryFeeUsd,
             totalUsd,
+            customerName,
         });
 
         window.open(
@@ -80,6 +109,34 @@ export function CartSheet() {
             '_blank',
             'noopener,noreferrer',
         );
+    };
+
+    const handleCheckout = (): void => {
+        if (!whatsappNumber || items.length === 0) {
+            return;
+        }
+
+        // Collect the customer's name first when the shop requires it.
+        if (requireFullName) {
+            setEnteringName(true);
+
+            return;
+        }
+
+        sendOrder();
+    };
+
+    const handleConfirmName = (): void => {
+        const trimmed = name.trim();
+
+        if (trimmed === '') {
+            return;
+        }
+
+        storeName(trimmed);
+        setName(trimmed);
+        setEnteringName(false);
+        sendOrder(trimmed);
     };
 
     return (
@@ -320,6 +377,55 @@ export function CartSheet() {
                                         </button>
                                     </div>
                                 </div>
+                            ) : enteringName ? (
+                                <form
+                                    onSubmit={(event) => {
+                                        event.preventDefault();
+                                        handleConfirmName();
+                                    }}
+                                    className="flex flex-col gap-2 rounded-md border-2 border-dashed border-brand-red/60 p-2.5"
+                                >
+                                    <label
+                                        htmlFor="checkout-name"
+                                        className="text-sm font-extrabold tracking-wide uppercase"
+                                    >
+                                        Your name
+                                    </label>
+                                    <input
+                                        id="checkout-name"
+                                        type="text"
+                                        autoFocus
+                                        value={name}
+                                        onChange={(event) =>
+                                            setName(event.target.value)
+                                        }
+                                        placeholder="e.g. Omar"
+                                        className="w-full rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-bold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                    />
+                                    <div className="flex gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setEnteringName(false)
+                                            }
+                                            className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                        >
+                                            Back
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            disabled={name.trim() === ''}
+                                            className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_#000]"
+                                        >
+                                            <img
+                                                src="/social-icons/whatsapp.svg"
+                                                alt=""
+                                                className="size-5 brightness-0 invert"
+                                            />
+                                            Send order
+                                        </button>
+                                    </div>
+                                </form>
                             ) : (
                                 <div className="flex gap-2">
                                     <button

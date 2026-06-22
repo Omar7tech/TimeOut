@@ -9,6 +9,8 @@ type OrderSummary = {
     /** Delivery charge in USD, or null when none applies. */
     deliveryFeeUsd: number | null;
     totalUsd: number;
+    /** The customer's name, included when full name is required. */
+    customerName?: string | null;
 };
 
 /**
@@ -42,9 +44,14 @@ export function buildOrderMessage({
     subtotalUsd,
     deliveryFeeUsd,
     totalUsd,
+    customerName,
 }: OrderSummary): string {
     const divider = '———————————————';
     const lines: string[] = ['🛒 *New Order — Time Out Snack*', ''];
+
+    if (customerName && customerName.trim() !== '') {
+        lines.push(`👤 *Name:* ${customerName.trim()}`, '');
+    }
 
     items.forEach((item, index) => {
         const lineTotalUsd = cartItemUnitUsd(item) * item.quantity;

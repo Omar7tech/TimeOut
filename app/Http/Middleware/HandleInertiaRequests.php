@@ -73,6 +73,8 @@ class HandleInertiaRequests extends Middleware
             'onlineOrderingActive' => $settings->online_ordering_active,
             // The WhatsApp number orders are sent to (only while ordering is active).
             'whatsappNumber' => $settings->online_ordering_active ? $settings->whatsapp_number : null,
+            // Whether the customer must provide their full name before ordering.
+            'requireFullName' => $settings->require_full_name,
             'socials' => collect($settings->social_links)
                 ->map(fn (array $link): ?array => ($platform = SocialPlatform::tryFrom($link['platform'] ?? ''))
                     ? [
