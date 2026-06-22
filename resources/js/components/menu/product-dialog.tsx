@@ -1,4 +1,4 @@
-import { Minus, Plus, ShoppingCart, Star } from 'lucide-react';
+import { Clock, Minus, Plus, ShoppingCart, Star } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { ProductPrice } from '@/components/menu/product-price';
 import { VariantSelector } from '@/components/menu/variant-selector';
@@ -132,6 +132,13 @@ export function ProductDialog({
                                 {product.subtitle}
                             </p>
                         )}
+                        {product.preparation_time !== null &&
+                            product.preparation_time > 0 && (
+                                <span className="mt-1 inline-flex w-fit items-center gap-1.5 rounded-md border-2 border-black bg-brand-red px-2 py-0.5 text-xs font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000]">
+                                    <Clock className="size-3.5" />
+                                    Ready in ~{product.preparation_time} min
+                                </span>
+                            )}
                     </DialogHeader>
 
                     {product.description && (
