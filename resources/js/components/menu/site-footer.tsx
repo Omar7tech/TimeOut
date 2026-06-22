@@ -1,3 +1,4 @@
+import { usePage } from '@inertiajs/react';
 import { BrandLogo } from '@/components/brand-logo';
 import { FooterHours } from '@/components/menu/footer-hours';
 import type { Category } from '@/types';
@@ -8,17 +9,13 @@ interface SiteFooterProps {
     onSelectCategory?: (id: number) => void;
 }
 
-const socials = [
-    { label: 'Instagram', href: 'https://instagram.com' },
-    { label: 'Facebook', href: 'https://facebook.com' },
-    { label: 'Call us', href: 'tel:+961' },
-] as const;
-
 /**
  * Footer that mirrors the header: the same cream zigzag band, logo, and uppercase
  * type. A torn-paper edge runs along the top so it reads as the page's closing strip.
  */
 export function SiteFooter({ categories, onSelectCategory }: SiteFooterProps) {
+    const socials = usePage().props.socials;
+
     return (
         <footer className="footer-zigzag mt-16 pt-12">
             <div className="mx-auto max-w-7xl px-4 pb-8 md:px-10">
@@ -58,25 +55,33 @@ export function SiteFooter({ categories, onSelectCategory }: SiteFooterProps) {
                     <FooterHours />
 
                     {/* Socials */}
-                    <nav>
-                        <h3 className="mb-3 text-xs font-black tracking-widest text-brand-red uppercase">
-                            Follow
-                        </h3>
-                        <ul className="flex flex-col gap-1.5">
-                            {socials.map((social) => (
-                                <li key={social.label}>
-                                    <a
-                                        href={social.href}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="text-sm font-bold tracking-wide text-foreground/70 uppercase transition-colors hover:text-foreground"
-                                    >
-                                        {social.label}
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
-                    </nav>
+                    {socials.length > 0 && (
+                        <nav>
+                            <h3 className="mb-3 text-xs font-black tracking-widest text-brand-red uppercase">
+                                Follow
+                            </h3>
+                            <ul className="flex items-center gap-3">
+                                {socials.map((social) => (
+                                    <li key={social.platform}>
+                                        <a
+                                            href={social.url}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            aria-label={social.label}
+                                            title={social.label}
+                                            className="flex size-10 items-center justify-center rounded-full bg-foreground/5 transition-colors hover:bg-foreground/10"
+                                        >
+                                            <img
+                                                src={social.icon}
+                                                alt=""
+                                                className="size-6"
+                                            />
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </nav>
+                    )}
                 </div>
 
                 <div className="mt-10 flex flex-col items-center justify-between gap-1 border-t-2 border-black/10 pt-4 text-xs font-bold tracking-wide text-muted-foreground uppercase md:flex-row">

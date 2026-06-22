@@ -63,6 +63,16 @@ class GeneralSettings extends Settings
      */
     public PriceDisplay $price_display;
 
+    /**
+     * The social media links shown in the storefront footer. Each entry is a
+     * single platform paired with its URL, shaped `['platform' => string, 'url' => string]`.
+     * Each platform may appear at most once.
+     *
+     * Note: no `@var` value type is declared because spatie/laravel-settings cannot
+     * resolve a complex array-shape docblock here (it would throw at runtime).
+     */
+    public array $social_links; // @phpstan-ignore missingType.iterableValue
+
     public static function group(): string
     {
         return 'general';

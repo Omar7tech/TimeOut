@@ -4,12 +4,14 @@ namespace App\Filament\Pages;
 
 use App\Enums\PriceDisplay;
 use App\Enums\ShopStatusMode;
+use App\Enums\SocialPlatform;
 use App\Enums\Weekday;
 use App\Settings\GeneralSettings;
 use BackedEnum;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\Toggle;
@@ -186,6 +188,43 @@ class ManageGeneral extends SettingsPage
 
                                         return $value !== PriceDisplay::USD->value && ! $lbpReady;
                                     }),
+                            ]),
+
+                        Tab::make('Social - التواصل')
+                            ->icon(Heroicon::OutlinedShare)
+                            ->schema([
+                                Repeater::make('social_links')
+                                    ->label('Social media links - روابط مواقع التواصل')
+                                    ->helperText('These appear in the storefront footer. Each platform can be added once. - تظهر هذه في تذييل الواجهة. يمكن إضافة كل منصة مرة واحدة.')
+                                    ->addActionLabel('Add link - إضافة رابط')
+                                    ->maxItems(count(SocialPlatform::cases()))
+                                    ->columnSpanFull()
+                                    ->itemLabel(function (array $state): ?string {
+                                        $platform = $state['platform'] ?? null;
+
+                                        if ($platform instanceof SocialPlatform) {
+                                            return $platform->getLabel();
+                                        }
+
+                                        return is_string($platform) ? SocialPlatform::tryFrom($platform)?->getLabel() : null;
+                                    })
+                                    ->schema([
+                                        Select::make('platform')
+                                            ->label('Platform - المنصة')
+                                            ->validationAttribute('platform')
+                                            ->options(SocialPlatform::class)
+                                            ->required()
+                                            ->disableOptionsWhenSelectedInSiblingRepeaterItems()
+                                            ->columnSpanFull(),
+
+                                        TextInput::make('url')
+                                            ->label('Link - الرابط')
+                                            ->validationAttribute('link')
+                                            ->url()
+                                            ->required()
+                                            ->maxLength(255)
+                                            ->columnSpanFull(),
+                                    ]),
                             ]),
                     ]),
             ]);

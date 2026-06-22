@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\SocialPlatform;
 use App\Settings\GeneralSettings;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -67,6 +68,18 @@ class HandleInertiaRequests extends Middleware
                 'lbpRate' => $lbpEnabled ? (float) $settings->lbp_exchange_rate : null,
                 'deliveryFeeUsd' => $settings->charge_delivery ? (float) $settings->delivery_fee : null,
             ],
+            'socials' => collect($settings->social_links)
+                ->map(fn (array $link): ?array => ($platform = SocialPlatform::tryFrom($link['platform'] ?? ''))
+                    ? [
+                        'platform' => $platform->value,
+                        'label' => $platform->getName(),
+                        'url' => $link['url'],
+                        'icon' => $platform->getIconPath(),
+                    ]
+                    : null)
+                ->filter()
+                ->values()
+                ->all(),
         ];
     }
 }
