@@ -15,7 +15,6 @@ import type { ProductCardViewProps } from './types';
 export function SpotlightCard({
     product,
     enableCart,
-    image,
     rtl,
     variants,
     hasVariants,
@@ -26,6 +25,10 @@ export function SpotlightCard({
     onOpen,
     onQuickAdd,
 }: ProductCardViewProps) {
+    // The large hero needs the full-resolution webp, not the small thumbnail the
+    // compact designs use; fall back to the thumb only when there's no full image.
+    const hero = product.image ?? product.thumb;
+
     return (
         <div className="group flex h-full flex-col overflow-hidden rounded-xl border-2 border-black bg-card text-card-foreground shadow-[5px_5px_0_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-1 hover:shadow-[8px_8px_0_0_#000]">
             <button
@@ -34,9 +37,9 @@ export function SpotlightCard({
                 aria-label="View details"
                 className="relative block w-full cursor-pointer overflow-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
             >
-                {image ? (
+                {hero ? (
                     <SmartImage
-                        src={image}
+                        src={hero}
                         alt={product.title}
                         className="aspect-[4/3] w-full"
                         imgClassName="object-cover transition-transform duration-500 group-hover:scale-110"
