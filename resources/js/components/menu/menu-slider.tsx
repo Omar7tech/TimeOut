@@ -133,20 +133,17 @@ export function MenuSlider({ slides, enableCart = false }: MenuSliderProps) {
                             ? isArabic(productTitle)
                             : false;
                         const rtlText = text ? isArabic(text) : false;
-                        const rtlAlign = text ? rtlText : rtlTitle;
 
                         const caption =
                             productTitle || text ? (
-                                <span
-                                    className={cn(
-                                        'pointer-events-none absolute inset-x-0 bottom-0 flex flex-col gap-1.5 bg-gradient-to-t from-black/70 to-transparent p-2.5',
-                                        rtlAlign ? 'items-end' : 'items-start',
-                                    )}
-                                >
+                                <span className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col gap-1.5 bg-gradient-to-t from-black/70 to-transparent p-2.5">
                                     {slide.product && productTitle && (
                                         <span
                                             dir={rtlTitle ? 'rtl' : undefined}
-                                            className="inline-flex items-center gap-1 rounded-md bg-brand-red px-2 py-1 text-[11px] font-extrabold tracking-wide text-white uppercase shadow-sm"
+                                            className={cn(
+                                                'inline-flex items-center gap-1 rounded-md bg-brand-red px-2 py-1 text-[11px] font-extrabold tracking-wide text-white uppercase shadow-sm',
+                                                rtlTitle ? 'self-end' : 'self-start',
+                                            )}
                                         >
                                             {productTitle}
                                             {rtlTitle ? (
@@ -159,7 +156,12 @@ export function MenuSlider({ slides, enableCart = false }: MenuSliderProps) {
                                     {text && (
                                         <span
                                             dir={rtlText ? 'rtl' : undefined}
-                                            className="text-sm font-semibold text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]"
+                                            className={cn(
+                                                'text-sm font-semibold text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]',
+                                                rtlText
+                                                    ? 'self-end text-right'
+                                                    : 'self-start text-left',
+                                            )}
                                         >
                                             {text}
                                         </span>
