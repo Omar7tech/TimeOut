@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Enums\BannerMode;
 use App\Enums\PriceDisplay;
+use App\Enums\ProductCardDesign;
 use App\Enums\ShopStatusMode;
 use App\Enums\SocialPlatform;
 use App\Enums\Weekday;
@@ -293,6 +294,18 @@ class ManageGeneral extends SettingsPage
                         Tab::make('Menu - القائمة')
                             ->icon(Heroicon::OutlinedListBullet)
                             ->schema([
+                                Radio::make('product_card_design')
+                                    ->label('Product card design - تصميم بطاقة المنتج')
+                                    ->validationAttribute('product card design')
+                                    ->helperText('Choose how product cards look on the storefront menu. - اختر شكل بطاقات المنتجات في القائمة.')
+                                    ->options(ProductCardDesign::class)
+                                    ->descriptions(collect(ProductCardDesign::cases())
+                                        ->mapWithKeys(fn (ProductCardDesign $design): array => [$design->value => $design->getDescription()])
+                                        ->all())
+                                    ->default(ProductCardDesign::CLASSIC->value)
+                                    ->required()
+                                    ->columnSpanFull(),
+
                                 Toggle::make('show_product_schedule')
                                     ->label('Show weekly product schedule - عرض جدول المنتجات الأسبوعي')
                                     ->helperText('Adds a schedule view to the menu so customers can see which scheduled items are available each day. - يضيف عرض جدول إلى القائمة ليرى الزبائن المنتجات المتاحة في كل يوم.')

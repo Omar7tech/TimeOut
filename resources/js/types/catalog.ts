@@ -1,5 +1,8 @@
 export type OrderType = 'dine_in' | 'takeaway' | 'both';
 
+/** The visual layout used to render product cards on the storefront menu. */
+export type ProductCardDesign = 'classic' | 'spotlight' | 'minimal';
+
 export type ProductVariant = {
     name: string;
     price: number;

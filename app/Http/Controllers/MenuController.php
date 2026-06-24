@@ -52,6 +52,7 @@ class MenuController extends Controller
             'orderTypeLabel' => $orderType->getLabel(),
             'categories' => CategoryResource::collection($categories)->resolve(),
             'showSchedule' => $settings->show_product_schedule,
+            'cardDesign' => $settings->product_card_design->value,
             // The weekly schedule is only built (and queried) when the feature is on.
             'schedule' => $settings->show_product_schedule
                 ? $this->weeklySchedule($orderType)

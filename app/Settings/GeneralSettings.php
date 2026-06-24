@@ -4,6 +4,7 @@ namespace App\Settings;
 
 use App\Enums\BannerMode;
 use App\Enums\PriceDisplay;
+use App\Enums\ProductCardDesign;
 use App\Enums\ShopStatusMode;
 use App\Enums\Weekday;
 use Carbon\CarbonInterface;
@@ -118,6 +119,11 @@ class GeneralSettings extends Settings
     public bool $show_product_schedule;
 
     /**
+     * The visual layout used to render product cards on the storefront menu.
+     */
+    public ProductCardDesign $product_card_design;
+
+    /**
      * Whether the floating WhatsApp chat badge is shown on the storefront.
      */
     public bool $show_whatsapp_badge;
@@ -141,6 +147,7 @@ class GeneralSettings extends Settings
             'status_mode' => new EnumCast(ShopStatusMode::class),
             'price_display' => new EnumCast(PriceDisplay::class),
             'banner_mode' => new EnumCast(BannerMode::class),
+            'product_card_design' => new EnumCast(ProductCardDesign::class),
         ];
     }
 
