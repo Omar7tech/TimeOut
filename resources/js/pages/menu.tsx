@@ -6,6 +6,7 @@ import { CategoryAddonsDialog } from '@/components/menu/category-addons-dialog';
 import { CategoryGrid } from '@/components/menu/category-grid';
 import { FilterPills } from '@/components/menu/filter-pills';
 import type { MenuFilter } from '@/components/menu/filter-pills';
+import { MenuSlider } from '@/components/menu/menu-slider';
 import { OrderTypeSwitch } from '@/components/menu/order-type-switch';
 import { ProductCard } from '@/components/menu/product-card';
 import { SiteBanner } from '@/components/menu/site-banner';
@@ -14,13 +15,14 @@ import { SiteHeader } from '@/components/menu/site-header';
 import { WeeklySchedule } from '@/components/menu/weekly-schedule';
 import { WhatsAppFab } from '@/components/menu/whatsapp-fab';
 import { CartProvider } from '@/contexts/cart-context';
-import type { OrderType, Product, ScheduleDay } from '@/types';
+import type { OrderType, Product, ScheduleDay, Slide } from '@/types';
 import type { Category } from '@/types';
 
 interface MenuProps {
     orderType: OrderType;
     orderTypeLabel: string;
     categories: Category[];
+    slides: Slide[];
     showSchedule: boolean;
     schedule: ScheduleDay[] | null;
 }
@@ -54,6 +56,7 @@ export default function Menu({
     orderType,
     orderTypeLabel,
     categories,
+    slides,
     showSchedule,
     schedule,
 }: MenuProps) {
@@ -175,6 +178,8 @@ export default function Menu({
             <SiteHeader showCart={cartEnabled} />
 
             <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6">
+                <MenuSlider slides={slides} enableCart={cartEnabled} />
+
                 <div className="flex items-center justify-between gap-3">
                     <h1 className="min-w-0 truncate text-xl font-black uppercase md:text-2xl">
                         {menuTitle}

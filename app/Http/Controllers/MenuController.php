@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Enums\OrderType;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\SlideResource;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Slide;
 use App\Settings\GeneralSettings;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -51,6 +54,7 @@ class MenuController extends Controller
             'orderType' => $orderType->value,
             'orderTypeLabel' => $orderType->getLabel(),
             'categories' => CategoryResource::collection($categories)->resolve(),
+            'slides' => SlideResource::collection($this->activeSlides())->resolve(),
             'showSchedule' => $settings->show_product_schedule,
             'cardDesign' => $settings->product_card_design->value,
             // The weekly schedule is only built (and queried) when the feature is on.
@@ -58,6 +62,21 @@ class MenuController extends Controller
                 ? $this->weeklySchedule($orderType)
                 : null,
         ]);
+    }
+
+    /**
+     * The active carousel slides in display order, with the linked product (and
+     * its category, for add-ons) eager-loaded for the storefront slider.
+     *
+     * @return Collection<int, Slide>
+     */
+    private function activeSlides(): Collection
+    {
+        return Slide::query()
+            ->where('is_active', true)
+            ->with(['media', 'product.media', 'product.category'])
+            ->orderBy('sort_order')
+            ->get();
     }
 
     /**

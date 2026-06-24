@@ -34,6 +34,17 @@ export type CategoryAddon = {
     price: number;
 };
 
+/**
+ * A storefront carousel slide. When `product` is set the slide is clickable and
+ * opens that product's details; otherwise it's a plain decorative image.
+ */
+export type Slide = {
+    id: number;
+    image: string | null;
+    product: Product | null;
+    addons: CategoryAddon[] | null;
+};
+
 /** Products available on a single weekday. `day` is ISO (1 = Monday .. 7 = Sunday). */
 export type ScheduleDay = {
     day: number;
