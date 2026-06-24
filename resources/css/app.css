@@ -158,33 +158,6 @@
     }
 }
 
-/* Brand-red main page scrollbar on desktop (pointer devices with real scrollbars). */
-@media (min-width: 768px) {
-    html {
-        scrollbar-color: var(--brand-red) transparent;
-        scrollbar-width: thin;
-    }
-
-    html::-webkit-scrollbar {
-        width: 12px;
-    }
-
-    html::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    html::-webkit-scrollbar-thumb {
-        background-color: var(--brand-red);
-        border-radius: 9999px;
-        /* Inset the thumb with a cream border so it reads as a pill. */
-        border: 3px solid var(--background);
-    }
-
-    html::-webkit-scrollbar-thumb:hover {
-        background-color: #c81720;
-    }
-}
-
 /*
  * Header band with a torn-paper zigzag along its bottom edge. The colored fill
  * lives on a pseudo-element so the header content stays unmasked, and the teeth
