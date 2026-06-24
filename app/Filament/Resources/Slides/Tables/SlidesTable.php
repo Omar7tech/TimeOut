@@ -24,6 +24,11 @@ class SlidesTable
                     ->label('Image')
                     ->collection('image')
                     ->conversion('slider'),
+                TextColumn::make('text')
+                    ->label('Text')
+                    ->placeholder('—')
+                    ->limit(30)
+                    ->wrap(),
                 TextColumn::make('product.title')
                     ->label('Links to')
                     ->badge()

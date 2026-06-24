@@ -124,6 +124,49 @@ export function MenuSlider({ slides, enableCart = false }: MenuSliderProps) {
                             <div className="aspect-[16/9] w-full bg-muted" />
                         );
 
+                        // The product button (red chip) and, under it, the slide's
+                        // optional custom text as plain larger text. Overlay aligns
+                        // to the side that matches the text's language.
+                        const productTitle = slide.product?.title ?? null;
+                        const text = slide.text ?? null;
+                        const rtlTitle = productTitle
+                            ? isArabic(productTitle)
+                            : false;
+                        const rtlText = text ? isArabic(text) : false;
+                        const rtlAlign = text ? rtlText : rtlTitle;
+
+                        const caption =
+                            productTitle || text ? (
+                                <span
+                                    className={cn(
+                                        'pointer-events-none absolute inset-x-0 bottom-0 flex flex-col gap-1.5 bg-gradient-to-t from-black/70 to-transparent p-2.5',
+                                        rtlAlign ? 'items-end' : 'items-start',
+                                    )}
+                                >
+                                    {slide.product && productTitle && (
+                                        <span
+                                            dir={rtlTitle ? 'rtl' : undefined}
+                                            className="inline-flex items-center gap-1 rounded-md bg-brand-red px-2 py-1 text-[11px] font-extrabold tracking-wide text-white uppercase shadow-sm"
+                                        >
+                                            {productTitle}
+                                            {rtlTitle ? (
+                                                <ChevronLeft className="size-3.5" />
+                                            ) : (
+                                                <ChevronRight className="size-3.5" />
+                                            )}
+                                        </span>
+                                    )}
+                                    {text && (
+                                        <span
+                                            dir={rtlText ? 'rtl' : undefined}
+                                            className="text-sm font-semibold text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]"
+                                        >
+                                            {text}
+                                        </span>
+                                    )}
+                                </span>
+                            ) : null;
+
                         return (
                             <div
                                 key={slide.id}
@@ -137,34 +180,12 @@ export function MenuSlider({ slides, enableCart = false }: MenuSliderProps) {
                                         className="relative block w-full cursor-pointer overflow-hidden rounded-lg shadow-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                     >
                                         {image}
-                                        <span
-                                            className={cn(
-                                                'pointer-events-none absolute inset-x-0 bottom-0 flex items-end bg-gradient-to-t from-black/65 to-transparent p-2.5',
-                                                isArabic(slide.product.title)
-                                                    ? 'justify-end'
-                                                    : 'justify-start',
-                                            )}
-                                        >
-                                            <span
-                                                dir={
-                                                    isArabic(slide.product.title)
-                                                        ? 'rtl'
-                                                        : undefined
-                                                }
-                                                className="inline-flex items-center gap-1 rounded-md bg-brand-red px-2 py-1 text-[11px] font-extrabold tracking-wide text-white uppercase shadow-sm"
-                                            >
-                                                {slide.product.title}
-                                                {isArabic(slide.product.title) ? (
-                                                    <ChevronLeft className="size-3.5" />
-                                                ) : (
-                                                    <ChevronRight className="size-3.5" />
-                                                )}
-                                            </span>
-                                        </span>
+                                        {caption}
                                     </button>
                                 ) : (
-                                    <div className="block w-full overflow-hidden rounded-lg shadow-sm">
+                                    <div className="relative block w-full overflow-hidden rounded-lg shadow-sm">
                                         {image}
+                                        {caption}
                                     </div>
                                 )}
                             </div>

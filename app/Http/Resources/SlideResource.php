@@ -24,6 +24,7 @@ class SlideResource extends JsonResource
 
         return [
             'id' => $this->id,
+            'text' => $this->text,
             'image' => $this->getFirstMediaUrl('image', 'slider') ?: ($this->getFirstMediaUrl('image') ?: null),
             'product' => $product ? (new ProductResource($product))->resolve() : null,
             // Add-ons come from the linked product's category, so the details

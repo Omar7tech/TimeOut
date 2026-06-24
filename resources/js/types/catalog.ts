@@ -40,6 +40,8 @@ export type CategoryAddon = {
  */
 export type Slide = {
     id: number;
+    /** Optional caption overlaid on the slide image. */
+    text: string | null;
     image: string | null;
     product: Product | null;
     addons: CategoryAddon[] | null;
