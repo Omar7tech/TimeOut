@@ -78,19 +78,26 @@ export function ProductCard({
         <div className="group flex min-w-0 flex-col rounded-lg border-2 border-neutral-700 bg-card p-2.5 text-card-foreground shadow-[4px_4px_0_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000]">
             <div className="flex gap-3">
                 {image && (
-                    <SmartImage
-                        src={image}
-                        alt={product.title}
-                        className="size-20 shrink-0 rounded-md md:size-28"
-                        imgClassName="object-cover transition-transform duration-300 group-hover:scale-105"
-                        draggable={false}
+                    <button
+                        type="button"
+                        onClick={() => setOpen(true)}
+                        aria-label="View details"
+                        className="shrink-0 cursor-pointer rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                     >
-                        {product.available_today && (
-                            <span className="absolute top-1 left-1 rounded border border-black bg-brand-yellow px-1 py-0.5 text-[9px] font-extrabold tracking-wide text-black uppercase">
-                                Today
-                            </span>
-                        )}
-                    </SmartImage>
+                        <SmartImage
+                            src={image}
+                            alt={product.title}
+                            className="size-20 rounded-md md:size-28"
+                            imgClassName="object-cover transition-transform duration-300 group-hover:scale-105"
+                            draggable={false}
+                        >
+                            {product.available_today && (
+                                <span className="absolute top-1 left-1 rounded border border-black bg-brand-yellow px-1 py-0.5 text-[9px] font-extrabold tracking-wide text-black uppercase">
+                                    Today
+                                </span>
+                            )}
+                        </SmartImage>
+                    </button>
                 )}
 
                 <div className="flex min-w-0 flex-1 flex-col">
