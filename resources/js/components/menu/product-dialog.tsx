@@ -97,7 +97,7 @@ export function ProductDialog({
                 and only the description scrolls within its own bounds. */}
             <DialogContent className="gap-0 overflow-y-hidden p-0">
                 {image ? (
-                    <div className="shrink-0 px-5 pt-2">
+                    <div className="shrink-0 px-5 pt-2 sm:pt-14">
                         <SmartImage
                             src={image}
                             alt={product.title}
