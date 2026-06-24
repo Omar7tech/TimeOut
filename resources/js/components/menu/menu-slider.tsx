@@ -116,7 +116,7 @@ export function MenuSlider({ slides, enableCart = false }: MenuSliderProps) {
                                 src={slide.image}
                                 alt={slide.product?.title ?? 'Featured'}
                                 className="aspect-[16/9] w-full"
-                                imgClassName="object-cover transition-transform duration-500 group-hover:scale-105"
+                                imgClassName="object-cover"
                                 loading="eager"
                                 draggable={false}
                             />
@@ -134,7 +134,7 @@ export function MenuSlider({ slides, enableCart = false }: MenuSliderProps) {
                                         type="button"
                                         onClick={() => openSlide(slide)}
                                         aria-label={`View ${slide.product.title}`}
-                                        className="group relative block w-full cursor-pointer overflow-hidden rounded-lg border-2 border-black shadow-[3px_3px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                        className="relative block w-full cursor-pointer overflow-hidden rounded-lg border-2 border-black shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                     >
                                         {image}
                                         <span className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end bg-gradient-to-t from-black/65 to-transparent p-2.5">
