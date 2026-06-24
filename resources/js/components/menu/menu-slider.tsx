@@ -138,7 +138,7 @@ export function MenuSlider({ slides, enableCart = false }: MenuSliderProps) {
                                     >
                                         {image}
                                         <span className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end bg-gradient-to-t from-black/65 to-transparent p-2.5">
-                                            <span className="inline-flex items-center gap-1 rounded-md border-2 border-black bg-brand-yellow px-2 py-1 text-[11px] font-extrabold tracking-wide text-black uppercase shadow-[2px_2px_0_0_#000]">
+                                            <span className="inline-flex items-center gap-1 rounded-md bg-brand-red px-2 py-1 text-[11px] font-extrabold tracking-wide text-white uppercase shadow-sm">
                                                 {slide.product.title}
                                                 <ChevronRight className="size-3.5" />
                                             </span>
