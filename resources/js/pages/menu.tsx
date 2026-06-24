@@ -1,4 +1,5 @@
 import { Head } from '@inertiajs/react';
+import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { CartSheet } from '@/components/menu/cart-sheet';
 import { CategoryAddonsDialog } from '@/components/menu/category-addons-dialog';
@@ -62,6 +63,25 @@ export default function Menu({
     const [active, setActive] = useState<MenuFilter | null>(() =>
         readFilterFromUrl(categories),
     );
+
+    // The weekly schedule renders every scheduled product card across all days,
+    // which can block the click. Paint a spinner first, then mount the heavy
+    // content on the next frames so the filter switch feels instant.
+    const [scheduleLoading, setScheduleLoading] = useState(false);
+
+    useEffect(() => {
+        if (active !== 'schedule') {
+            return;
+        }
+
+        setScheduleLoading(true);
+
+        let frame = requestAnimationFrame(() => {
+            frame = requestAnimationFrame(() => setScheduleLoading(false));
+        });
+
+        return () => cancelAnimationFrame(frame);
+    }, [active]);
 
     useEffect(() => {
         const url = new URL(window.location.href);
@@ -166,7 +186,11 @@ export default function Menu({
                             </h2>
                         </div>
 
-                        {schedule && schedule.length > 0 ? (
+                        {scheduleLoading ? (
+                            <div className="flex justify-center py-16">
+                                <Loader2 className="size-8 animate-spin text-brand-red" />
+                            </div>
+                        ) : schedule && schedule.length > 0 ? (
                             <WeeklySchedule
                                 schedule={schedule}
                                 enableCart={cartEnabled}
