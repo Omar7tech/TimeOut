@@ -54,7 +54,7 @@ class MenuController extends Controller
             'orderType' => $orderType->value,
             'orderTypeLabel' => $orderType->getLabel(),
             'categories' => CategoryResource::collection($categories)->resolve(),
-            'slides' => SlideResource::collection($this->activeSlides())->resolve(),
+            'slides' => SlideResource::collection($this->activeSlides($orderType))->resolve(),
             'showSchedule' => $settings->show_product_schedule,
             'cardDesign' => $settings->product_card_design->value,
             // The weekly schedule is only built (and queried) when the feature is on.
@@ -68,15 +68,29 @@ class MenuController extends Controller
      * The active carousel slides in display order, with the linked product (and
      * its category, for add-ons) eager-loaded for the storefront slider.
      *
+     * Slides linked to a product are only kept while that product is available
+     * now for this menu: an inactive product, a scheduled one that isn't offered
+     * today, or one whose order type doesn't match this menu (e.g. a delivery
+     * item on the dine-in menu) is hidden, so the slider never points to
+     * something a customer can't get here. Plain image slides (no product)
+     * always show.
+     *
      * @return Collection<int, Slide>
      */
-    private function activeSlides(): Collection
+    private function activeSlides(OrderType $orderType): Collection
     {
+        $allowedTypes = [$orderType, OrderType::BOTH];
+
         return Slide::query()
             ->where('is_active', true)
             ->with(['media', 'product.media', 'product.category'])
             ->orderBy('sort_order')
-            ->get();
+            ->get()
+            ->filter(fn (Slide $slide): bool => $slide->product === null || (
+                $slide->product->isAvailableNow()
+                && in_array($slide->product->order_type, $allowedTypes, true)
+            ))
+            ->values();
     }
 
     /**
