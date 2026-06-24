@@ -1,4 +1,11 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import type { ReactNode } from 'react';
 
 export type CartAddon = {
@@ -49,11 +56,16 @@ function addonsSignature(addons: CartAddon[]): string {
         .join(',');
 }
 
-type CartContextValue = {
+/** Cart data that changes as items are added or the sheet is toggled. */
+type CartState = {
     items: CartItem[];
     count: number;
     subtotalUsd: number;
     open: boolean;
+};
+
+/** Cart mutators with stable identities, safe to depend on without re-renders. */
+type CartActions = {
     setOpen: (open: boolean) => void;
     addItem: (input: AddToCartInput) => void;
     increment: (key: string) => void;
@@ -62,7 +74,13 @@ type CartContextValue = {
     clear: () => void;
 };
 
-const CartContext = createContext<CartContextValue | null>(null);
+type CartContextValue = CartState & CartActions;
+
+// State and actions are kept in separate contexts so components that only fire
+// actions (e.g. a product card's "add to cart") don't re-render when the cart
+// contents change — only the components reading cart state do.
+const CartStateContext = createContext<CartState | null>(null);
+const CartActionsContext = createContext<CartActions | null>(null);
 
 const STORAGE_KEY = 'timeout-cart';
 
@@ -101,100 +119,116 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
     }, [items]);
 
-    const value = useMemo<CartContextValue>(() => {
-        const addItem = (input: AddToCartInput): void => {
-            const addons = (input.addons ?? []).filter(
-                (addon) => addon.quantity > 0,
-            );
-            const signature = addonsSignature(addons);
-            const key = `${input.productId}:${input.variantIndex ?? 'base'}${
-                signature ? `:${signature}` : ''
-            }`;
+    const addItem = useCallback((input: AddToCartInput): void => {
+        const addons = (input.addons ?? []).filter(
+            (addon) => addon.quantity > 0,
+        );
+        const signature = addonsSignature(addons);
+        const key = `${input.productId}:${input.variantIndex ?? 'base'}${
+            signature ? `:${signature}` : ''
+        }`;
 
-            setItems((previous) => {
-                const existing = previous.find((item) => item.key === key);
+        setItems((previous) => {
+            const existing = previous.find((item) => item.key === key);
 
-                if (existing) {
-                    return previous.map((item) =>
-                        item.key === key
-                            ? { ...item, quantity: item.quantity + 1 }
-                            : item,
-                    );
-                }
-
-                return [
-                    ...previous,
-                    {
-                        key,
-                        productId: input.productId,
-                        title: input.title,
-                        variantName: input.variantName,
-                        unitUsd: input.unitUsd,
-                        addons,
-                        image: input.image,
-                        quantity: 1,
-                    },
-                ];
-            });
-
-            setOpen(true);
-        };
-
-        const increment = (key: string): void => {
-            setItems((previous) =>
-                previous.map((item) =>
+            if (existing) {
+                return previous.map((item) =>
                     item.key === key
                         ? { ...item, quantity: item.quantity + 1 }
                         : item,
-                ),
-            );
-        };
+                );
+            }
 
-        const decrement = (key: string): void => {
-            setItems((previous) =>
-                previous
-                    .map((item) =>
-                        item.key === key
-                            ? { ...item, quantity: item.quantity - 1 }
-                            : item,
-                    )
-                    .filter((item) => item.quantity > 0),
-            );
-        };
+            return [
+                ...previous,
+                {
+                    key,
+                    productId: input.productId,
+                    title: input.title,
+                    variantName: input.variantName,
+                    unitUsd: input.unitUsd,
+                    addons,
+                    image: input.image,
+                    quantity: 1,
+                },
+            ];
+        });
 
-        const removeItem = (key: string): void => {
-            setItems((previous) => previous.filter((item) => item.key !== key));
-        };
+        setOpen(true);
+    }, []);
 
-        const clear = (): void => setItems([]);
+    const increment = useCallback((key: string): void => {
+        setItems((previous) =>
+            previous.map((item) =>
+                item.key === key
+                    ? { ...item, quantity: item.quantity + 1 }
+                    : item,
+            ),
+        );
+    }, []);
 
-        return {
+    const decrement = useCallback((key: string): void => {
+        setItems((previous) =>
+            previous
+                .map((item) =>
+                    item.key === key
+                        ? { ...item, quantity: item.quantity - 1 }
+                        : item,
+                )
+                .filter((item) => item.quantity > 0),
+        );
+    }, []);
+
+    const removeItem = useCallback((key: string): void => {
+        setItems((previous) => previous.filter((item) => item.key !== key));
+    }, []);
+
+    const clear = useCallback((): void => setItems([]), []);
+
+    const actions = useMemo<CartActions>(
+        () => ({ setOpen, addItem, increment, decrement, removeItem, clear }),
+        [addItem, increment, decrement, removeItem, clear],
+    );
+
+    const state = useMemo<CartState>(
+        () => ({
             items,
             count: items.reduce((total, item) => total + item.quantity, 0),
             subtotalUsd: items.reduce(
-                (total, item) =>
-                    total + cartItemUnitUsd(item) * item.quantity,
+                (total, item) => total + cartItemUnitUsd(item) * item.quantity,
                 0,
             ),
             open,
-            setOpen,
-            addItem,
-            increment,
-            decrement,
-            removeItem,
-            clear,
-        };
-    }, [items, open]);
+        }),
+        [items, open],
+    );
 
-    return <CartContext value={value}>{children}</CartContext>;
+    return (
+        <CartActionsContext value={actions}>
+            <CartStateContext value={state}>{children}</CartStateContext>
+        </CartActionsContext>
+    );
 }
 
-export function useCart(): CartContextValue {
-    const context = useContext(CartContext);
+/** Cart mutators only; identity is stable so consumers don't re-render. */
+export function useCartActions(): CartActions {
+    const context = useContext(CartActionsContext);
 
     if (context === null) {
-        throw new Error('useCart must be used within a CartProvider.');
+        throw new Error('useCartActions must be used within a CartProvider.');
     }
 
     return context;
+}
+
+/** Cart state plus actions; re-renders when the cart contents change. */
+export function useCart(): CartContextValue {
+    const state = useContext(CartStateContext);
+    const actions = useContext(CartActionsContext);
+
+    if (state === null || actions === null) {
+        throw new Error('useCart must be used within a CartProvider.');
+    }
+
+    return { ...state, ...actions };
 }

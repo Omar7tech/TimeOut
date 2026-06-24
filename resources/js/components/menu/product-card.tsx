@@ -1,12 +1,12 @@
 import { Eye, ShoppingCart, Star } from 'lucide-react';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { DietIcons } from '@/components/menu/diet-icons';
 import { ProductDialog } from '@/components/menu/product-dialog';
 import { ProductPrice } from '@/components/menu/product-price';
 import { VariantSelector } from '@/components/menu/variant-selector';
 import { SmartImage } from '@/components/smart-image';
 import type { CartAddon } from '@/contexts/cart-context';
-import { useCart } from '@/contexts/cart-context';
+import { useCartActions } from '@/contexts/cart-context';
 import { cn, isArabic } from '@/lib/utils';
 import type { CategoryAddon, Product } from '@/types';
 
@@ -22,12 +22,12 @@ interface ProductCardProps {
  * Compact menu item card: thumbnail, single-line title/subtitle/description,
  * price, and quick actions. The "View" action opens the full details modal.
  */
-export function ProductCard({
+function ProductCardComponent({
     product,
     addons = [],
     enableCart = false,
 }: ProductCardProps) {
-    const { addItem } = useCart();
+    const { addItem } = useCartActions();
     const variants = product.variants ?? [];
     const hasVariants = variants.length > 0;
 
@@ -203,3 +203,9 @@ export function ProductCard({
         </div>
     );
 }
+
+/**
+ * Memoized so cart mutations elsewhere (which don't change this card's props)
+ * don't re-render the whole product grid.
+ */
+export const ProductCard = memo(ProductCardComponent);

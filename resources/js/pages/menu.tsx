@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CartSheet } from '@/components/menu/cart-sheet';
 import { CategoryAddonsDialog } from '@/components/menu/category-addons-dialog';
 import { CategoryGrid } from '@/components/menu/category-grid';
@@ -113,33 +113,58 @@ export default function Menu({
         window.history.replaceState(window.history.state, '', url);
     }, [active, categories]);
 
-    let heading = '';
-    let products: Product[] = [];
-    let activeCategory: Category | null = null;
-    // Each product's add-ons come from its own category, so the mixed "today"
-    // view can still surface the right extras per item.
-    const addonsByProduct = new Map<number, Category['addons']>();
+    // Derive the visible products, heading and per-product add-ons for the active
+    // filter. Memoized so this only recomputes when the filter or data changes,
+    // not on unrelated re-renders (e.g. the schedule loading toggle).
+    const { heading, products, activeCategory, addonsByProduct } = useMemo(() => {
+        // Each product's add-ons come from its own category, so the mixed "today"
+        // view can still surface the right extras per item.
+        const byProduct = new Map<number, Category['addons']>();
 
-    if (active === 'today') {
-        heading = 'Today - اليوم';
+        if (active === 'today') {
+            const todayProducts: Product[] = [];
 
-        for (const category of categories) {
-            for (const product of category.products ?? []) {
-                if (product.available_today) {
-                    products.push(product);
-                    addonsByProduct.set(product.id, category.addons);
+            for (const category of categories) {
+                for (const product of category.products ?? []) {
+                    if (product.available_today) {
+                        todayProducts.push(product);
+                        byProduct.set(product.id, category.addons);
+                    }
                 }
             }
-        }
-    } else if (typeof active === 'number') {
-        activeCategory = categories.find((item) => item.id === active) ?? null;
-        heading = activeCategory?.title ?? '';
-        products = activeCategory?.products ?? [];
 
-        for (const product of products) {
-            addonsByProduct.set(product.id, activeCategory?.addons ?? null);
+            return {
+                heading: 'Today - اليوم',
+                products: todayProducts,
+                activeCategory: null as Category | null,
+                addonsByProduct: byProduct,
+            };
         }
-    }
+
+        if (typeof active === 'number') {
+            const category =
+                categories.find((item) => item.id === active) ?? null;
+            const categoryProducts = category?.products ?? [];
+
+            for (const product of categoryProducts) {
+                byProduct.set(product.id, category?.addons ?? null);
+            }
+
+            return {
+                heading: category?.title ?? '',
+                products: categoryProducts,
+                activeCategory: category,
+                addonsByProduct: byProduct,
+            };
+        }
+
+        return {
+            heading: '',
+            products: [] as Product[],
+            activeCategory: null as Category | null,
+            addonsByProduct: byProduct,
+        };
+    }, [active, categories]);
 
     return (
         <CartProvider>
