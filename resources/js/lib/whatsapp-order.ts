@@ -1,7 +1,7 @@
 import { cartItemUnitUsd } from '@/contexts/cart-context';
 import type { CartItem } from '@/contexts/cart-context';
-import type { LocationResult } from '@/lib/geolocation';
 import type { PriceParts } from '@/hooks/use-pricing';
+import type { LocationResult } from '@/lib/geolocation';
 
 type OrderSummary = {
     items: CartItem[];

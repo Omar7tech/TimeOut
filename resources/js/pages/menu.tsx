@@ -66,22 +66,28 @@ export default function Menu({
 
     // The weekly schedule renders every scheduled product card across all days,
     // which can block the click. Paint a spinner first, then mount the heavy
-    // content on the next frames so the filter switch feels instant.
+    // content on the next frames so the filter switch feels instant. The loading
+    // flag is raised during render (when switching to the schedule) and cleared
+    // from a rAF callback, so we never call setState synchronously in an effect.
     const [scheduleLoading, setScheduleLoading] = useState(false);
+    const [prevActive, setPrevActive] = useState(active);
+
+    if (active !== prevActive) {
+        setPrevActive(active);
+        setScheduleLoading(active === 'schedule');
+    }
 
     useEffect(() => {
-        if (active !== 'schedule') {
+        if (!scheduleLoading) {
             return;
         }
-
-        setScheduleLoading(true);
 
         let frame = requestAnimationFrame(() => {
             frame = requestAnimationFrame(() => setScheduleLoading(false));
         });
 
         return () => cancelAnimationFrame(frame);
-    }, [active]);
+    }, [scheduleLoading]);
 
     useEffect(() => {
         const url = new URL(window.location.href);

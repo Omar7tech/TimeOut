@@ -1,14 +1,14 @@
 import { usePage } from '@inertiajs/react';
 import { MapPin, Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { OpenCountdown } from '@/components/menu/open-countdown';
+import { SmartImage } from '@/components/smart-image';
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { OpenCountdown } from '@/components/menu/open-countdown';
-import { SmartImage } from '@/components/smart-image';
 import { cartItemUnitUsd, useCart } from '@/contexts/cart-context';
 import { usePricing } from '@/hooks/use-pricing';
 import { getBestLocation } from '@/lib/geolocation';
