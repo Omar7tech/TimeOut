@@ -114,7 +114,7 @@ export function ProductDialog({
                     </div>
                 ) : (
                     // Keep the close button clear of the title when there's no image.
-                    <div className="h-2 shrink-0" />
+                    <div className="h-10 shrink-0 sm:h-12" />
                 )}
 
                 {/* Details column. Title, variants, extras and the footer stay
