@@ -134,7 +134,7 @@ export function MenuSlider({ slides, enableCart = false }: MenuSliderProps) {
                                         type="button"
                                         onClick={() => openSlide(slide)}
                                         aria-label={`View ${slide.product.title}`}
-                                        className="relative block w-full cursor-pointer overflow-hidden rounded-lg border-2 border-black shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                        className="relative block w-full cursor-pointer overflow-hidden rounded-lg shadow-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                     >
                                         {image}
                                         <span className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end bg-gradient-to-t from-black/65 to-transparent p-2.5">
@@ -145,7 +145,7 @@ export function MenuSlider({ slides, enableCart = false }: MenuSliderProps) {
                                         </span>
                                     </button>
                                 ) : (
-                                    <div className="block w-full overflow-hidden rounded-lg border-2 border-black shadow-[3px_3px_0_0_#000]">
+                                    <div className="block w-full overflow-hidden rounded-lg shadow-sm">
                                         {image}
                                     </div>
                                 )}
