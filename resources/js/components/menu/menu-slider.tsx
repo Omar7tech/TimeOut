@@ -1,12 +1,12 @@
 import Autoplay from 'embla-carousel-autoplay';
 import useEmblaCarousel from 'embla-carousel-react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { ProductDialog } from '@/components/menu/product-dialog';
 import { SmartImage } from '@/components/smart-image';
 import type { CartAddon } from '@/contexts/cart-context';
 import { useCartActions } from '@/contexts/cart-context';
-import { cn } from '@/lib/utils';
+import { cn, isArabic } from '@/lib/utils';
 import type { Slide } from '@/types';
 
 interface MenuSliderProps {
@@ -137,10 +137,28 @@ export function MenuSlider({ slides, enableCart = false }: MenuSliderProps) {
                                         className="relative block w-full cursor-pointer overflow-hidden rounded-lg shadow-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                     >
                                         {image}
-                                        <span className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end bg-gradient-to-t from-black/65 to-transparent p-2.5">
-                                            <span className="inline-flex items-center gap-1 rounded-md bg-brand-red px-2 py-1 text-[11px] font-extrabold tracking-wide text-white uppercase shadow-sm">
+                                        <span
+                                            className={cn(
+                                                'pointer-events-none absolute inset-x-0 bottom-0 flex items-end bg-gradient-to-t from-black/65 to-transparent p-2.5',
+                                                isArabic(slide.product.title)
+                                                    ? 'justify-end'
+                                                    : 'justify-start',
+                                            )}
+                                        >
+                                            <span
+                                                dir={
+                                                    isArabic(slide.product.title)
+                                                        ? 'rtl'
+                                                        : undefined
+                                                }
+                                                className="inline-flex items-center gap-1 rounded-md bg-brand-red px-2 py-1 text-[11px] font-extrabold tracking-wide text-white uppercase shadow-sm"
+                                            >
                                                 {slide.product.title}
-                                                <ChevronRight className="size-3.5" />
+                                                {isArabic(slide.product.title) ? (
+                                                    <ChevronLeft className="size-3.5" />
+                                                ) : (
+                                                    <ChevronRight className="size-3.5" />
+                                                )}
                                             </span>
                                         </span>
                                     </button>
