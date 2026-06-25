@@ -1,5 +1,6 @@
 import { Head } from '@inertiajs/react';
 import { BoardSlider } from '@/components/menu/board-slider';
+import { useWakeLock } from '@/hooks/use-wake-lock';
 import type { Slide } from '@/types';
 
 interface BoardProps {
@@ -21,6 +22,9 @@ interface BoardProps {
  * cart — nothing here is meant to be touched.
  */
 export default function Board({ screen, slides }: BoardProps) {
+    // Keep the TV awake for as long as the board is open.
+    useWakeLock();
+
     return (
         <>
             <Head title={`${screen.name} - Menu Board`} />
