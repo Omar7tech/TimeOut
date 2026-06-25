@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -22,13 +23,13 @@ class BoardSlide extends Model implements HasMedia
     use InteractsWithMedia;
 
     /**
-     * The board this slide is shown on.
+     * The boards this slide is shown on. A slide can be shared across many.
      *
-     * @return BelongsTo<DisplayScreen, $this>
+     * @return BelongsToMany<DisplayScreen, $this>
      */
-    public function displayScreen(): BelongsTo
+    public function displayScreens(): BelongsToMany
     {
-        return $this->belongsTo(DisplayScreen::class);
+        return $this->belongsToMany(DisplayScreen::class)->withPivot('sort_order');
     }
 
     /**
@@ -56,6 +57,18 @@ class BoardSlide extends Model implements HasMedia
             ->format('webp')
             ->quality(80)
             ->fit(Fit::Max, 1600, 900);
+    }
+
+    /**
+     * A human-readable label for the slide, used in admin lists where a slide
+     * has no caption of its own.
+     *
+     * @return Attribute<string, never>
+     */
+    protected function title(): Attribute
+    {
+        return Attribute::get(fn (): string => $this->text
+            ?: ($this->product_id !== null ? $this->product->title : 'Slide #'.$this->id));
     }
 
     /**
@@ -109,7 +122,6 @@ class BoardSlide extends Model implements HasMedia
         return [
             'is_active' => 'boolean',
             'custom_schedule' => 'boolean',
-            'sort_order' => 'integer',
         ];
     }
 }

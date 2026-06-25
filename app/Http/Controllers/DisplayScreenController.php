@@ -19,7 +19,7 @@ class DisplayScreenController extends Controller
         abort_unless($displayScreen->is_active, 404);
 
         $slides = $displayScreen->slides()
-            ->where('is_active', true)
+            ->where('board_slides.is_active', true)
             ->with(['media', 'product.media', 'product.category'])
             ->get()
             // A product-linked slide follows its product's availability (hidden

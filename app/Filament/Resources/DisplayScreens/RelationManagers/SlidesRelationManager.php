@@ -2,10 +2,13 @@
 
 namespace App\Filament\Resources\DisplayScreens\RelationManagers;
 
+use Filament\Actions\AttachAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\DetachAction;
+use Filament\Actions\DetachBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Select;
@@ -98,7 +101,7 @@ class SlidesRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('text')
+            ->recordTitleAttribute('title')
             ->reorderable('sort_order')
             ->defaultSort('sort_order')
             ->columns([
@@ -138,13 +141,24 @@ class SlidesRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make(),
+                // Reuse a slide that already exists on another board.
+                AttachAction::make()
+                    ->label('Attach existing slide')
+                    ->multiple()
+                    ->preloadRecordSelect()
+                    ->recordSelectOptionsQuery(fn (Builder $query): Builder => $query->with('product'))
+                    ->recordSelectSearchColumns(['text']),
             ])
             ->recordActions([
                 EditAction::make(),
+                // Detach removes the slide from this board only; delete removes
+                // the shared slide everywhere.
+                DetachAction::make(),
                 DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    DetachBulkAction::make(),
                     DeleteBulkAction::make(),
                 ]),
             ]);

@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Enums\ScreenOrientation;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\Sluggable\Attributes\Sluggable;
 
 /**
@@ -22,13 +22,18 @@ class DisplayScreen extends Model
     }
 
     /**
-     * The slides this screen cycles through, in display order.
+     * The slides this screen cycles through, in per-board display order.
      *
-     * @return HasMany<BoardSlide, $this>
+     * Slides are shared: the same slide can belong to several boards, each with
+     * its own ordering held on the pivot.
+     *
+     * @return BelongsToMany<BoardSlide, $this>
      */
-    public function slides(): HasMany
+    public function slides(): BelongsToMany
     {
-        return $this->hasMany(BoardSlide::class)->orderBy('sort_order');
+        return $this->belongsToMany(BoardSlide::class)
+            ->withPivot('sort_order')
+            ->orderByPivot('sort_order');
     }
 
     protected $casts = [
