@@ -22,12 +22,16 @@ enum BoardLayout: string implements HasDescription, HasIcon, HasLabel
     /** Full-bleed image with the details in a solid centered bottom bar. */
     case BANNER = 'banner';
 
+    /** Several products at once in a grid, cycling pages when there are many. */
+    case GRID = 'grid';
+
     public function getLabel(): string
     {
         return match ($this) {
             self::SPOTLIGHT => 'Spotlight',
             self::SPLIT => 'Split',
             self::BANNER => 'Banner',
+            self::GRID => 'Grid',
         };
     }
 
@@ -37,6 +41,7 @@ enum BoardLayout: string implements HasDescription, HasIcon, HasLabel
             self::SPOTLIGHT => 'Full-screen image with the details over a soft gradient at the bottom.',
             self::SPLIT => 'Image on one half, the product details on a solid panel beside it.',
             self::BANNER => 'Full-screen image with the details centered in a solid bar along the bottom.',
+            self::GRID => 'Several products at once in a grid; pages cycle when there are many.',
         };
     }
 
@@ -46,6 +51,7 @@ enum BoardLayout: string implements HasDescription, HasIcon, HasLabel
             self::SPOTLIGHT => Heroicon::OutlinedSparkles,
             self::SPLIT => Heroicon::OutlinedViewColumns,
             self::BANNER => Heroicon::OutlinedRectangleGroup,
+            self::GRID => Heroicon::OutlinedSquares2x2,
         };
     }
 }

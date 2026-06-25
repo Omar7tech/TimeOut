@@ -4,7 +4,7 @@ export type OrderType = 'dine_in' | 'takeaway' | 'both';
 export type ProductCardDesign = 'classic' | 'spotlight' | 'minimal';
 
 /** The visual style a Menu Board uses to present each slide on the TV. */
-export type BoardLayout = 'spotlight' | 'split' | 'banner';
+export type BoardLayout = 'spotlight' | 'split' | 'banner' | 'grid';
 
 export type ProductVariant = {
     name: string;

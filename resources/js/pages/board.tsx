@@ -1,4 +1,5 @@
 import { Head } from '@inertiajs/react';
+import { BoardGrid } from '@/components/menu/board-grid';
 import { BoardSlider } from '@/components/menu/board-slider';
 import { useWakeLock } from '@/hooks/use-wake-lock';
 import type { BoardLayout, Slide } from '@/types';
@@ -43,19 +44,25 @@ export default function Board({ screen, slides }: BoardProps) {
                     />
                 )}
 
-                {slides.length > 0 ? (
+                {slides.length === 0 ? (
+                    <div className="grid h-full place-items-center">
+                        <p className="text-lg font-semibold text-white/60">
+                            No slides yet.
+                        </p>
+                    </div>
+                ) : screen.layout === 'grid' ? (
+                    <BoardGrid
+                        slides={slides}
+                        rotationSeconds={screen.rotation_seconds}
+                        showPrices={screen.display_prices}
+                    />
+                ) : (
                     <BoardSlider
                         slides={slides}
                         rotationSeconds={screen.rotation_seconds}
                         showPrices={screen.display_prices}
                         layout={screen.layout}
                     />
-                ) : (
-                    <div className="grid h-full place-items-center">
-                        <p className="text-lg font-semibold text-white/60">
-                            No slides yet.
-                        </p>
-                    </div>
                 )}
             </main>
         </>
