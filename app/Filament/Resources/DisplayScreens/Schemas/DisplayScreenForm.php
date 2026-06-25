@@ -39,6 +39,7 @@ class DisplayScreenForm
                             ->helperText('How each slide is presented on the screen.')
                             ->options(BoardLayout::class)
                             ->default(BoardLayout::SPOTLIGHT)
+                            ->native(false)
                             ->required(),
 
                         TextInput::make('rotation_seconds')
