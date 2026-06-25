@@ -33,6 +33,7 @@ class DisplayScreenController extends Controller
                 'name' => $displayScreen->name,
                 'orientation' => $displayScreen->orientation->value,
                 'rotation_seconds' => $displayScreen->rotation_seconds,
+                'display_prices' => $displayScreen->display_prices,
             ],
             'slides' => SlideResource::collection($slides)->resolve(),
         ]);

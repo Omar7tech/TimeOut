@@ -12,6 +12,8 @@ interface BoardSliderProps {
     slides: Slide[];
     /** Seconds each slide stays on screen before auto-advancing. */
     rotationSeconds: number;
+    /** Whether product slides show their prices. */
+    showPrices: boolean;
 }
 
 /**
@@ -21,7 +23,11 @@ interface BoardSliderProps {
  * shows that product's details (title, description, diet markers and every
  * variant price); plain slides show just the image and optional caption.
  */
-export function BoardSlider({ slides, rotationSeconds }: BoardSliderProps) {
+export function BoardSlider({
+    slides,
+    rotationSeconds,
+    showPrices,
+}: BoardSliderProps) {
     // Clamp to a sane floor so a misconfigured 0 can't freeze on one slide.
     const delay = Math.max(rotationSeconds, 2) * 1000;
     const plugins = useMemo(
@@ -56,7 +62,7 @@ export function BoardSlider({ slides, rotationSeconds }: BoardSliderProps) {
                         key={slide.id}
                         className="relative flex h-full min-w-0 flex-[0_0_100%] items-stretch"
                     >
-                        <BoardSlideView slide={slide} />
+                        <BoardSlideView slide={slide} showPrices={showPrices} />
                     </div>
                 ))}
             </div>
@@ -64,7 +70,13 @@ export function BoardSlider({ slides, rotationSeconds }: BoardSliderProps) {
     );
 }
 
-function BoardSlideView({ slide }: { slide: Slide }) {
+function BoardSlideView({
+    slide,
+    showPrices,
+}: {
+    slide: Slide;
+    showPrices: boolean;
+}) {
     const product = slide.product;
     const image = slide.image ? (
         <SmartImage
@@ -102,13 +114,21 @@ function BoardSlideView({ slide }: { slide: Slide }) {
                     </p>
                 )}
 
-                {product && <ProductDetails product={product} />}
+                {product && (
+                    <ProductDetails product={product} showPrices={showPrices} />
+                )}
             </div>
         </div>
     );
 }
 
-function ProductDetails({ product }: { product: Product }) {
+function ProductDetails({
+    product,
+    showPrices,
+}: {
+    product: Product;
+    showPrices: boolean;
+}) {
     const variants = product.variants ?? [];
     const hasVariants = variants.length > 0;
     const rtl = isArabic(product.title);
@@ -155,37 +175,38 @@ function ProductDetails({ product }: { product: Product }) {
                 </p>
             )}
 
-            {hasVariants ? (
-                <div
-                    className={cn(
-                        'mt-1 flex flex-wrap gap-3',
-                        rtl && 'justify-end',
-                    )}
-                >
-                    {variants.map((variant, index) => (
-                        <div
-                            key={index}
-                            className="flex items-center gap-3 rounded-xl border-2 border-black bg-black/40 px-4 py-2.5 backdrop-blur-sm"
-                        >
-                            <span className="text-lg font-bold tracking-wide text-white uppercase md:text-xl">
-                                {variant.name}
-                            </span>
-                            <ProductPrice
-                                basePrice={variant.price}
-                                discountPrice={variant.discount_price}
-                                size="lg"
-                            />
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                <ProductPrice
-                    basePrice={product.price}
-                    discountPrice={product.discount_price}
-                    size="lg"
-                    className="mt-1 text-2xl md:text-3xl"
-                />
-            )}
+            {showPrices &&
+                (hasVariants ? (
+                    <div
+                        className={cn(
+                            'mt-1 flex flex-wrap gap-3',
+                            rtl && 'justify-end',
+                        )}
+                    >
+                        {variants.map((variant, index) => (
+                            <div
+                                key={index}
+                                className="flex items-center gap-3 rounded-xl border-2 border-black bg-black/40 px-4 py-2.5 backdrop-blur-sm"
+                            >
+                                <span className="text-lg font-bold tracking-wide text-white uppercase md:text-xl">
+                                    {variant.name}
+                                </span>
+                                <ProductPrice
+                                    basePrice={variant.price}
+                                    discountPrice={variant.discount_price}
+                                    size="lg"
+                                />
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <ProductPrice
+                        basePrice={product.price}
+                        discountPrice={product.discount_price}
+                        size="lg"
+                        className="mt-1 text-2xl md:text-3xl"
+                    />
+                ))}
         </div>
     );
 }

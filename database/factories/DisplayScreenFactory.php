@@ -26,6 +26,7 @@ class DisplayScreenFactory extends Factory
             'slug' => Str::slug($name).'-'.$this->faker->unique()->numberBetween(1, 99999),
             'orientation' => ScreenOrientation::LANDSCAPE,
             'rotation_seconds' => 6,
+            'display_prices' => true,
             'is_active' => true,
             'sort_order' => 0,
         ];

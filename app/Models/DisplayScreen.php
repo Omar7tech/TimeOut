@@ -39,6 +39,7 @@ class DisplayScreen extends Model
     protected $casts = [
         'orientation' => ScreenOrientation::class,
         'rotation_seconds' => 'integer',
+        'display_prices' => 'boolean',
         'is_active' => 'boolean',
         'sort_order' => 'integer',
     ];

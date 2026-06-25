@@ -8,6 +8,8 @@ interface BoardProps {
         orientation: 'landscape' | 'portrait';
         /** Seconds each slide stays on screen before auto-advancing. */
         rotation_seconds: number;
+        /** Whether product slides show their prices. */
+        display_prices: boolean;
     };
     slides: Slide[];
 }
@@ -28,6 +30,7 @@ export default function Board({ screen, slides }: BoardProps) {
                     <BoardSlider
                         slides={slides}
                         rotationSeconds={screen.rotation_seconds}
+                        showPrices={screen.display_prices}
                     />
                 ) : (
                     <div className="grid h-full place-items-center">

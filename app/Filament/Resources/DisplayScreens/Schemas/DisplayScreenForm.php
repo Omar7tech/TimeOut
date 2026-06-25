@@ -42,6 +42,12 @@ class DisplayScreenForm
                             ->default(6)
                             ->required(),
 
+                        Toggle::make('display_prices')
+                            ->label('Display prices')
+                            ->helperText('Show product prices on this board. Turn off for a promo-only screen.')
+                            ->default(true)
+                            ->inline(false),
+
                         Toggle::make('is_active')
                             ->label('Active')
                             ->default(true)
