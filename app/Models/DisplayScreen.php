@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\BoardLayout;
 use App\Enums\ScreenOrientation;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Model;
@@ -38,8 +39,10 @@ class DisplayScreen extends Model
 
     protected $casts = [
         'orientation' => ScreenOrientation::class,
+        'layout' => BoardLayout::class,
         'rotation_seconds' => 'integer',
         'display_prices' => 'boolean',
+        'show_logo' => 'boolean',
         'is_active' => 'boolean',
         'sort_order' => 'integer',
     ];

@@ -1,16 +1,20 @@
 import { Head } from '@inertiajs/react';
 import { BoardSlider } from '@/components/menu/board-slider';
 import { useWakeLock } from '@/hooks/use-wake-lock';
-import type { Slide } from '@/types';
+import type { BoardLayout, Slide } from '@/types';
 
 interface BoardProps {
     screen: {
         name: string;
         orientation: 'landscape' | 'portrait';
+        /** How each slide is presented on the screen. */
+        layout: BoardLayout;
         /** Seconds each slide stays on screen before auto-advancing. */
         rotation_seconds: number;
         /** Whether product slides show their prices. */
         display_prices: boolean;
+        /** Restaurant logo URL to overlay, or null when hidden. */
+        logo: string | null;
     };
     slides: Slide[];
 }
@@ -29,12 +33,22 @@ export default function Board({ screen, slides }: BoardProps) {
         <>
             <Head title={`${screen.name} - Menu Board`} />
 
-            <main className="h-screen w-screen overflow-hidden bg-black">
+            <main className="relative h-screen w-screen overflow-hidden bg-black">
+                {screen.logo && (
+                    <img
+                        src={screen.logo}
+                        alt="Logo"
+                        draggable={false}
+                        className="pointer-events-none absolute top-6 right-6 z-10 h-12 w-auto drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] md:top-10 md:right-10 md:h-20"
+                    />
+                )}
+
                 {slides.length > 0 ? (
                     <BoardSlider
                         slides={slides}
                         rotationSeconds={screen.rotation_seconds}
                         showPrices={screen.display_prices}
+                        layout={screen.layout}
                     />
                 ) : (
                     <div className="grid h-full place-items-center">

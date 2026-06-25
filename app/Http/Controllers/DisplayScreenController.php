@@ -34,8 +34,11 @@ class DisplayScreenController extends Controller
             'screen' => [
                 'name' => $displayScreen->name,
                 'orientation' => $displayScreen->orientation->value,
+                'layout' => $displayScreen->layout->value,
                 'rotation_seconds' => $displayScreen->rotation_seconds,
                 'display_prices' => $displayScreen->display_prices,
+                // The white logo suits the board's dark background.
+                'logo' => $displayScreen->show_logo ? asset('logos/timeout-logo.png') : null,
             ],
             'slides' => SlideResource::collection($slides)->resolve(),
         ]);
