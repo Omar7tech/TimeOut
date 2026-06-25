@@ -117,7 +117,6 @@ export function MenuSlider({ slides, enableCart = false }: MenuSliderProps) {
                                 alt={slide.product?.title ?? 'Featured'}
                                 className="aspect-[16/9] w-full"
                                 imgClassName="object-cover"
-                                loading="eager"
                                 draggable={false}
                             />
                         ) : (
