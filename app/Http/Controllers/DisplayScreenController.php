@@ -22,10 +22,12 @@ class DisplayScreenController extends Controller
             ->where('is_active', true)
             ->with(['media', 'product.media', 'product.category'])
             ->get()
-            // A slide linked to a product is only shown while that product is
-            // available now: a hidden product, or a scheduled one not offered
-            // today, hides the whole slide. Plain image slides always show.
-            ->filter(fn (BoardSlide $slide): bool => $slide->product === null || $slide->product->isAvailableNow())
+            // A product-linked slide follows its product's availability (hidden
+            // when inactive or not scheduled today). A plain slide follows its
+            // own optional custom weekday schedule.
+            ->filter(fn (BoardSlide $slide): bool => $slide->product !== null
+                ? $slide->product->isAvailableNow()
+                : $slide->isScheduledNow())
             ->values();
 
         return Inertia::render('board', [

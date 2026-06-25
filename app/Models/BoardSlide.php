@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Image\Enums\Fit;
@@ -57,12 +59,56 @@ class BoardSlide extends Model implements HasMedia
     }
 
     /**
+     * The ISO weekdays (1=Mon .. 7=Sun) a plain slide is shown on.
+     *
+     * Stored as a JSON array of integers so weekday lookups stay type-safe.
+     *
+     * @return Attribute<list<int>|null, list<int>|null>
+     */
+    protected function availableDays(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value): ?array => $value === null
+                ? null
+                : array_values(array_map(intval(...), json_decode($value, true))),
+            set: function (?array $value): ?string {
+                if ($value === null) {
+                    return null;
+                }
+
+                $encoded = json_encode(array_values(array_map(intval(...), $value)));
+
+                return $encoded === false ? null : $encoded;
+            },
+        );
+    }
+
+    /**
+     * Whether a plain (non-product) slide should show at the given moment.
+     *
+     * Product-linked slides follow their product's own availability, so this
+     * only governs plain slides: one without a custom schedule always shows;
+     * otherwise the moment's weekday must be one of its chosen days.
+     */
+    public function isScheduledNow(?CarbonInterface $moment = null): bool
+    {
+        if (! $this->custom_schedule) {
+            return true;
+        }
+
+        $moment ??= now();
+
+        return in_array($moment->dayOfWeekIso, $this->available_days ?? [], true);
+    }
+
+    /**
      * @return array<string, string>
      */
     protected function casts(): array
     {
         return [
             'is_active' => 'boolean',
+            'custom_schedule' => 'boolean',
             'sort_order' => 'integer',
         ];
     }
