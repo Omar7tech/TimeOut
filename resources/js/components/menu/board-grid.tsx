@@ -20,30 +20,27 @@ interface BoardGridProps {
 const MAX_PER_PAGE = 6;
 
 /**
- * "Grid" display style: shows several products at once. Product-linked slides
- * are laid out as cards; when there are more than fit on one screen the grid
- * pages through them, cycling on the board's rotation interval. The column count
- * adapts to how many products are on the page so 1–2 items read large while a
- * full screen stays tidy.
+ * "Grid" display style: shows several slides at once as cards. A product slide
+ * shows its photo, title and price; a plain slide shows its image (and caption,
+ * if any). When there are more than fit on one screen the grid pages through
+ * them, cycling on the board's rotation interval. The column count adapts to how
+ * many cards are on the page so 1–2 read large while a full screen stays tidy.
  *
  * Performance: the page split is memoized and only the first page's images load
- * eagerly. Cards use the high-quality webp conversion (the product's own photo,
- * falling back to the slide image).
+ * eagerly. Cards use the high-quality webp conversion.
  */
 export function BoardGrid({
     slides,
     rotationSeconds,
     showPrices,
 }: BoardGridProps) {
-    // Only product-linked slides belong in a product grid; plain promo images
-    // have no title/price to show here and are skipped.
+    // Every slide gets a card: product slides show details, plain slides show
+    // their image (and caption, if any).
     const pages = useMemo(() => {
-        const productSlides = slides.filter((slide) => slide.product !== null);
-
         const chunks: Slide[][] = [];
 
-        for (let i = 0; i < productSlides.length; i += MAX_PER_PAGE) {
-            chunks.push(productSlides.slice(i, i + MAX_PER_PAGE));
+        for (let i = 0; i < slides.length; i += MAX_PER_PAGE) {
+            chunks.push(slides.slice(i, i + MAX_PER_PAGE));
         }
 
         return chunks;
@@ -69,7 +66,7 @@ export function BoardGrid({
         return (
             <div className="grid h-full place-items-center">
                 <p className="text-lg font-semibold text-white/60">
-                    No products to show.
+                    No slides to show.
                 </p>
             </div>
         );
@@ -151,14 +148,10 @@ function GridCard({
 }) {
     const product = slide.product;
 
-    if (!product) {
-        return null;
-    }
-
     // Prefer the product's own webp photo; fall back to the slide image. Both
     // are high-quality webp conversions.
-    const image = product.image ?? slide.image;
-    const rtl = isArabic(product.title);
+    const image = product?.image ?? slide.image;
+    const rtl = isArabic(product?.title ?? slide.text ?? '');
 
     return (
         <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border-2 border-neutral-800 bg-neutral-900 shadow-lg">
@@ -166,7 +159,7 @@ function GridCard({
                 {image ? (
                     <SmartImage
                         src={image}
-                        alt={product.title}
+                        alt={product?.title ?? slide.text ?? 'Featured'}
                         className="absolute inset-0 h-full w-full"
                         imgClassName="object-cover"
                         loading={eager ? 'eager' : 'lazy'}
@@ -175,37 +168,57 @@ function GridCard({
                 ) : (
                     <div className="absolute inset-0 bg-neutral-800" />
                 )}
-                {product.is_featured && (
+                {product?.is_featured && (
                     <Star className="absolute top-3 right-3 size-7 fill-brand-yellow text-brand-yellow drop-shadow-md" />
                 )}
             </div>
 
-            <div
-                dir={rtl ? 'rtl' : undefined}
-                className={cn('flex flex-col gap-1.5 p-4', rtl && 'text-right')}
-            >
+            {product ? (
                 <div
+                    dir={rtl ? 'rtl' : undefined}
                     className={cn(
-                        'flex items-center gap-2',
-                        rtl && 'flex-row-reverse',
+                        'flex flex-col gap-1.5 p-4',
+                        rtl && 'text-right',
                     )}
                 >
-                    <h3 className="min-w-0 flex-1 truncate text-2xl leading-tight font-black text-white md:text-3xl">
-                        {product.title}
-                    </h3>
-                    <DietIcons product={product} iconClassName="size-6" />
-                </div>
-
-                {showPrices && (
-                    <div className={cn('flex', rtl && 'justify-end')}>
-                        <ProductPrice
-                            basePrice={product.price}
-                            discountPrice={product.discount_price}
-                            size="lg"
-                        />
+                    <div
+                        className={cn(
+                            'flex items-center gap-2',
+                            rtl && 'flex-row-reverse',
+                        )}
+                    >
+                        <h3 className="min-w-0 flex-1 truncate text-2xl leading-tight font-black text-white md:text-3xl">
+                            {product.title}
+                        </h3>
+                        <DietIcons product={product} iconClassName="size-6" />
                     </div>
-                )}
-            </div>
+
+                    {showPrices && (
+                        <div className={cn('flex', rtl && 'justify-end')}>
+                            <ProductPrice
+                                basePrice={product.price}
+                                discountPrice={product.discount_price}
+                                size="lg"
+                            />
+                        </div>
+                    )}
+                </div>
+            ) : (
+                // Plain slide: show its caption when it has one, else image only.
+                slide.text && (
+                    <div className="p-4">
+                        <h3
+                            dir={rtl ? 'rtl' : undefined}
+                            className={cn(
+                                'truncate text-2xl leading-tight font-black text-white md:text-3xl',
+                                rtl && 'text-right',
+                            )}
+                        >
+                            {slide.text}
+                        </h3>
+                    </div>
+                )
+            )}
         </div>
     );
 }
