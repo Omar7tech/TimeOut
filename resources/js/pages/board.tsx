@@ -1,5 +1,6 @@
 import { Head } from '@inertiajs/react';
 import { BoardGrid } from '@/components/menu/board-grid';
+import { BoardShowcase } from '@/components/menu/board-showcase';
 import { BoardSlider } from '@/components/menu/board-slider';
 import { useWakeLock } from '@/hooks/use-wake-lock';
 import type { BoardLayout, Slide } from '@/types';
@@ -52,6 +53,12 @@ export default function Board({ screen, slides }: BoardProps) {
                     </div>
                 ) : screen.layout === 'grid' ? (
                     <BoardGrid
+                        slides={slides}
+                        rotationSeconds={screen.rotation_seconds}
+                        showPrices={screen.display_prices}
+                    />
+                ) : screen.layout === 'showcase' ? (
+                    <BoardShowcase
                         slides={slides}
                         rotationSeconds={screen.rotation_seconds}
                         showPrices={screen.display_prices}

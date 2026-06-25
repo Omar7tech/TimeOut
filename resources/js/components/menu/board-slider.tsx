@@ -102,7 +102,7 @@ function BoardSlideView({
 }
 
 /** Default: full-bleed image with the details over a bottom gradient. */
-function SpotlightSlide({
+export function SpotlightSlide({
     slide,
     showPrices,
 }: {

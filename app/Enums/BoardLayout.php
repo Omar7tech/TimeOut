@@ -25,6 +25,9 @@ enum BoardLayout: string implements HasDescription, HasIcon, HasLabel
     /** Several products at once in a grid, cycling pages when there are many. */
     case GRID = 'grid';
 
+    /** A large rotating hero with a live sidebar of what's coming up next. */
+    case SHOWCASE = 'showcase';
+
     public function getLabel(): string
     {
         return match ($this) {
@@ -32,6 +35,7 @@ enum BoardLayout: string implements HasDescription, HasIcon, HasLabel
             self::SPLIT => 'Split',
             self::BANNER => 'Banner',
             self::GRID => 'Grid',
+            self::SHOWCASE => 'Showcase',
         };
     }
 
@@ -42,6 +46,7 @@ enum BoardLayout: string implements HasDescription, HasIcon, HasLabel
             self::SPLIT => 'Image on one half, the product details on a solid panel beside it.',
             self::BANNER => 'Full-screen image with the details centered in a solid bar along the bottom.',
             self::GRID => 'Several products at once in a grid; pages cycle when there are many.',
+            self::SHOWCASE => 'A large rotating feature with a live sidebar highlighting what is up next.',
         };
     }
 
@@ -52,6 +57,7 @@ enum BoardLayout: string implements HasDescription, HasIcon, HasLabel
             self::SPLIT => Heroicon::OutlinedViewColumns,
             self::BANNER => Heroicon::OutlinedRectangleGroup,
             self::GRID => Heroicon::OutlinedSquares2x2,
+            self::SHOWCASE => Heroicon::OutlinedQueueList,
         };
     }
 }
