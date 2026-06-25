@@ -22,9 +22,10 @@ class DisplayScreenController extends Controller
             ->where('is_active', true)
             ->with(['media', 'product.media', 'product.category'])
             ->get()
-            // Drop slides whose linked product was removed; SlideResource already
-            // degrades an inactive product to a plain image.
-            ->filter(fn (BoardSlide $slide): bool => $slide->product_id === null || $slide->product !== null)
+            // A slide linked to a product is only shown while that product is
+            // available now: a hidden product, or a scheduled one not offered
+            // today, hides the whole slide. Plain image slides always show.
+            ->filter(fn (BoardSlide $slide): bool => $slide->product === null || $slide->product->isAvailableNow())
             ->values();
 
         return Inertia::render('board', [

@@ -118,7 +118,11 @@ function ProductDetails({ product }: { product: Product }) {
             dir={rtl ? 'rtl' : undefined}
             className={cn(
                 'flex max-w-5xl flex-col gap-4',
-                rtl ? 'items-end text-right' : 'items-start',
+                // Anchor the whole block to the screen edge that matches the
+                // language: right for Arabic, left otherwise.
+                rtl
+                    ? 'items-end self-end text-right'
+                    : 'items-start self-start',
             )}
         >
             <div
