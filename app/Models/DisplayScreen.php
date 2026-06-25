@@ -3,9 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ScreenOrientation;
-use Database\Factories\DisplayScreenFactory;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Sluggable\Attributes\Sluggable;
@@ -18,9 +16,6 @@ use Spatie\Sluggable\Attributes\Sluggable;
 #[Guarded(['id'])]
 class DisplayScreen extends Model
 {
-    /** @use HasFactory<DisplayScreenFactory> */
-    use HasFactory;
-
     public function getRouteKeyName(): string
     {
         return 'slug';
