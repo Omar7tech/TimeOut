@@ -13,6 +13,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
@@ -86,6 +87,13 @@ class SlidesRelationManager extends RelationManager
                     ->color(fn ($state): string => $state ? 'success' : 'gray')
                     ->placeholder('Plain image')
                     ->formatStateUsing(fn (?string $state): string => $state ?? 'Plain image'),
+                TextColumn::make('schedule_status')
+                    ->label('Schedule')
+                    ->badge()
+                    ->color('warning')
+                    ->icon(Heroicon::OutlinedCalendarDays)
+                    ->placeholder('—')
+                    ->state(fn ($record): ?string => $record->product?->has_schedule ? 'Auto Scheduled' : null),
                 ToggleColumn::make('is_active')
                     ->label('Active')
                     ->sortable(),
