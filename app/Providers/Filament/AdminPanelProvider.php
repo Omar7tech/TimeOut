@@ -16,7 +16,6 @@ use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Width;
 use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -54,12 +53,17 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 AccountWidget::class,
             ])
+            ->navigationGroups([
+                'Menu',
+                'Displays',
+                'Settings',
+            ])
             ->subNavigationPosition(SubNavigationPosition::Top)
             ->darkMode(true)
             ->plugin(
                 AuthDesignerPlugin::make()
                     ->login(
-                        fn(AuthPageConfig $config) => $config
+                        fn (AuthPageConfig $config) => $config
                             ->media(asset('cover/cover.webp'))
                             ->mediaPosition(MediaPosition::Left)
                             ->mediaSize('65%')

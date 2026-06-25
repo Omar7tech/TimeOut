@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class BoardSlideResource extends Resource
 {
@@ -21,6 +22,10 @@ class BoardSlideResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $navigationLabel = 'Board Slides';
+
+    protected static string|UnitEnum|null $navigationGroup = 'Displays';
+
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $modelLabel = 'Board Slide';
 
