@@ -3,9 +3,11 @@
 namespace App\Filament\Resources\DisplayScreens\Tables;
 
 use App\Enums\ScreenOrientation;
+use App\Models\DisplayScreen;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -33,6 +35,16 @@ class DisplayScreensTable
                     ->counts('slides')
                     ->badge()
                     ->color('gray'),
+                TextColumn::make('url')
+                    ->label('URL')
+                    ->state(fn (DisplayScreen $record): string => route('board.show', $record))
+                    ->url(fn (DisplayScreen $record): string => route('board.show', $record))
+                    ->openUrlInNewTab()
+                    ->icon(Heroicon::OutlinedLink)
+                    ->color('primary')
+                    ->copyable()
+                    ->copyMessage('URL copied')
+                    ->tooltip('Open the board on a TV'),
                 ToggleColumn::make('is_active')
                     ->label('Active')
                     ->sortable(),
