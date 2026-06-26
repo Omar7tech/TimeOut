@@ -18,16 +18,9 @@
         $seoWhatsapp = 'https://wa.me/9613150099?text=' . rawurlencode('Hello TimeOut Snack, I want to make an order');
 
         // Pull live business data from settings for richer structured data.
-        $seoSocial = [];
         $seoHours = [];
         try {
             $settings = app(\App\Settings\GeneralSettings::class);
-
-            $seoSocial = collect($settings->social_links ?? [])
-                ->pluck('url')
-                ->filter()
-                ->values()
-                ->all();
 
             $dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             foreach ($settings->opening_hours ?? [] as $entry) {
@@ -143,7 +136,6 @@
         'acceptsReservations' => false,
         'hasMenu' => $seoMenu,
         'openingHoursSpecification' => $seoHours,
-        'sameAs' => $seoSocial,
         'potentialAction' => [
             '@type' => 'OrderAction',
             'target' => $seoWhatsapp,
