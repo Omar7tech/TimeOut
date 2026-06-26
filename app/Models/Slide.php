@@ -45,7 +45,7 @@ class Slide extends Model implements HasMedia
         $this->addMediaConversion('slider')
             ->nonQueued()
             ->format('webp')
-            ->quality(80)
+            ->quality(25)
             ->fit(Fit::Max, 1600, 900);
     }
 
