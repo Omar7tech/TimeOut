@@ -45,6 +45,16 @@ class DisplayScreensTable
                     ->copyable()
                     ->copyMessage('URL copied')
                     ->tooltip('Open the board on a TV'),
+                TextColumn::make('simple_url')
+                    ->label('Simple URL')
+                    ->state(fn (DisplayScreen $record): string => route('board.show', [$record, 'simple' => 1]))
+                    ->url(fn (DisplayScreen $record): string => route('board.show', [$record, 'simple' => 1]))
+                    ->openUrlInNewTab()
+                    ->icon(Heroicon::OutlinedTv)
+                    ->color('gray')
+                    ->copyable()
+                    ->copyMessage('Simple URL copied')
+                    ->tooltip('Lightweight version for older Smart TVs (ignores the display style).'),
                 ToggleColumn::make('is_active')
                     ->label('Active')
                     ->sortable(),

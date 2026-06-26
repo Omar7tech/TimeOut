@@ -36,7 +36,7 @@ class DisplayScreenForm
 
                         Select::make('layout')
                             ->label('Display style')
-                            ->helperText('How each slide is presented on the screen.')
+                            ->helperText('How each slide is presented on the screen. Older Smart TVs can use the lightweight "Simple URL" instead, which ignores this style.')
                             ->options(BoardLayout::class)
                             ->default(BoardLayout::SPOTLIGHT)
                             ->native(false)
