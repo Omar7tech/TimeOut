@@ -8,6 +8,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 
 class DisplayScreenForm
@@ -62,6 +63,23 @@ class DisplayScreenForm
                             ->helperText('Overlay the restaurant logo on the screen.')
                             ->default(true)
                             ->inline(false),
+
+                        Toggle::make('auto_refresh')
+                            ->label('Auto refresh')
+                            ->helperText('Periodically reload the board so it picks up new slides and prices on its own.')
+                            ->default(false)
+                            ->live()
+                            ->inline(false),
+
+                        TextInput::make('auto_refresh_minutes')
+                            ->label('Refresh every (minutes)')
+                            ->helperText('How often the board reloads itself.')
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(1440)
+                            ->default(15)
+                            ->required(fn (Get $get): bool => (bool) $get('auto_refresh'))
+                            ->visible(fn (Get $get): bool => (bool) $get('auto_refresh')),
 
                         Toggle::make('is_active')
                             ->label('Active')

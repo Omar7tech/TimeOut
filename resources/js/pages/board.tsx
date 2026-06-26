@@ -2,6 +2,7 @@ import { Head } from '@inertiajs/react';
 import { BoardGrid } from '@/components/menu/board-grid';
 import { BoardShowcase } from '@/components/menu/board-showcase';
 import { BoardSlider } from '@/components/menu/board-slider';
+import { useAutoRefresh } from '@/hooks/use-auto-refresh';
 import { useWakeLock } from '@/hooks/use-wake-lock';
 import type { BoardLayout, Slide } from '@/types';
 
@@ -17,6 +18,8 @@ interface BoardProps {
         display_prices: boolean;
         /** Restaurant logo URL to overlay, or null when hidden. */
         logo: string | null;
+        /** How often the board reloads itself, in minutes; null when off. */
+        auto_refresh_minutes: number | null;
     };
     slides: Slide[];
 }
@@ -30,6 +33,9 @@ interface BoardProps {
 export default function Board({ screen, slides }: BoardProps) {
     // Keep the TV awake for as long as the board is open.
     useWakeLock();
+
+    // Optionally reload the board on an interval so it picks up new slides/prices.
+    useAutoRefresh(screen.auto_refresh_minutes);
 
     return (
         <>

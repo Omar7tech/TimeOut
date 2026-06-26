@@ -56,6 +56,8 @@ class DisplayScreenController extends Controller
                 'display_prices' => $displayScreen->display_prices,
                 // The white logo suits the board's dark background.
                 'logo' => $displayScreen->show_logo ? asset('logos/timeout-logo.png') : null,
+                // How often the board reloads itself, in minutes; null when off.
+                'auto_refresh_minutes' => $displayScreen->auto_refresh ? $displayScreen->auto_refresh_minutes : null,
             ],
             'slides' => SlideResource::collection($slides)->resolve(),
         ]);

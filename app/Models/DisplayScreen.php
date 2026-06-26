@@ -43,6 +43,8 @@ class DisplayScreen extends Model
         'rotation_seconds' => 'integer',
         'display_prices' => 'boolean',
         'show_logo' => 'boolean',
+        'auto_refresh' => 'boolean',
+        'auto_refresh_minutes' => 'integer',
         'is_active' => 'boolean',
         'sort_order' => 'integer',
     ];
