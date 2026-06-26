@@ -101,7 +101,7 @@ class DisplayScreenController extends Controller
 
         $simpleSlides = $slides->map(function (BoardSlide $slide) use ($displayScreen, $formatPrice): array {
             $product = $slide->product && $slide->product->is_active ? $slide->product : null;
-            $caption = $product?->title ?? $slide->text ?? '';
+            $caption = ($product ? $product->title : null) ?? $slide->text ?? '';
 
             $productData = null;
 
