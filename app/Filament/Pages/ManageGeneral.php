@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Enums\BannerMode;
+use App\Enums\MenuFilterDesign;
 use App\Enums\PriceDisplay;
 use App\Enums\ProductCardDesign;
 use App\Enums\ShopStatusMode;
@@ -306,6 +307,18 @@ class ManageGeneral extends SettingsPage
                                         ->mapWithKeys(fn (ProductCardDesign $design): array => [$design->value => $design->getDescription()])
                                         ->all())
                                     ->default(ProductCardDesign::CLASSIC->value)
+                                    ->required()
+                                    ->columnSpanFull(),
+
+                                Radio::make('menu_filter_design')
+                                    ->label('Filter design - تصميم الفلاتر')
+                                    ->validationAttribute('filter design')
+                                    ->helperText('Choose how the category filter controls look on the menu. - اختر شكل أزرار الفلترة في القائمة.')
+                                    ->options(MenuFilterDesign::class)
+                                    ->descriptions(collect(MenuFilterDesign::cases())
+                                        ->mapWithKeys(fn (MenuFilterDesign $design): array => [$design->value => $design->getDescription()])
+                                        ->all())
+                                    ->default(MenuFilterDesign::PILLS->value)
                                     ->required()
                                     ->columnSpanFull(),
 

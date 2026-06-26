@@ -3,6 +3,7 @@
 namespace App\Settings;
 
 use App\Enums\BannerMode;
+use App\Enums\MenuFilterDesign;
 use App\Enums\PriceDisplay;
 use App\Enums\ProductCardDesign;
 use App\Enums\ShopStatusMode;
@@ -124,6 +125,11 @@ class GeneralSettings extends Settings
     public ProductCardDesign $product_card_design;
 
     /**
+     * The visual style used to render the menu's category filter controls.
+     */
+    public MenuFilterDesign $menu_filter_design;
+
+    /**
      * Whether the floating WhatsApp chat badge is shown on the storefront.
      */
     public bool $show_whatsapp_badge;
@@ -148,6 +154,7 @@ class GeneralSettings extends Settings
             'price_display' => new EnumCast(PriceDisplay::class),
             'banner_mode' => new EnumCast(BannerMode::class),
             'product_card_design' => new EnumCast(ProductCardDesign::class),
+            'menu_filter_design' => new EnumCast(MenuFilterDesign::class),
         ];
     }
 

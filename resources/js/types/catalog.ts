@@ -3,6 +3,9 @@ export type OrderType = 'dine_in' | 'takeaway' | 'both';
 /** The visual layout used to render product cards on the storefront menu. */
 export type ProductCardDesign = 'classic' | 'spotlight' | 'minimal';
 
+/** The visual style used to render the menu's category filter controls. */
+export type MenuFilterDesign = 'pills' | 'chips' | 'dropdown';
+
 /** The visual style a Menu Board uses to present each slide on the TV. */
 export type BoardLayout =
     | 'spotlight'

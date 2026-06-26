@@ -57,6 +57,7 @@ class MenuController extends Controller
             'slides' => SlideResource::collection($this->activeSlides($orderType))->resolve(),
             'showSchedule' => $settings->show_product_schedule,
             'cardDesign' => $settings->product_card_design->value,
+            'filterDesign' => $settings->menu_filter_design->value,
             // The weekly schedule is only built (and queried) when the feature is on.
             'schedule' => $settings->show_product_schedule
                 ? $this->weeklySchedule($orderType)
