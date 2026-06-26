@@ -84,14 +84,28 @@ class HandleInertiaRequests extends Middleware
                 'number' => $settings->whatsapp_badge_number,
             ],
             'socials' => collect($settings->social_links)
-                ->map(fn (array $link): ?array => ($platform = SocialPlatform::tryFrom($link['platform'] ?? ''))
-                    ? [
+                ->map(function ($link): ?array {
+                    if (! is_array($link)) {
+                        return null;
+                    }
+
+                    $rawPlatform = $link['platform'] ?? null;
+                    $platform = $rawPlatform instanceof SocialPlatform
+                        ? $rawPlatform
+                        : SocialPlatform::tryFrom((string) $rawPlatform);
+                    $url = $link['url'] ?? null;
+
+                    if ($platform === null || blank($url)) {
+                        return null;
+                    }
+
+                    return [
                         'platform' => $platform->value,
                         'label' => $platform->getName(),
-                        'url' => $link['url'],
+                        'url' => $url,
                         'icon' => $platform->getIconPath(),
-                    ]
-                    : null)
+                    ];
+                })
                 ->filter()
                 ->values()
                 ->all(),
