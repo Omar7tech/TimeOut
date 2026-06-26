@@ -108,7 +108,7 @@ export function MenuSlider({ slides, enableCart = false }: MenuSliderProps) {
 
     return (
         <section aria-label="Featured" className="flex flex-col gap-3">
-            <div ref={emblaRef} className="overflow-hidden py-1.5">
+            <div ref={emblaRef} className="overflow-hidden py-1.5 select-none">
                 <div className="-ml-3 flex">
                     {slides.map((slide) => {
                         const image = slide.image ? (
