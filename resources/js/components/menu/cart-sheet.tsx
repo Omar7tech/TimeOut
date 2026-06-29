@@ -102,6 +102,9 @@ export function CartSheet() {
     // True when a required location lookup failed (denied, timed out, or
     // unsupported); the order is held until the customer retries successfully.
     const [locationError, setLocationError] = useState(false);
+    // True once the order is ready and we're handing off to WhatsApp, so the
+    // customer sees a confirmation instead of an abrupt redirect.
+    const [sending, setSending] = useState(false);
 
     // Auto-dismiss the clear confirmation after a few seconds.
     useEffect(() => {
@@ -125,6 +128,7 @@ export function CartSheet() {
             setEnteringDetails(false);
             setLocating(false);
             setLocationError(false);
+            setSending(false);
             // Block any in-flight location lookup from sending after the
             // customer has closed the cart.
             sentRef.current = true;
@@ -163,10 +167,19 @@ export function CartSheet() {
             location,
         });
 
-        // Same-tab navigation instead of window.open: popup blockers (notably
-        // iOS Safari, which blocks popups opened after an async await) never
-        // stop it, and on mobile this deep-links straight into the WhatsApp app.
-        window.location.href = buildWhatsAppUrl(whatsappNumber, message);
+        const url = buildWhatsAppUrl(whatsappNumber, message);
+
+        // Show the "Opening WhatsApp…" confirmation, then hand off. The short
+        // delay lets that state paint before we navigate. Same-tab navigation
+        // (not window.open) is never stopped by popup blockers — notably iOS
+        // Safari — and on mobile it deep-links straight into the WhatsApp app.
+        setLocating(false);
+        setLocationError(false);
+        setSending(true);
+
+        window.setTimeout(() => {
+            window.location.href = url;
+        }, 600);
     };
 
     // Resolve the customer's location (when enabled) then open WhatsApp. When the
@@ -474,7 +487,23 @@ export function CartSheet() {
                                 </span>
                             </div>
 
-                            {locating ? (
+                            {sending ? (
+                                <div className="flex flex-col items-center gap-1.5 rounded-md border-2 border-dashed border-brand-red/60 p-3 text-center">
+                                    <img
+                                        src="/social-icons/whatsapp.svg"
+                                        alt=""
+                                        className="size-7 animate-pulse"
+                                    />
+                                    <p className="text-sm font-extrabold tracking-wide uppercase">
+                                        Opening WhatsApp…
+                                    </p>
+                                    <p className="text-xs font-semibold text-muted-foreground">
+                                        Sending your order. If WhatsApp doesn't
+                                        open, please tap your back button and try
+                                        again.
+                                    </p>
+                                </div>
+                            ) : locating ? (
                                 <div className="flex flex-col items-center gap-1.5 rounded-md border-2 border-dashed border-brand-red/60 p-3 text-center">
                                     <MapPin className="size-6 animate-pulse text-brand-red" />
                                     <p className="text-sm font-extrabold tracking-wide uppercase">
