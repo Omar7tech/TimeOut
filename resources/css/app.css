@@ -159,6 +159,22 @@
 }
 
 /*
+ * Respect the OS "reduce motion" setting: near-instant transitions/animations
+ * and no smooth scrolling, so the neo-brutalist hover lifts and slide-ins don't
+ * trigger motion sickness for users who've opted out.
+ */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/*
  * Header band with a torn-paper zigzag along its bottom edge. The colored fill
  * lives on a pseudo-element so the header content stays unmasked, and the teeth
  * hang below the band so the page shows through the notches.
