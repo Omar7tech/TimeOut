@@ -520,8 +520,11 @@ export function CartSheet() {
                                                         onClick={() =>
                                                             decrement(item.key)
                                                         }
+                                                        disabled={
+                                                            item.quantity <= 1
+                                                        }
                                                         aria-label="Decrease quantity"
-                                                        className="flex size-8 items-center justify-center bg-card transition-colors hover:bg-muted"
+                                                        className="flex size-8 items-center justify-center bg-card transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:text-muted-foreground/40 disabled:hover:bg-card"
                                                     >
                                                         <Minus className="size-3.5" />
                                                     </button>
