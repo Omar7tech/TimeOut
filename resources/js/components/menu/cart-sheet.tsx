@@ -964,6 +964,12 @@ export function CartSheet() {
                                                         className="size-5 brightness-0 invert"
                                                     />
                                                     Checkout
+                                                    <span className="font-black">
+                                                        •
+                                                    </span>
+                                                    <span className="tabular-nums">
+                                                        {fmtPrimary(totalUsd)}
+                                                    </span>
                                                 </>
                                             )}
                                         </button>
