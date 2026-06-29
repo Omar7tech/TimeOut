@@ -1,4 +1,4 @@
-import { Eye, ShoppingCart, Star } from 'lucide-react';
+import { Eye, Plus, Star } from 'lucide-react';
 import { DietIcons } from '@/components/menu/diet-icons';
 import { ProductPrice } from '@/components/menu/product-price';
 import { VariantSelector } from '@/components/menu/variant-selector';
@@ -124,7 +124,7 @@ export function ClassicCard({
                                     aria-label="Add to cart"
                                     className="inline-flex size-8 items-center justify-center rounded-md border-2 border-black bg-brand-red text-white shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                 >
-                                    <ShoppingCart className="size-4" />
+                                    <Plus className="size-4" />
                                 </button>
                             )}
                         </div>

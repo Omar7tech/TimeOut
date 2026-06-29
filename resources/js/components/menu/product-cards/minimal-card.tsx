@@ -1,4 +1,4 @@
-import { Eye, ShoppingCart, Star } from 'lucide-react';
+import { Eye, Plus, Star } from 'lucide-react';
 import { DietIcons } from '@/components/menu/diet-icons';
 import { ProductPrice } from '@/components/menu/product-price';
 import { VariantSelector } from '@/components/menu/variant-selector';
@@ -129,7 +129,7 @@ export function MinimalCard({
                                 aria-label="Add to cart"
                                 className="inline-flex size-9 items-center justify-center rounded-full bg-brand-red text-white transition-transform hover:scale-105 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                             >
-                                <ShoppingCart className="size-4" />
+                                <Plus className="size-4" />
                             </button>
                         )}
                     </div>
