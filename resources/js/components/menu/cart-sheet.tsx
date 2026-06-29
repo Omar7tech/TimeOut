@@ -102,9 +102,19 @@ export function CartSheet() {
     // True when a required location lookup failed (denied, timed out, or
     // unsupported); the order is held until the customer retries successfully.
     const [locationError, setLocationError] = useState(false);
+    // True when the location failure was an explicit permission denial (vs. a
+    // timeout/unavailable signal), so we can show the right instructions.
+    const [locationDenied, setLocationDenied] = useState(false);
     // True once the order is ready and we're handing off to WhatsApp, so the
     // customer sees a confirmation instead of an abrupt redirect.
     const [sending, setSending] = useState(false);
+    // The built WhatsApp URL, exposed as a manual link in the sending panel so
+    // the customer can tap through if the automatic redirect doesn't fire.
+    const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
+    // Geolocation only works on a secure origin; default to true on the server
+    // so the warning never flashes during SSR.
+    const isSecureContext =
+        typeof window === 'undefined' ? true : window.isSecureContext;
 
     // Auto-dismiss the clear confirmation after a few seconds.
     useEffect(() => {
@@ -128,7 +138,9 @@ export function CartSheet() {
             setEnteringDetails(false);
             setLocating(false);
             setLocationError(false);
+            setLocationDenied(false);
             setSending(false);
+            setWhatsappUrl(null);
             // Block any in-flight location lookup from sending after the
             // customer has closed the cart.
             sentRef.current = true;
@@ -173,8 +185,11 @@ export function CartSheet() {
         // delay lets that state paint before we navigate. Same-tab navigation
         // (not window.open) is never stopped by popup blockers — notably iOS
         // Safari — and on mobile it deep-links straight into the WhatsApp app.
+        // The URL is also surfaced as a manual link in case the redirect is
+        // swallowed by the browser.
         setLocating(false);
         setLocationError(false);
+        setWhatsappUrl(url);
         setSending(true);
 
         window.setTimeout(() => {
@@ -202,12 +217,14 @@ export function CartSheet() {
 
         if (!('geolocation' in navigator)) {
             // Location is required but this device can't provide it.
+            setLocationDenied(false);
             setLocationError(true);
 
             return;
         }
 
         setLocationError(false);
+        setLocationDenied(false);
         setLocating(true);
 
         getBestLocation({ timeoutMs: 8000 })
@@ -216,9 +233,19 @@ export function CartSheet() {
                 setEnteringDetails(false);
                 sendOrder(customerName, customerPhone, location);
             })
-            .catch(() => {
+            .catch((error: unknown) => {
                 // Required location failed — hold the order and let them retry.
+                // A code of 1 (PERMISSION_DENIED) means the customer (or the
+                // browser) blocked access, which needs different instructions
+                // than a plain timeout/unavailable signal.
+                const denied =
+                    typeof error === 'object' &&
+                    error !== null &&
+                    'code' in error &&
+                    (error as GeolocationPositionError).code === 1;
+
                 setLocating(false);
+                setLocationDenied(denied);
                 setLocationError(true);
             });
     };
@@ -488,7 +515,7 @@ export function CartSheet() {
                             </div>
 
                             {sending ? (
-                                <div className="flex flex-col items-center gap-1.5 rounded-md border-2 border-dashed border-brand-red/60 p-3 text-center">
+                                <div className="flex flex-col items-center gap-2.5 rounded-md border-2 border-dashed border-brand-red/60 p-3 text-center">
                                     <img
                                         src="/social-icons/whatsapp.svg"
                                         alt=""
@@ -498,10 +525,25 @@ export function CartSheet() {
                                         Opening WhatsApp…
                                     </p>
                                     <p className="text-xs font-semibold text-muted-foreground">
-                                        Sending your order. If WhatsApp doesn't
-                                        open, please tap your back button and try
-                                        again.
+                                        If WhatsApp didn't open, tap the button
+                                        below to send your order.
                                     </p>
+
+                                    {whatsappUrl && (
+                                        <a
+                                            href={whatsappUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex w-full items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                        >
+                                            <img
+                                                src="/social-icons/whatsapp.svg"
+                                                alt=""
+                                                className="size-5 brightness-0 invert"
+                                            />
+                                            Open WhatsApp
+                                        </a>
+                                    )}
                                 </div>
                             ) : locating ? (
                                 <div className="flex flex-col items-center gap-1.5 rounded-md border-2 border-dashed border-brand-red/60 p-3 text-center">
@@ -522,10 +564,17 @@ export function CartSheet() {
                                             Location needed
                                         </p>
                                         <p className="text-xs font-semibold text-muted-foreground">
-                                            We couldn't get your location, and
-                                            it's required to place the order.
-                                            Please enable location and try again.
+                                            {locationDenied
+                                                ? 'Location is blocked for this site. Tap the location icon in your browser’s address bar (or your browser settings) to allow it, then try again.'
+                                                : 'We couldn’t pin down your location. Make sure GPS/location is turned on, move somewhere with a clearer signal, then try again.'}
                                         </p>
+                                        {!isSecureContext && (
+                                            <p className="text-[11px] font-bold text-brand-red">
+                                                This page must be opened over a
+                                                secure (https) link for location
+                                                to work.
+                                            </p>
+                                        )}
                                     </div>
 
                                     <div className="flex gap-2">
