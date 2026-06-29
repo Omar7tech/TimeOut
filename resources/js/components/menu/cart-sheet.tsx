@@ -19,6 +19,13 @@ import { buildOrderMessage, buildWhatsAppUrl } from '@/lib/whatsapp-order';
 
 const NAME_STORAGE_KEY = 'timeout-customer-name';
 const PHONE_STORAGE_KEY = 'timeout-customer-phone';
+/** Minimum number of digits a phone number must contain to be accepted. */
+const PHONE_MIN_DIGITS = 8;
+
+/** Count the digits in a phone number, ignoring spaces, dashes and symbols. */
+function phoneDigitCount(value: string): number {
+    return value.replace(/\D/g, '').length;
+}
 
 /** Read a remembered checkout value from a previous order, if any. */
 function readStored(key: string): string {
@@ -191,7 +198,10 @@ export function CartSheet() {
             return;
         }
 
-        if (requirePhoneNumber && trimmedPhone === '') {
+        if (
+            requirePhoneNumber &&
+            phoneDigitCount(trimmedPhone) < PHONE_MIN_DIGITS
+        ) {
             return;
         }
 
@@ -546,6 +556,14 @@ export function CartSheet() {
                                                 placeholder="e.g. 03 123 456"
                                                 className="w-full rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-bold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                             />
+                                            {phone.trim() !== '' &&
+                                                phoneDigitCount(phone) <
+                                                    PHONE_MIN_DIGITS && (
+                                                    <p className="text-xs font-bold text-brand-red">
+                                                        Please enter at least{' '}
+                                                        {PHONE_MIN_DIGITS} digits.
+                                                    </p>
+                                                )}
                                         </>
                                     )}
                                     <div className="flex gap-2">
@@ -564,7 +582,8 @@ export function CartSheet() {
                                                 (requireFullName &&
                                                     name.trim() === '') ||
                                                 (requirePhoneNumber &&
-                                                    phone.trim() === '') ||
+                                                    phoneDigitCount(phone) <
+                                                        PHONE_MIN_DIGITS) ||
                                                 locating
                                             }
                                             className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_#000]"
