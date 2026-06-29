@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
  * a small toast and let the customer open the cart when they're ready.
  */
 export function CartToast() {
-    const { lastAdded, setOpen } = useCart();
+    const { lastAdded, setOpen, count } = useCart();
     const [visible, setVisible] = useState(false);
     const [title, setTitle] = useState('');
 
@@ -54,10 +54,15 @@ export function CartToast() {
                         setVisible(false);
                         setOpen(true);
                     }}
-                    className="inline-flex shrink-0 items-center gap-1.5 rounded-full border-2 border-black bg-brand-red px-3 py-1 text-xs font-extrabold tracking-wide text-white uppercase transition-colors hover:bg-brand-red/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                    className="inline-flex shrink-0 items-center gap-1.5 rounded-full border-2 border-black bg-brand-red py-1 pr-1.5 pl-3 text-xs font-extrabold tracking-wide text-white uppercase transition-colors hover:bg-brand-red/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 >
                     <ShoppingCart className="size-3.5" />
                     View
+                    {count > 0 && (
+                        <span className="inline-flex min-w-5 items-center justify-center rounded-full border-2 border-black bg-brand-yellow px-1 text-[11px] leading-none text-black">
+                            {count > 99 ? '99+' : count}
+                        </span>
+                    )}
                 </button>
             </div>
         </div>
