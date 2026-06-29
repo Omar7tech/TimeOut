@@ -3,6 +3,7 @@ import {
     MapPin,
     MapPinOff,
     Minus,
+    Pencil,
     Plus,
     ShoppingCart,
     StickyNote,
@@ -14,6 +15,7 @@ import { SmartImage } from '@/components/smart-image';
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
@@ -119,24 +121,38 @@ export function CartSheet() {
         typeof window === 'undefined' ? true : window.isSecureContext;
     // An optional free-text note for the whole order.
     const [orderNote, setOrderNote] = useState('');
-    // Per-item note editors that are currently expanded, keyed by cart line.
-    const [openNotes, setOpenNotes] = useState<Record<string, boolean>>({});
-    // Live textarea elements per cart line, so we can focus only the note the
-    // customer just opened — not whichever one was open last on a re-render.
-    const noteRefs = useRef<Record<string, HTMLTextAreaElement | null>>({});
+    // The cart line whose note is being edited in the popup, plus the working
+    // draft. Editing happens in a focused dialog instead of a cramped inline box.
+    const [noteEditingKey, setNoteEditingKey] = useState<string | null>(null);
+    const [noteDraft, setNoteDraft] = useState('');
 
-    const toggleNote = (key: string): void => {
-        setOpenNotes((previous) => ({ ...previous, [key]: !previous[key] }));
-        // Focus the field once it has rendered, without relying on autoFocus
-        // (which re-fires on every remount and steals focus).
-        requestAnimationFrame(() => noteRefs.current[key]?.focus());
+    const noteEditingItem =
+        noteEditingKey === null
+            ? null
+            : (items.find((item) => item.key === noteEditingKey) ?? null);
+
+    const openNoteEditor = (key: string, currentNote: string): void => {
+        setNoteEditingKey(key);
+        setNoteDraft(currentNote);
     };
 
-    // Empty the cart and drop every note that belonged to it.
+    const closeNoteEditor = (): void => {
+        setNoteEditingKey(null);
+        setNoteDraft('');
+    };
+
+    const saveNote = (): void => {
+        if (noteEditingKey !== null) {
+            setNote(noteEditingKey, noteDraft.trim());
+        }
+
+        closeNoteEditor();
+    };
+
+    // Empty the cart and drop the order note that belonged to it.
     const handleClear = (): void => {
         clear();
         setOrderNote('');
-        setOpenNotes({});
         setConfirmingClear(false);
     };
 
@@ -165,6 +181,7 @@ export function CartSheet() {
             setLocationDenied(false);
             setSending(false);
             setWhatsappUrl(null);
+            closeNoteEditor();
             // Block any in-flight location lookup from sending after the
             // customer has closed the cart.
             sentRef.current = true;
@@ -351,406 +368,446 @@ export function CartSheet() {
     };
 
     return (
-        <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogContent className="gap-0 p-0">
-                <DialogHeader className="border-b-2 border-neutral-700 p-4 pr-12">
-                    <DialogTitle className="flex items-center gap-2">
-                        <ShoppingCart className="size-5" />
-                        Your cart
-                        {count > 0 && (
-                            <span className="rounded-full bg-brand-red px-2 py-0.5 text-xs font-extrabold text-white">
-                                {count}
-                            </span>
-                        )}
-                    </DialogTitle>
-                </DialogHeader>
+        <>
+            <Dialog open={open} onOpenChange={handleOpenChange}>
+                <DialogContent className="flex h-[90dvh] flex-col gap-0 overflow-hidden p-0 sm:h-auto sm:max-h-[88vh]">
+                    <DialogHeader className="shrink-0 border-b-2 border-neutral-700 p-4 pr-12">
+                        <DialogTitle className="flex items-center gap-2">
+                            <ShoppingCart className="size-5" />
+                            Your cart
+                            {count > 0 && (
+                                <span className="rounded-full bg-brand-red px-2 py-0.5 text-xs font-extrabold text-white">
+                                    {count}
+                                </span>
+                            )}
+                        </DialogTitle>
+                    </DialogHeader>
 
-                {items.length === 0 ? (
-                    <div className="flex flex-col items-center gap-2 px-4 py-12 text-center">
-                        <ShoppingCart className="size-10 text-muted-foreground/40" />
-                        <p className="font-bold">Your cart is empty</p>
-                        <p className="text-sm text-muted-foreground">
-                            Add some items to get started.
-                        </p>
-                    </div>
-                ) : (
-                    <>
-                        <ul className="flex max-h-[50vh] flex-col divide-y-2 divide-neutral-700 overflow-y-auto">
-                            {items.map((item) => (
-                                <li
-                                    key={item.key}
-                                    className="flex flex-col gap-2 p-3"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        {item.image && (
-                                            <SmartImage
-                                                src={item.image}
-                                                alt={item.title}
-                                                className="size-14 shrink-0 rounded-md border-2 border-black"
-                                                imgClassName="object-cover"
-                                                draggable={false}
-                                            />
-                                        )}
+                    {items.length === 0 ? (
+                        <div className="flex flex-1 flex-col items-center justify-center gap-2 px-4 py-12 text-center">
+                            <ShoppingCart className="size-10 text-muted-foreground/40" />
+                            <p className="font-bold">Your cart is empty</p>
+                            <p className="text-sm text-muted-foreground">
+                                Add some items to get started.
+                            </p>
+                        </div>
+                    ) : (
+                        <>
+                            <ul className="flex min-h-0 flex-1 flex-col divide-y-2 divide-neutral-700 overflow-y-auto">
+                                {items.map((item) => (
+                                    <li
+                                        key={item.key}
+                                        className="flex flex-col gap-2 p-3"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            {item.image && (
+                                                <SmartImage
+                                                    src={item.image}
+                                                    alt={item.title}
+                                                    className="size-14 shrink-0 rounded-md border-2 border-black"
+                                                    imgClassName="object-cover"
+                                                    draggable={false}
+                                                />
+                                            )}
 
-                                        <div className="flex min-w-0 flex-1 flex-col gap-1">
-                                            <p className="truncate text-sm leading-tight font-bold">
-                                                {item.title}
-                                            </p>
-                                            {item.variantName && (
-                                                <p className="truncate text-xs font-semibold text-muted-foreground">
-                                                    {item.variantName}
+                                            <div className="flex min-w-0 flex-1 flex-col gap-1">
+                                                <p className="truncate text-sm leading-tight font-bold">
+                                                    {item.title}
                                                 </p>
-                                            )}
-                                            {item.addons.length > 0 ? (
-                                                <div className="mt-0.5 flex flex-col gap-0.5 rounded-md border border-dashed border-neutral-400 p-1.5 text-[11px] font-semibold text-muted-foreground">
-                                                    <div className="flex items-center justify-between gap-2">
-                                                        <span>Item</span>
-                                                        <span className="tabular-nums">
-                                                            {fmtPrimary(
-                                                                item.unitUsd *
-                                                                    item.quantity,
-                                                            )}
-                                                        </span>
-                                                    </div>
+                                                {item.variantName && (
+                                                    <p className="truncate text-xs font-semibold text-muted-foreground">
+                                                        {item.variantName}
+                                                    </p>
+                                                )}
+                                                {item.addons.length > 0 ? (
+                                                    <div className="mt-0.5 flex flex-col gap-0.5 rounded-md border border-dashed border-neutral-400 p-1.5 text-[11px] font-semibold text-muted-foreground">
+                                                        <div className="flex items-center justify-between gap-2">
+                                                            <span>Item</span>
+                                                            <span className="tabular-nums">
+                                                                {fmtPrimary(
+                                                                    item.unitUsd *
+                                                                        item.quantity,
+                                                                )}
+                                                            </span>
+                                                        </div>
 
-                                                    {item.addons.map(
-                                                        (addon) => (
-                                                            <div
-                                                                key={addon.name}
-                                                                className="flex items-center justify-between gap-2"
+                                                        {item.addons.map(
+                                                            (addon) => (
+                                                                <div
+                                                                    key={
+                                                                        addon.name
+                                                                    }
+                                                                    className="flex items-center justify-between gap-2"
+                                                                >
+                                                                    <span className="min-w-0 truncate">
+                                                                        <span className="tabular-nums">
+                                                                            {addon.quantity *
+                                                                                item.quantity}
+                                                                            ×
+                                                                        </span>{' '}
+                                                                        {
+                                                                            addon.name
+                                                                        }
+                                                                    </span>
+                                                                    <span className="shrink-0 tabular-nums">
+                                                                        +
+                                                                        {fmtPrimary(
+                                                                            addon.price *
+                                                                                addon.quantity *
+                                                                                item.quantity,
+                                                                        )}
+                                                                    </span>
+                                                                </div>
+                                                            ),
+                                                        )}
+
+                                                        <div className="mt-0.5 flex items-center justify-between gap-2 border-t border-neutral-300 pt-0.5 text-xs font-extrabold text-foreground">
+                                                            <span className="tracking-wide uppercase">
+                                                                Total
+                                                            </span>
+                                                            <span className="tabular-nums">
+                                                                {fmtPrimary(
+                                                                    cartItemUnitUsd(
+                                                                        item,
+                                                                    ) *
+                                                                        item.quantity,
+                                                                )}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex flex-col text-xs leading-tight font-extrabold">
+                                                        {pricing.showUsd && (
+                                                            <span>
+                                                                {pricing.usd(
+                                                                    item.unitUsd *
+                                                                        item.quantity,
+                                                                )}
+                                                            </span>
+                                                        )}
+                                                        {pricing.showLbp && (
+                                                            <span
+                                                                className={cn(
+                                                                    pricing.showUsd &&
+                                                                        'text-[11px] text-muted-foreground',
+                                                                )}
                                                             >
-                                                                <span className="min-w-0 truncate">
-                                                                    <span className="tabular-nums">
-                                                                        {addon.quantity *
-                                                                            item.quantity}
-                                                                        ×
-                                                                    </span>{' '}
-                                                                    {addon.name}
-                                                                </span>
-                                                                <span className="shrink-0 tabular-nums">
-                                                                    +
-                                                                    {fmtPrimary(
-                                                                        addon.price *
-                                                                            addon.quantity *
-                                                                            item.quantity,
-                                                                    )}
-                                                                </span>
-                                                            </div>
-                                                        ),
-                                                    )}
-
-                                                    <div className="mt-0.5 flex items-center justify-between gap-2 border-t border-neutral-300 pt-0.5 text-xs font-extrabold text-foreground">
-                                                        <span className="tracking-wide uppercase">
-                                                            Total
-                                                        </span>
-                                                        <span className="tabular-nums">
-                                                            {fmtPrimary(
-                                                                cartItemUnitUsd(
-                                                                    item,
-                                                                ) *
-                                                                    item.quantity,
-                                                            )}
-                                                        </span>
+                                                                {pricing.lbp(
+                                                                    item.unitUsd *
+                                                                        item.quantity,
+                                                                )}
+                                                            </span>
+                                                        )}
                                                     </div>
+                                                )}
+                                            </div>
+
+                                            <div className="flex shrink-0 flex-col items-end gap-1.5">
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        removeItem(item.key)
+                                                    }
+                                                    aria-label={`Remove ${item.title}`}
+                                                    className="text-muted-foreground transition-colors hover:text-brand-red"
+                                                >
+                                                    <Trash2 className="size-4" />
+                                                </button>
+
+                                                <div className="flex items-center overflow-hidden rounded-md border-2 border-black">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            decrement(item.key)
+                                                        }
+                                                        aria-label="Decrease quantity"
+                                                        className="flex size-8 items-center justify-center bg-card transition-colors hover:bg-muted"
+                                                    >
+                                                        <Minus className="size-3.5" />
+                                                    </button>
+                                                    <span className="w-8 text-center text-sm font-extrabold tabular-nums">
+                                                        {item.quantity}
+                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            increment(item.key)
+                                                        }
+                                                        aria-label="Increase quantity"
+                                                        className="flex size-8 items-center justify-center bg-card transition-colors hover:bg-muted"
+                                                    >
+                                                        <Plus className="size-3.5" />
+                                                    </button>
                                                 </div>
-                                            ) : (
-                                                <div className="flex flex-col text-xs leading-tight font-extrabold">
-                                                    {pricing.showUsd && (
-                                                        <span>
-                                                            {pricing.usd(
-                                                                item.unitUsd *
-                                                                    item.quantity,
-                                                            )}
-                                                        </span>
-                                                    )}
-                                                    {pricing.showLbp && (
-                                                        <span
-                                                            className={cn(
-                                                                pricing.showUsd &&
-                                                                    'text-[11px] text-muted-foreground',
-                                                            )}
-                                                        >
-                                                            {pricing.lbp(
-                                                                item.unitUsd *
-                                                                    item.quantity,
-                                                            )}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            )}
+                                            </div>
                                         </div>
 
-                                        <div className="flex shrink-0 flex-col items-end gap-1.5">
+                                        {item.note &&
+                                        item.note.trim() !== '' ? (
                                             <button
                                                 type="button"
                                                 onClick={() =>
-                                                    removeItem(item.key)
+                                                    openNoteEditor(
+                                                        item.key,
+                                                        item.note ?? '',
+                                                    )
                                                 }
-                                                aria-label={`Remove ${item.title}`}
-                                                className="text-muted-foreground transition-colors hover:text-brand-red"
+                                                className="flex w-full items-start gap-1.5 rounded-md border-2 border-dashed border-brand-red/50 bg-brand-red/5 px-2.5 py-1.5 text-left text-xs font-semibold text-foreground transition-colors hover:border-brand-red"
                                             >
-                                                <Trash2 className="size-4" />
-                                            </button>
-
-                                            <div className="flex items-center overflow-hidden rounded-md border-2 border-black">
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        decrement(item.key)
-                                                    }
-                                                    aria-label="Decrease quantity"
-                                                    className="flex size-7 items-center justify-center bg-card transition-colors hover:bg-muted"
-                                                >
-                                                    <Minus className="size-3.5" />
-                                                </button>
-                                                <span className="w-7 text-center text-sm font-extrabold tabular-nums">
-                                                    {item.quantity}
+                                                <StickyNote className="mt-0.5 size-3.5 shrink-0 text-brand-red" />
+                                                <span className="flex-1 break-words">
+                                                    {item.note}
                                                 </span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        increment(item.key)
-                                                    }
-                                                    aria-label="Increase quantity"
-                                                    className="flex size-7 items-center justify-center bg-card transition-colors hover:bg-muted"
-                                                >
-                                                    <Plus className="size-3.5" />
-                                                </button>
-                                            </div>
+                                                <Pencil className="mt-0.5 size-3 shrink-0 text-muted-foreground" />
+                                            </button>
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    openNoteEditor(item.key, '')
+                                                }
+                                                className="inline-flex items-center gap-1.5 self-start text-xs font-bold text-muted-foreground transition-colors hover:text-brand-red"
+                                            >
+                                                <StickyNote className="size-3.5" />
+                                                Add a note
+                                            </button>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+
+                            <div className="flex shrink-0 flex-col gap-3 border-t-2 border-neutral-700 p-4">
+                                {deliveryFeeUsd !== null && (
+                                    <div className="flex flex-col gap-1.5 text-sm font-bold">
+                                        <div className="flex items-center justify-between text-muted-foreground">
+                                            <span>Subtotal</span>
+                                            <span className="tabular-nums">
+                                                {fmtPrimary(subtotalUsd)}
+                                            </span>
                                         </div>
-                                    </div>
-
-                                    {openNotes[item.key] ||
-                                    (item.note && item.note.trim() !== '') ? (
-                                        <textarea
-                                            ref={(el) => {
-                                                noteRefs.current[item.key] = el;
-                                            }}
-                                            value={item.note ?? ''}
-                                            onChange={(event) =>
-                                                setNote(
-                                                    item.key,
-                                                    event.target.value,
-                                                )
-                                            }
-                                            rows={2}
-                                            maxLength={200}
-                                            placeholder="Add a note (e.g. no pickles, extra sauce)"
-                                            className="w-full resize-none rounded-md border-2 border-black bg-card px-2.5 py-1.5 text-xs font-semibold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                        />
-                                    ) : (
-                                        <button
-                                            type="button"
-                                            onClick={() => toggleNote(item.key)}
-                                            className="inline-flex items-center gap-1.5 self-start text-xs font-bold text-muted-foreground transition-colors hover:text-brand-red"
-                                        >
-                                            <StickyNote className="size-3.5" />
-                                            Add a note
-                                        </button>
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
-
-                        <div className="flex flex-col gap-3 border-t-2 border-neutral-700 p-4">
-                            {deliveryFeeUsd !== null && (
-                                <div className="flex flex-col gap-1.5 text-sm font-bold">
-                                    <div className="flex items-center justify-between text-muted-foreground">
-                                        <span>Subtotal</span>
-                                        <span className="tabular-nums">
-                                            {fmtPrimary(subtotalUsd)}
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center justify-between text-muted-foreground">
-                                        <span>Delivery</span>
-                                        <span className="tabular-nums">
-                                            {fmtPrimary(deliveryFeeUsd)}
-                                        </span>
-                                    </div>
-                                </div>
-                            )}
-
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm font-bold tracking-wide text-muted-foreground uppercase">
-                                    {deliveryFeeUsd !== null
-                                        ? 'Total'
-                                        : 'Subtotal'}
-                                </span>
-                                <span className="flex flex-col items-end text-lg leading-tight font-black">
-                                    {pricing.showUsd && (
-                                        <span>{pricing.usd(totalUsd)}</span>
-                                    )}
-                                    {pricing.showLbp && (
-                                        <span
-                                            className={cn(
-                                                pricing.showUsd &&
-                                                    'text-sm text-muted-foreground',
-                                            )}
-                                        >
-                                            {pricing.lbp(totalUsd)}
-                                        </span>
-                                    )}
-                                </span>
-                            </div>
-
-                            {isOpen &&
-                                !sending &&
-                                !locating &&
-                                !locationError &&
-                                !confirmingClear && (
-                                    <div className="flex flex-col gap-1.5">
-                                        <label
-                                            htmlFor="order-note"
-                                            className="flex items-center gap-1.5 text-xs font-extrabold tracking-wide text-muted-foreground uppercase"
-                                        >
-                                            <StickyNote className="size-3.5" />
-                                            Note for the order
-                                        </label>
-                                        <textarea
-                                            id="order-note"
-                                            value={orderNote}
-                                            onChange={(event) =>
-                                                setOrderNote(event.target.value)
-                                            }
-                                            rows={2}
-                                            maxLength={300}
-                                            placeholder="Anything we should know? (e.g. ring the bell, call on arrival)"
-                                            className="w-full resize-none rounded-md border-2 border-black bg-card px-2.5 py-1.5 text-xs font-semibold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                        />
+                                        <div className="flex items-center justify-between text-muted-foreground">
+                                            <span>Delivery</span>
+                                            <span className="tabular-nums">
+                                                {fmtPrimary(deliveryFeeUsd)}
+                                            </span>
+                                        </div>
                                     </div>
                                 )}
 
-                            {sending ? (
-                                <div className="flex flex-col items-center gap-2.5 rounded-md border-2 border-dashed border-brand-red/60 p-3 text-center">
-                                    <img
-                                        src="/social-icons/whatsapp.svg"
-                                        alt=""
-                                        className="size-7 animate-pulse"
-                                    />
-                                    <p className="text-sm font-extrabold tracking-wide uppercase">
-                                        Opening WhatsApp…
-                                    </p>
-                                    <p className="text-xs font-semibold text-muted-foreground">
-                                        If WhatsApp didn't open, tap the button
-                                        below to send your order.
-                                    </p>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm font-bold tracking-wide text-muted-foreground uppercase">
+                                        {deliveryFeeUsd !== null
+                                            ? 'Total'
+                                            : 'Subtotal'}
+                                    </span>
+                                    <span className="flex flex-col items-end text-lg leading-tight font-black">
+                                        {pricing.showUsd && (
+                                            <span>{pricing.usd(totalUsd)}</span>
+                                        )}
+                                        {pricing.showLbp && (
+                                            <span
+                                                className={cn(
+                                                    pricing.showUsd &&
+                                                        'text-sm text-muted-foreground',
+                                                )}
+                                            >
+                                                {pricing.lbp(totalUsd)}
+                                            </span>
+                                        )}
+                                    </span>
+                                </div>
 
-                                    {whatsappUrl && (
-                                        <a
-                                            href={whatsappUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex w-full items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                        >
-                                            <img
-                                                src="/social-icons/whatsapp.svg"
-                                                alt=""
-                                                className="size-5 brightness-0 invert"
+                                {isOpen &&
+                                    !sending &&
+                                    !locating &&
+                                    !locationError &&
+                                    !confirmingClear && (
+                                        <div className="flex flex-col gap-1.5">
+                                            <label
+                                                htmlFor="order-note"
+                                                className="flex items-center gap-1.5 text-xs font-extrabold tracking-wide text-muted-foreground uppercase"
+                                            >
+                                                <StickyNote className="size-3.5" />
+                                                Note for the order
+                                            </label>
+                                            <textarea
+                                                id="order-note"
+                                                value={orderNote}
+                                                onChange={(event) =>
+                                                    setOrderNote(
+                                                        event.target.value,
+                                                    )
+                                                }
+                                                rows={2}
+                                                maxLength={300}
+                                                placeholder="Anything we should know? (e.g. ring the bell, call on arrival)"
+                                                className="w-full resize-none rounded-md border-2 border-black bg-card px-2.5 py-1.5 text-xs font-semibold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                             />
-                                            Open WhatsApp
-                                        </a>
+                                        </div>
                                     )}
-                                </div>
-                            ) : locating ? (
-                                <div className="flex flex-col items-center gap-1.5 rounded-md border-2 border-dashed border-brand-red/60 p-3 text-center">
-                                    <MapPin className="size-6 animate-pulse text-brand-red" />
-                                    <p className="text-sm font-extrabold tracking-wide uppercase">
-                                        Getting your location…
-                                    </p>
-                                    <p className="text-xs font-semibold text-muted-foreground">
-                                        Please allow location so we can deliver
-                                        to the right spot.
-                                    </p>
-                                </div>
-                            ) : locationError ? (
-                                <div className="flex flex-col gap-3 rounded-md border-2 border-dashed border-brand-red/60 p-3">
-                                    <div className="flex flex-col items-center gap-1.5 text-center">
-                                        <MapPinOff className="size-6 text-brand-red" />
+
+                                {sending ? (
+                                    <div className="flex flex-col items-center gap-2.5 rounded-md border-2 border-dashed border-brand-red/60 p-3 text-center">
+                                        <img
+                                            src="/social-icons/whatsapp.svg"
+                                            alt=""
+                                            className="size-7 animate-pulse"
+                                        />
                                         <p className="text-sm font-extrabold tracking-wide uppercase">
-                                            Location needed
+                                            Opening WhatsApp…
                                         </p>
                                         <p className="text-xs font-semibold text-muted-foreground">
-                                            {locationDenied
-                                                ? 'Location is blocked for this site. Tap the location icon in your browser’s address bar (or your browser settings) to allow it, then try again.'
-                                                : 'We couldn’t pin down your location. Make sure GPS/location is turned on, move somewhere with a clearer signal, then try again.'}
+                                            If WhatsApp didn't open, tap the
+                                            button below to send your order.
                                         </p>
-                                        {!isSecureContext && (
-                                            <p className="text-[11px] font-bold text-brand-red">
-                                                This page must be opened over a
-                                                secure (https) link for location
-                                                to work.
-                                            </p>
+
+                                        {whatsappUrl && (
+                                            <a
+                                                href={whatsappUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex w-full items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                            >
+                                                <img
+                                                    src="/social-icons/whatsapp.svg"
+                                                    alt=""
+                                                    className="size-5 brightness-0 invert"
+                                                />
+                                                Open WhatsApp
+                                            </a>
                                         )}
                                     </div>
+                                ) : locating ? (
+                                    <div className="flex flex-col items-center gap-1.5 rounded-md border-2 border-dashed border-brand-red/60 p-3 text-center">
+                                        <MapPin className="size-6 animate-pulse text-brand-red" />
+                                        <p className="text-sm font-extrabold tracking-wide uppercase">
+                                            Getting your location…
+                                        </p>
+                                        <p className="text-xs font-semibold text-muted-foreground">
+                                            Please allow location so we can
+                                            deliver to the right spot.
+                                        </p>
+                                    </div>
+                                ) : locationError ? (
+                                    <div className="flex flex-col gap-3 rounded-md border-2 border-dashed border-brand-red/60 p-3">
+                                        <div className="flex flex-col items-center gap-1.5 text-center">
+                                            <MapPinOff className="size-6 text-brand-red" />
+                                            <p className="text-sm font-extrabold tracking-wide uppercase">
+                                                Location needed
+                                            </p>
+                                            <p className="text-xs font-semibold text-muted-foreground">
+                                                {locationDenied
+                                                    ? 'Location is blocked for this site. Tap the location icon in your browser’s address bar (or your browser settings) to allow it, then try again.'
+                                                    : 'We couldn’t pin down your location. Make sure GPS/location is turned on, move somewhere with a clearer signal, then try again.'}
+                                            </p>
+                                            {!isSecureContext && (
+                                                <p className="text-[11px] font-bold text-brand-red">
+                                                    This page must be opened
+                                                    over a secure (https) link
+                                                    for location to work.
+                                                </p>
+                                            )}
+                                        </div>
 
-                                    <div className="flex gap-2">
+                                        <div className="flex gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setLocationError(false)
+                                                }
+                                                className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                            >
+                                                Back
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={retryLocation}
+                                                className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                            >
+                                                <MapPin className="size-5" />
+                                                Try again
+                                            </button>
+                                        </div>
+
+                                        <div className="flex flex-col gap-2 border-t-2 border-dashed border-neutral-300 pt-3">
+                                            <p className="text-center text-xs font-semibold text-muted-foreground">
+                                                Can’t share your location? Send
+                                                your order now, then share your
+                                                location directly in the
+                                                WhatsApp chat.
+                                            </p>
+                                            <button
+                                                type="button"
+                                                onClick={sendWithLocationLater}
+                                                className="inline-flex items-center justify-center gap-2 rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                            >
+                                                <img
+                                                    src="/social-icons/whatsapp.svg"
+                                                    alt=""
+                                                    className="size-5"
+                                                />
+                                                Send order &amp; share location
+                                                later
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : !isOpen ? (
+                                    <div className="flex flex-col gap-3 rounded-md border-2 border-dashed border-brand-red/60 p-3">
+                                        <div className="flex flex-col items-center gap-1 text-center">
+                                            <p className="text-sm font-extrabold tracking-wide uppercase">
+                                                We're closed
+                                                <span className="text-brand-red">
+                                                    .
+                                                </span>
+                                            </p>
+                                            <p className="text-xs font-semibold text-muted-foreground">
+                                                Your cart is saved — order the
+                                                moment we reopen.
+                                            </p>
+                                        </div>
+
+                                        <OpenCountdown className="" />
+
                                         <button
                                             type="button"
                                             onClick={() =>
-                                                setLocationError(false)
+                                                setConfirmingClear(true)
                                             }
-                                            className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                            className="inline-flex items-center justify-center gap-1.5 self-center text-xs font-extrabold tracking-wide text-muted-foreground uppercase transition-colors hover:text-brand-red"
                                         >
-                                            Back
+                                            <Trash2 className="size-3.5" />
+                                            Clear cart
                                         </button>
-                                        <button
-                                            type="button"
-                                            onClick={retryLocation}
-                                            className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                        >
-                                            <MapPin className="size-5" />
-                                            Try again
-                                        </button>
+
+                                        {confirmingClear && (
+                                            <div className="flex gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setConfirmingClear(
+                                                            false,
+                                                        )
+                                                    }
+                                                    className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                >
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleClear}
+                                                    className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                >
+                                                    <Trash2 className="size-4" />
+                                                    Clear
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
-
-                                    <div className="flex flex-col gap-2 border-t-2 border-dashed border-neutral-300 pt-3">
-                                        <p className="text-center text-xs font-semibold text-muted-foreground">
-                                            Can’t share your location? Send your
-                                            order now, then share your location
-                                            directly in the WhatsApp chat.
+                                ) : confirmingClear ? (
+                                    <div className="flex flex-col gap-2 rounded-md border-2 border-dashed border-brand-red/60 p-2.5">
+                                        <p className="text-center text-sm font-bold">
+                                            Clear all items from your cart?
                                         </p>
-                                        <button
-                                            type="button"
-                                            onClick={sendWithLocationLater}
-                                            className="inline-flex items-center justify-center gap-2 rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                        >
-                                            <img
-                                                src="/social-icons/whatsapp.svg"
-                                                alt=""
-                                                className="size-5"
-                                            />
-                                            Send order &amp; share location
-                                            later
-                                        </button>
-                                    </div>
-                                </div>
-                            ) : !isOpen ? (
-                                <div className="flex flex-col gap-3 rounded-md border-2 border-dashed border-brand-red/60 p-3">
-                                    <div className="flex flex-col items-center gap-1 text-center">
-                                        <p className="text-sm font-extrabold tracking-wide uppercase">
-                                            We're closed
-                                            <span className="text-brand-red">
-                                                .
-                                            </span>
-                                        </p>
-                                        <p className="text-xs font-semibold text-muted-foreground">
-                                            Your cart is saved — order the
-                                            moment we reopen.
-                                        </p>
-                                    </div>
-
-                                    <OpenCountdown className="" />
-
-                                    <button
-                                        type="button"
-                                        onClick={() => setConfirmingClear(true)}
-                                        className="inline-flex items-center justify-center gap-1.5 self-center text-xs font-extrabold tracking-wide text-muted-foreground uppercase transition-colors hover:text-brand-red"
-                                    >
-                                        <Trash2 className="size-3.5" />
-                                        Clear cart
-                                    </button>
-
-                                    {confirmingClear && (
                                         <div className="flex gap-2">
                                             <button
                                                 type="button"
@@ -770,117 +827,129 @@ export function CartSheet() {
                                                 Clear
                                             </button>
                                         </div>
-                                    )}
-                                </div>
-                            ) : confirmingClear ? (
-                                <div className="flex flex-col gap-2 rounded-md border-2 border-dashed border-brand-red/60 p-2.5">
-                                    <p className="text-center text-sm font-bold">
-                                        Clear all items from your cart?
-                                    </p>
+                                    </div>
+                                ) : enteringDetails ? (
+                                    <form
+                                        onSubmit={(event) => {
+                                            event.preventDefault();
+                                            handleConfirmDetails();
+                                        }}
+                                        className="flex flex-col gap-2 rounded-md border-2 border-dashed border-brand-red/60 p-2.5"
+                                    >
+                                        {requireFullName && (
+                                            <>
+                                                <label
+                                                    htmlFor="checkout-name"
+                                                    className="text-sm font-extrabold tracking-wide uppercase"
+                                                >
+                                                    Your name
+                                                </label>
+                                                <input
+                                                    id="checkout-name"
+                                                    type="text"
+                                                    autoFocus
+                                                    value={name}
+                                                    onChange={(event) =>
+                                                        setName(
+                                                            event.target.value,
+                                                        )
+                                                    }
+                                                    placeholder="Your full name"
+                                                    className="w-full rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-bold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                />
+                                            </>
+                                        )}
+                                        {requirePhoneNumber && (
+                                            <>
+                                                <label
+                                                    htmlFor="checkout-phone"
+                                                    className="text-sm font-extrabold tracking-wide uppercase"
+                                                >
+                                                    Your phone number
+                                                </label>
+                                                <input
+                                                    id="checkout-phone"
+                                                    type="tel"
+                                                    inputMode="tel"
+                                                    autoFocus={!requireFullName}
+                                                    value={phone}
+                                                    onChange={(event) =>
+                                                        setPhone(
+                                                            event.target.value,
+                                                        )
+                                                    }
+                                                    placeholder="e.g. 03 123 456"
+                                                    className="w-full rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-bold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                />
+                                                {phone.trim() !== '' &&
+                                                    phoneDigitCount(phone) <
+                                                        PHONE_MIN_DIGITS && (
+                                                        <p className="text-xs font-bold text-brand-red">
+                                                            Please enter at
+                                                            least{' '}
+                                                            {PHONE_MIN_DIGITS}{' '}
+                                                            digits.
+                                                        </p>
+                                                    )}
+                                            </>
+                                        )}
+                                        <div className="flex gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setEnteringDetails(false)
+                                                }
+                                                className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                            >
+                                                Back
+                                            </button>
+                                            <button
+                                                type="submit"
+                                                disabled={
+                                                    (requireFullName &&
+                                                        name.trim() === '') ||
+                                                    (requirePhoneNumber &&
+                                                        phoneDigitCount(phone) <
+                                                            PHONE_MIN_DIGITS) ||
+                                                    locating
+                                                }
+                                                className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_#000]"
+                                            >
+                                                {locating ? (
+                                                    <>
+                                                        <MapPin className="size-5 animate-pulse" />
+                                                        Getting location…
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <img
+                                                            src="/social-icons/whatsapp.svg"
+                                                            alt=""
+                                                            className="size-5 brightness-0 invert"
+                                                        />
+                                                        Send order
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
+                                    </form>
+                                ) : (
                                     <div className="flex gap-2">
                                         <button
                                             type="button"
                                             onClick={() =>
-                                                setConfirmingClear(false)
+                                                setConfirmingClear(true)
                                             }
-                                            className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                        >
-                                            Cancel
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                clear();
-                                                setConfirmingClear(false);
-                                            }}
-                                            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                            aria-label="Clear cart"
+                                            className="inline-flex items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                         >
                                             <Trash2 className="size-4" />
-                                            Clear
                                         </button>
-                                    </div>
-                                </div>
-                            ) : enteringDetails ? (
-                                <form
-                                    onSubmit={(event) => {
-                                        event.preventDefault();
-                                        handleConfirmDetails();
-                                    }}
-                                    className="flex flex-col gap-2 rounded-md border-2 border-dashed border-brand-red/60 p-2.5"
-                                >
-                                    {requireFullName && (
-                                        <>
-                                            <label
-                                                htmlFor="checkout-name"
-                                                className="text-sm font-extrabold tracking-wide uppercase"
-                                            >
-                                                Your name
-                                            </label>
-                                            <input
-                                                id="checkout-name"
-                                                type="text"
-                                                autoFocus
-                                                value={name}
-                                                onChange={(event) =>
-                                                    setName(event.target.value)
-                                                }
-                                                placeholder="Your full name"
-                                                className="w-full rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-bold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                            />
-                                        </>
-                                    )}
-                                    {requirePhoneNumber && (
-                                        <>
-                                            <label
-                                                htmlFor="checkout-phone"
-                                                className="text-sm font-extrabold tracking-wide uppercase"
-                                            >
-                                                Your phone number
-                                            </label>
-                                            <input
-                                                id="checkout-phone"
-                                                type="tel"
-                                                inputMode="tel"
-                                                autoFocus={!requireFullName}
-                                                value={phone}
-                                                onChange={(event) =>
-                                                    setPhone(event.target.value)
-                                                }
-                                                placeholder="e.g. 03 123 456"
-                                                className="w-full rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-bold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                            />
-                                            {phone.trim() !== '' &&
-                                                phoneDigitCount(phone) <
-                                                    PHONE_MIN_DIGITS && (
-                                                    <p className="text-xs font-bold text-brand-red">
-                                                        Please enter at least{' '}
-                                                        {PHONE_MIN_DIGITS}{' '}
-                                                        digits.
-                                                    </p>
-                                                )}
-                                        </>
-                                    )}
-                                    <div className="flex gap-2">
                                         <button
                                             type="button"
-                                            onClick={() =>
-                                                setEnteringDetails(false)
-                                            }
-                                            className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                        >
-                                            Back
-                                        </button>
-                                        <button
-                                            type="submit"
-                                            disabled={
-                                                (requireFullName &&
-                                                    name.trim() === '') ||
-                                                (requirePhoneNumber &&
-                                                    phoneDigitCount(phone) <
-                                                        PHONE_MIN_DIGITS) ||
-                                                locating
-                                            }
-                                            className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_#000]"
+                                            onClick={handleCheckout}
+                                            disabled={locating}
+                                            className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_#000]"
                                         >
                                             {locating ? (
                                                 <>
@@ -894,50 +963,82 @@ export function CartSheet() {
                                                         alt=""
                                                         className="size-5 brightness-0 invert"
                                                     />
-                                                    Send order
+                                                    Checkout
                                                 </>
                                             )}
                                         </button>
                                     </div>
-                                </form>
-                            ) : (
-                                <div className="flex gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => setConfirmingClear(true)}
-                                        aria-label="Clear cart"
-                                        className="inline-flex items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                    >
-                                        <Trash2 className="size-4" />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={handleCheckout}
-                                        disabled={locating}
-                                        className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_#000]"
-                                    >
-                                        {locating ? (
-                                            <>
-                                                <MapPin className="size-5 animate-pulse" />
-                                                Getting location…
-                                            </>
-                                        ) : (
-                                            <>
-                                                <img
-                                                    src="/social-icons/whatsapp.svg"
-                                                    alt=""
-                                                    className="size-5 brightness-0 invert"
-                                                />
-                                                Checkout
-                                            </>
-                                        )}
-                                    </button>
-                                </div>
-                            )}
+                                )}
+                            </div>
+                        </>
+                    )}
+                </DialogContent>
+            </Dialog>
+
+            <Dialog
+                open={noteEditingKey !== null}
+                onOpenChange={(next) => {
+                    if (!next) {
+                        closeNoteEditor();
+                    }
+                }}
+            >
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader className="pr-8">
+                        <DialogTitle className="flex items-center gap-2">
+                            <StickyNote className="size-5 text-brand-red" />
+                            Add a note
+                        </DialogTitle>
+                        {noteEditingItem && (
+                            <DialogDescription className="font-semibold">
+                                {noteEditingItem.title}
+                                {noteEditingItem.variantName
+                                    ? ` — ${noteEditingItem.variantName}`
+                                    : ''}
+                            </DialogDescription>
+                        )}
+                    </DialogHeader>
+
+                    <form
+                        onSubmit={(event) => {
+                            event.preventDefault();
+                            saveNote();
+                        }}
+                        className="flex flex-col gap-3"
+                    >
+                        <textarea
+                            autoFocus
+                            value={noteDraft}
+                            onChange={(event) =>
+                                setNoteDraft(event.target.value)
+                            }
+                            rows={4}
+                            maxLength={200}
+                            placeholder="e.g. no pickles, extra sauce, well done"
+                            className="w-full resize-none rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-semibold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                        />
+                        <p className="-mt-1 text-right text-[11px] font-semibold text-muted-foreground">
+                            {noteDraft.length}/200
+                        </p>
+
+                        <div className="flex gap-2">
+                            <button
+                                type="button"
+                                onClick={closeNoteEditor}
+                                className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                            >
+                                Save note
+                            </button>
                         </div>
-                    </>
-                )}
-            </DialogContent>
-        </Dialog>
+                    </form>
+                </DialogContent>
+            </Dialog>
+        </>
     );
 }
