@@ -700,7 +700,7 @@ export function CartSheet() {
                                                 onChange={(event) =>
                                                     setName(event.target.value)
                                                 }
-                                                placeholder="e.g. Omar"
+                                                placeholder="Your full name"
                                                 className="w-full rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-bold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                             />
                                         </>
