@@ -208,11 +208,11 @@ export function ProductDialog({
                                                     }
                                                     disabled={!active}
                                                     aria-label={`Less ${addon.name}`}
-                                                    className="flex size-7 items-center justify-center bg-card transition-colors hover:bg-muted disabled:opacity-40"
+                                                    className="flex size-9 items-center justify-center bg-card transition-colors hover:bg-muted disabled:opacity-40"
                                                 >
                                                     <Minus className="size-3.5" />
                                                 </button>
-                                                <span className="w-7 text-center text-sm font-extrabold tabular-nums">
+                                                <span className="w-9 text-center text-sm font-extrabold tabular-nums">
                                                     {quantity}
                                                 </span>
                                                 <button
@@ -224,7 +224,7 @@ export function ProductDialog({
                                                         )
                                                     }
                                                     aria-label={`More ${addon.name}`}
-                                                    className="flex size-7 items-center justify-center bg-card transition-colors hover:bg-muted"
+                                                    className="flex size-9 items-center justify-center bg-card transition-colors hover:bg-muted"
                                                 >
                                                     <Plus className="size-3.5" />
                                                 </button>
@@ -253,9 +253,12 @@ export function ProductDialog({
                         >
                             <ShoppingCart className="size-4" />
                             Add to cart
-                            {extrasUsd > 0 && pricing.showUsd && (
+                            {extrasUsd > 0 && (
                                 <span className="font-bold text-white/80">
-                                    +{pricing.usd(extrasUsd)}
+                                    +
+                                    {pricing.showUsd
+                                        ? pricing.usd(extrasUsd)
+                                        : pricing.lbp(extrasUsd)}
                                 </span>
                             )}
                         </button>

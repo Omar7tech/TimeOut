@@ -156,6 +156,15 @@
     [role='button']:not(:disabled) {
         cursor: pointer;
     }
+
+    /* Remove the legacy ~300ms tap delay on touch devices for interactive UI. */
+    button,
+    [role='button'],
+    a,
+    label,
+    summary {
+        touch-action: manipulation;
+    }
 }
 
 /*

@@ -558,9 +558,9 @@ export function CartSheet() {
                                                             removeItem(item.key)
                                                         }
                                                         aria-label={`Remove ${item.title}`}
-                                                        className="text-muted-foreground transition-colors hover:text-brand-red"
+                                                        className="-m-1 rounded-md p-1 text-muted-foreground transition-colors hover:text-brand-red"
                                                     >
-                                                        <Trash2 className="size-4" />
+                                                        <Trash2 className="size-5" />
                                                     </button>
 
                                                     <div className="flex items-center overflow-hidden rounded-md border-2 border-black">
@@ -576,11 +576,11 @@ export function CartSheet() {
                                                                 1
                                                             }
                                                             aria-label="Decrease quantity"
-                                                            className="flex size-8 items-center justify-center bg-card transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:text-muted-foreground/40 disabled:hover:bg-card"
+                                                            className="flex size-10 items-center justify-center bg-card transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:text-muted-foreground/40 disabled:hover:bg-card"
                                                         >
                                                             <Minus className="size-3.5" />
                                                         </button>
-                                                        <span className="w-8 text-center text-sm font-extrabold tabular-nums">
+                                                        <span className="w-10 text-center text-sm font-extrabold tabular-nums">
                                                             {item.quantity}
                                                         </span>
                                                         <button
@@ -591,7 +591,7 @@ export function CartSheet() {
                                                                 )
                                                             }
                                                             aria-label="Increase quantity"
-                                                            className="flex size-8 items-center justify-center bg-card transition-colors hover:bg-muted"
+                                                            className="flex size-10 items-center justify-center bg-card transition-colors hover:bg-muted"
                                                         >
                                                             <Plus className="size-3.5" />
                                                         </button>
@@ -641,7 +641,7 @@ export function CartSheet() {
                                 )}
                             </div>
 
-                            <div className="flex shrink-0 flex-col gap-3 border-t-2 border-neutral-700 p-4">
+                            <div className="flex shrink-0 flex-col gap-3 border-t-2 border-neutral-700 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
                                 {deliveryFeeUsd !== null && (
                                     <div className="flex flex-col gap-1.5 text-sm font-bold">
                                         <div className="flex items-center justify-between text-muted-foreground">
