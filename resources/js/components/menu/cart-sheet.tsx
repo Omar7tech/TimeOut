@@ -18,24 +18,25 @@ import { cn } from '@/lib/utils';
 import { buildOrderMessage, buildWhatsAppUrl } from '@/lib/whatsapp-order';
 
 const NAME_STORAGE_KEY = 'timeout-customer-name';
+const PHONE_STORAGE_KEY = 'timeout-customer-phone';
 
-/** The customer name remembered from a previous order, if any. */
-function readStoredName(): string {
+/** Read a remembered checkout value from a previous order, if any. */
+function readStored(key: string): string {
     if (typeof window === 'undefined') {
         return '';
     }
 
     try {
-        return window.localStorage.getItem(NAME_STORAGE_KEY) ?? '';
+        return window.localStorage.getItem(key) ?? '';
     } catch {
         return '';
     }
 }
 
-/** Remember the customer name so it can be pre-filled on the next order. */
-function storeName(name: string): void {
+/** Remember a checkout value so it can be pre-filled on the next order. */
+function store(key: string, value: string): void {
     try {
-        window.localStorage.setItem(NAME_STORAGE_KEY, name);
+        window.localStorage.setItem(key, value);
     } catch {
         // Ignore storage failures (e.g. private mode quota).
     }
@@ -59,8 +60,12 @@ export function CartSheet() {
     } = useCart();
     const pricing = usePricing();
     const isOpen = useShopOpen();
-    const { whatsappNumber, requireFullName, getClientLocation } =
-        usePage().props;
+    const {
+        whatsappNumber,
+        requireFullName,
+        requirePhoneNumber,
+        getClientLocation,
+    } = usePage().props;
     // Single-currency formatter for the per-item breakdown rows (USD when shown,
     // otherwise LBP), keeping the breakdown compact.
     const fmtPrimary = (usd: number): string =>
@@ -69,9 +74,15 @@ export function CartSheet() {
     const deliveryFeeUsd = items.length > 0 ? pricing.deliveryFeeUsd : null;
     const totalUsd = subtotalUsd + (deliveryFeeUsd ?? 0);
     const [confirmingClear, setConfirmingClear] = useState(false);
-    // The name-entry step shown before checkout when a full name is required.
-    const [enteringName, setEnteringName] = useState(false);
-    const [name, setName] = useState<string>(readStoredName);
+    // The details-entry step shown before checkout when a name and/or phone
+    // number is required.
+    const [enteringDetails, setEnteringDetails] = useState(false);
+    const [name, setName] = useState<string>(() =>
+        readStored(NAME_STORAGE_KEY),
+    );
+    const [phone, setPhone] = useState<string>(() =>
+        readStored(PHONE_STORAGE_KEY),
+    );
     // True while waiting on the browser's geolocation prompt.
     const [locating, setLocating] = useState(false);
 
@@ -94,13 +105,14 @@ export function CartSheet() {
 
         if (!next) {
             setConfirmingClear(false);
-            setEnteringName(false);
+            setEnteringDetails(false);
             setLocating(false);
         }
     };
 
     const sendOrder = (
         customerName?: string | null,
+        customerPhone?: string | null,
         location?: LocationResult | null,
     ): void => {
         if (!whatsappNumber || items.length === 0) {
@@ -114,6 +126,7 @@ export function CartSheet() {
             deliveryFeeUsd,
             totalUsd,
             customerName,
+            customerPhone,
             location,
         });
 
@@ -126,9 +139,12 @@ export function CartSheet() {
 
     // Resolve the customer's location (when enabled) then open WhatsApp. The order
     // is never blocked: if location is denied or unavailable, it sends without it.
-    const beginSend = (customerName?: string | null): void => {
+    const beginSend = (
+        customerName?: string | null,
+        customerPhone?: string | null,
+    ): void => {
         if (!getClientLocation || !('geolocation' in navigator)) {
-            sendOrder(customerName);
+            sendOrder(customerName, customerPhone);
 
             return;
         }
@@ -138,14 +154,14 @@ export function CartSheet() {
         getBestLocation()
             .then((location) => {
                 setLocating(false);
-                setEnteringName(false);
-                sendOrder(customerName, location);
+                setEnteringDetails(false);
+                sendOrder(customerName, customerPhone, location);
             })
             .catch(() => {
                 // Denied or unavailable — send the order without a location.
                 setLocating(false);
-                setEnteringName(false);
-                sendOrder(customerName, null);
+                setEnteringDetails(false);
+                sendOrder(customerName, customerPhone, null);
             });
     };
 
@@ -156,9 +172,9 @@ export function CartSheet() {
             return;
         }
 
-        // Collect the customer's name first when the shop requires it.
-        if (requireFullName) {
-            setEnteringName(true);
+        // Collect the customer's details first when the shop requires any.
+        if (requireFullName || requirePhoneNumber) {
+            setEnteringDetails(true);
 
             return;
         }
@@ -166,16 +182,33 @@ export function CartSheet() {
         beginSend();
     };
 
-    const handleConfirmName = (): void => {
-        const trimmed = name.trim();
+    const handleConfirmDetails = (): void => {
+        const trimmedName = name.trim();
+        const trimmedPhone = phone.trim();
 
-        if (trimmed === '') {
+        // Required fields must be filled before the order can be sent.
+        if (requireFullName && trimmedName === '') {
             return;
         }
 
-        storeName(trimmed);
-        setName(trimmed);
-        beginSend(trimmed);
+        if (requirePhoneNumber && trimmedPhone === '') {
+            return;
+        }
+
+        if (requireFullName) {
+            store(NAME_STORAGE_KEY, trimmedName);
+            setName(trimmedName);
+        }
+
+        if (requirePhoneNumber) {
+            store(PHONE_STORAGE_KEY, trimmedPhone);
+            setPhone(trimmedPhone);
+        }
+
+        beginSend(
+            requireFullName ? trimmedName : null,
+            requirePhoneNumber ? trimmedPhone : null,
+        );
     };
 
     return (
@@ -464,36 +497,62 @@ export function CartSheet() {
                                         </button>
                                     </div>
                                 </div>
-                            ) : enteringName ? (
+                            ) : enteringDetails ? (
                                 <form
                                     onSubmit={(event) => {
                                         event.preventDefault();
-                                        handleConfirmName();
+                                        handleConfirmDetails();
                                     }}
                                     className="flex flex-col gap-2 rounded-md border-2 border-dashed border-brand-red/60 p-2.5"
                                 >
-                                    <label
-                                        htmlFor="checkout-name"
-                                        className="text-sm font-extrabold tracking-wide uppercase"
-                                    >
-                                        Your name
-                                    </label>
-                                    <input
-                                        id="checkout-name"
-                                        type="text"
-                                        autoFocus
-                                        value={name}
-                                        onChange={(event) =>
-                                            setName(event.target.value)
-                                        }
-                                        placeholder="e.g. Omar"
-                                        className="w-full rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-bold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                    />
+                                    {requireFullName && (
+                                        <>
+                                            <label
+                                                htmlFor="checkout-name"
+                                                className="text-sm font-extrabold tracking-wide uppercase"
+                                            >
+                                                Your name
+                                            </label>
+                                            <input
+                                                id="checkout-name"
+                                                type="text"
+                                                autoFocus
+                                                value={name}
+                                                onChange={(event) =>
+                                                    setName(event.target.value)
+                                                }
+                                                placeholder="e.g. Omar"
+                                                className="w-full rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-bold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                            />
+                                        </>
+                                    )}
+                                    {requirePhoneNumber && (
+                                        <>
+                                            <label
+                                                htmlFor="checkout-phone"
+                                                className="text-sm font-extrabold tracking-wide uppercase"
+                                            >
+                                                Your phone number
+                                            </label>
+                                            <input
+                                                id="checkout-phone"
+                                                type="tel"
+                                                inputMode="tel"
+                                                autoFocus={!requireFullName}
+                                                value={phone}
+                                                onChange={(event) =>
+                                                    setPhone(event.target.value)
+                                                }
+                                                placeholder="e.g. 03 123 456"
+                                                className="w-full rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-bold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                            />
+                                        </>
+                                    )}
                                     <div className="flex gap-2">
                                         <button
                                             type="button"
                                             onClick={() =>
-                                                setEnteringName(false)
+                                                setEnteringDetails(false)
                                             }
                                             className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                         >
@@ -502,7 +561,11 @@ export function CartSheet() {
                                         <button
                                             type="submit"
                                             disabled={
-                                                name.trim() === '' || locating
+                                                (requireFullName &&
+                                                    name.trim() === '') ||
+                                                (requirePhoneNumber &&
+                                                    phone.trim() === '') ||
+                                                locating
                                             }
                                             className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_#000]"
                                         >

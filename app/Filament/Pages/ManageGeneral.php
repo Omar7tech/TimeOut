@@ -262,6 +262,15 @@ class ManageGeneral extends SettingsPage
                                         $get('online_ordering_active')
                                         JS),
 
+                                Toggle::make('require_phone_number')
+                                    ->label('Require phone number - طلب رقم الهاتف')
+                                    ->helperText('Ask the customer for their phone number before sending the order. - اطلب رقم هاتف الزبون قبل إرسال الطلب.')
+                                    ->default(false)
+                                    ->columnSpanFull()
+                                    ->visibleJs(<<<'JS'
+                                        $get('online_ordering_active')
+                                        JS),
+
                                 Toggle::make('get_client_location')
                                     ->label('Get customer location - تحديد موقع الزبون')
                                     ->helperText('Ask for the customer\'s location and attach a map link to the order. - اطلب موقع الزبون وأرفق رابط الخريطة مع الطلب.')

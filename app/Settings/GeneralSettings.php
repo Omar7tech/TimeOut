@@ -109,6 +109,11 @@ class GeneralSettings extends Settings
     public bool $require_full_name;
 
     /**
+     * Whether customers must provide their phone number before sending an order.
+     */
+    public bool $require_phone_number;
+
+    /**
      * Whether to request the customer's location and attach it to their order.
      */
     public bool $get_client_location;

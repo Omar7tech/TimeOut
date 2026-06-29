@@ -12,6 +12,8 @@ type OrderSummary = {
     totalUsd: number;
     /** The customer's name, included when full name is required. */
     customerName?: string | null;
+    /** The customer's phone number, included when a phone number is required. */
+    customerPhone?: string | null;
     /** The customer's coordinates, included when location sharing is on. */
     location?: LocationResult | null;
 };
@@ -48,6 +50,7 @@ export function buildOrderMessage({
     deliveryFeeUsd,
     totalUsd,
     customerName,
+    customerPhone,
     location,
 }: OrderSummary): string {
     const divider = '———————————————';
@@ -55,6 +58,10 @@ export function buildOrderMessage({
 
     if (customerName && customerName.trim() !== '') {
         lines.push(`👤 *Name:* ${customerName.trim()}`);
+    }
+
+    if (customerPhone && customerPhone.trim() !== '') {
+        lines.push(`📱 *Phone:* ${customerPhone.trim()}`);
     }
 
     if (location) {
@@ -70,6 +77,7 @@ export function buildOrderMessage({
 
     if (
         (customerName && customerName.trim() !== '') ||
+        (customerPhone && customerPhone.trim() !== '') ||
         location
     ) {
         lines.push('');
