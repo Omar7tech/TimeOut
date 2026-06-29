@@ -125,6 +125,28 @@ export function CartSheet() {
     // draft. Editing happens in a focused dialog instead of a cramped inline box.
     const [noteEditingKey, setNoteEditingKey] = useState<string | null>(null);
     const [noteDraft, setNoteDraft] = useState('');
+    // Whether the item list has hidden content above/below the scroll viewport,
+    // used to fade the edges as a "more to scroll" hint.
+    const listRef = useRef<HTMLUListElement>(null);
+    const [scrollFades, setScrollFades] = useState({
+        top: false,
+        bottom: false,
+    });
+
+    const updateScrollFades = (): void => {
+        const element = listRef.current;
+
+        if (element === null) {
+            return;
+        }
+
+        const { scrollTop, scrollHeight, clientHeight } = element;
+
+        setScrollFades({
+            top: scrollTop > 4,
+            bottom: scrollTop + clientHeight < scrollHeight - 4,
+        });
+    };
 
     const noteEditingItem =
         noteEditingKey === null
@@ -169,6 +191,14 @@ export function CartSheet() {
 
         return () => window.clearTimeout(timeout);
     }, [confirmingClear]);
+
+    // Recompute the scroll fades after the list renders or its contents change
+    // (a frame later so the sheet's open animation has settled its height).
+    useEffect(() => {
+        const frame = requestAnimationFrame(updateScrollFades);
+
+        return () => cancelAnimationFrame(frame);
+    }, [items, open]);
 
     const handleOpenChange = (next: boolean): void => {
         setOpen(next);
@@ -400,191 +430,216 @@ export function CartSheet() {
                         </div>
                     ) : (
                         <>
-                            <ul className="flex min-h-0 flex-1 flex-col divide-y-2 divide-neutral-700 overflow-y-auto">
-                                {items.map((item) => (
-                                    <li
-                                        key={item.key}
-                                        className="flex flex-col gap-2 p-3"
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            {item.image && (
-                                                <SmartImage
-                                                    src={item.image}
-                                                    alt={item.title}
-                                                    className="size-14 shrink-0 rounded-md border-2 border-black"
-                                                    imgClassName="object-cover"
-                                                    draggable={false}
-                                                />
-                                            )}
+                            <div className="relative flex min-h-0 flex-1 flex-col">
+                                {scrollFades.top && (
+                                    <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-6 bg-gradient-to-b from-card to-transparent" />
+                                )}
 
-                                            <div className="flex min-w-0 flex-1 flex-col gap-1">
-                                                <p className="truncate text-sm leading-tight font-bold">
-                                                    {item.title}
-                                                </p>
-                                                {item.variantName && (
-                                                    <p className="truncate text-xs font-semibold text-muted-foreground">
-                                                        {item.variantName}
-                                                    </p>
+                                <ul
+                                    ref={listRef}
+                                    onScroll={updateScrollFades}
+                                    className="flex min-h-0 flex-1 flex-col divide-y-2 divide-neutral-700 overflow-y-auto"
+                                >
+                                    {items.map((item) => (
+                                        <li
+                                            key={item.key}
+                                            className="flex flex-col gap-2 p-3"
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                {item.image && (
+                                                    <SmartImage
+                                                        src={item.image}
+                                                        alt={item.title}
+                                                        className="size-14 shrink-0 rounded-md border-2 border-black"
+                                                        imgClassName="object-cover"
+                                                        draggable={false}
+                                                    />
                                                 )}
-                                                {item.addons.length > 0 ? (
-                                                    <div className="mt-0.5 flex flex-col gap-0.5 rounded-md border border-dashed border-neutral-400 p-1.5 text-[11px] font-semibold text-muted-foreground">
-                                                        <div className="flex items-center justify-between gap-2">
-                                                            <span>Item</span>
-                                                            <span className="tabular-nums">
-                                                                {fmtPrimary(
-                                                                    item.unitUsd *
-                                                                        item.quantity,
-                                                                )}
-                                                            </span>
-                                                        </div>
 
-                                                        {item.addons.map(
-                                                            (addon) => (
-                                                                <div
-                                                                    key={
-                                                                        addon.name
-                                                                    }
-                                                                    className="flex items-center justify-between gap-2"
-                                                                >
-                                                                    <span className="min-w-0 truncate">
-                                                                        <span className="tabular-nums">
-                                                                            {addon.quantity *
-                                                                                item.quantity}
-                                                                            ×
-                                                                        </span>{' '}
-                                                                        {
+                                                <div className="flex min-w-0 flex-1 flex-col gap-1">
+                                                    <p className="truncate text-sm leading-tight font-bold">
+                                                        {item.title}
+                                                    </p>
+                                                    {item.variantName && (
+                                                        <p className="truncate text-xs font-semibold text-muted-foreground">
+                                                            {item.variantName}
+                                                        </p>
+                                                    )}
+                                                    {item.addons.length > 0 ? (
+                                                        <div className="mt-0.5 flex flex-col gap-0.5 rounded-md border border-dashed border-neutral-400 p-1.5 text-[11px] font-semibold text-muted-foreground">
+                                                            <div className="flex items-center justify-between gap-2">
+                                                                <span>
+                                                                    Item
+                                                                </span>
+                                                                <span className="tabular-nums">
+                                                                    {fmtPrimary(
+                                                                        item.unitUsd *
+                                                                            item.quantity,
+                                                                    )}
+                                                                </span>
+                                                            </div>
+
+                                                            {item.addons.map(
+                                                                (addon) => (
+                                                                    <div
+                                                                        key={
                                                                             addon.name
                                                                         }
-                                                                    </span>
-                                                                    <span className="shrink-0 tabular-nums">
-                                                                        +
-                                                                        {fmtPrimary(
-                                                                            addon.price *
-                                                                                addon.quantity *
-                                                                                item.quantity,
-                                                                        )}
-                                                                    </span>
-                                                                </div>
-                                                            ),
-                                                        )}
+                                                                        className="flex items-center justify-between gap-2"
+                                                                    >
+                                                                        <span className="min-w-0 truncate">
+                                                                            <span className="tabular-nums">
+                                                                                {addon.quantity *
+                                                                                    item.quantity}
 
-                                                        <div className="mt-0.5 flex items-center justify-between gap-2 border-t border-neutral-300 pt-0.5 text-xs font-extrabold text-foreground">
-                                                            <span className="tracking-wide uppercase">
-                                                                Total
-                                                            </span>
-                                                            <span className="tabular-nums">
-                                                                {fmtPrimary(
-                                                                    cartItemUnitUsd(
-                                                                        item,
-                                                                    ) *
-                                                                        item.quantity,
-                                                                )}
-                                                            </span>
+                                                                                ×
+                                                                            </span>{' '}
+                                                                            {
+                                                                                addon.name
+                                                                            }
+                                                                        </span>
+                                                                        <span className="shrink-0 tabular-nums">
+                                                                            +
+                                                                            {fmtPrimary(
+                                                                                addon.price *
+                                                                                    addon.quantity *
+                                                                                    item.quantity,
+                                                                            )}
+                                                                        </span>
+                                                                    </div>
+                                                                ),
+                                                            )}
+
+                                                            <div className="mt-0.5 flex items-center justify-between gap-2 border-t border-neutral-300 pt-0.5 text-xs font-extrabold text-foreground">
+                                                                <span className="tracking-wide uppercase">
+                                                                    Total
+                                                                </span>
+                                                                <span className="tabular-nums">
+                                                                    {fmtPrimary(
+                                                                        cartItemUnitUsd(
+                                                                            item,
+                                                                        ) *
+                                                                            item.quantity,
+                                                                    )}
+                                                                </span>
+                                                            </div>
                                                         </div>
+                                                    ) : (
+                                                        <div className="flex flex-col text-xs leading-tight font-extrabold">
+                                                            {pricing.showUsd && (
+                                                                <span>
+                                                                    {pricing.usd(
+                                                                        item.unitUsd *
+                                                                            item.quantity,
+                                                                    )}
+                                                                </span>
+                                                            )}
+                                                            {pricing.showLbp && (
+                                                                <span
+                                                                    className={cn(
+                                                                        pricing.showUsd &&
+                                                                            'text-[11px] text-muted-foreground',
+                                                                    )}
+                                                                >
+                                                                    {pricing.lbp(
+                                                                        item.unitUsd *
+                                                                            item.quantity,
+                                                                    )}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <div className="flex shrink-0 flex-col items-end gap-1.5">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            removeItem(item.key)
+                                                        }
+                                                        aria-label={`Remove ${item.title}`}
+                                                        className="text-muted-foreground transition-colors hover:text-brand-red"
+                                                    >
+                                                        <Trash2 className="size-4" />
+                                                    </button>
+
+                                                    <div className="flex items-center overflow-hidden rounded-md border-2 border-black">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                decrement(
+                                                                    item.key,
+                                                                )
+                                                            }
+                                                            disabled={
+                                                                item.quantity <=
+                                                                1
+                                                            }
+                                                            aria-label="Decrease quantity"
+                                                            className="flex size-8 items-center justify-center bg-card transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:text-muted-foreground/40 disabled:hover:bg-card"
+                                                        >
+                                                            <Minus className="size-3.5" />
+                                                        </button>
+                                                        <span className="w-8 text-center text-sm font-extrabold tabular-nums">
+                                                            {item.quantity}
+                                                        </span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                increment(
+                                                                    item.key,
+                                                                )
+                                                            }
+                                                            aria-label="Increase quantity"
+                                                            className="flex size-8 items-center justify-center bg-card transition-colors hover:bg-muted"
+                                                        >
+                                                            <Plus className="size-3.5" />
+                                                        </button>
                                                     </div>
-                                                ) : (
-                                                    <div className="flex flex-col text-xs leading-tight font-extrabold">
-                                                        {pricing.showUsd && (
-                                                            <span>
-                                                                {pricing.usd(
-                                                                    item.unitUsd *
-                                                                        item.quantity,
-                                                                )}
-                                                            </span>
-                                                        )}
-                                                        {pricing.showLbp && (
-                                                            <span
-                                                                className={cn(
-                                                                    pricing.showUsd &&
-                                                                        'text-[11px] text-muted-foreground',
-                                                                )}
-                                                            >
-                                                                {pricing.lbp(
-                                                                    item.unitUsd *
-                                                                        item.quantity,
-                                                                )}
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                )}
+                                                </div>
                                             </div>
 
-                                            <div className="flex shrink-0 flex-col items-end gap-1.5">
+                                            {item.note &&
+                                            item.note.trim() !== '' ? (
                                                 <button
                                                     type="button"
                                                     onClick={() =>
-                                                        removeItem(item.key)
+                                                        openNoteEditor(
+                                                            item.key,
+                                                            item.note ?? '',
+                                                        )
                                                     }
-                                                    aria-label={`Remove ${item.title}`}
-                                                    className="text-muted-foreground transition-colors hover:text-brand-red"
+                                                    className="flex w-full items-start gap-1.5 rounded-md border-2 border-dashed border-brand-red/50 bg-brand-red/5 px-2.5 py-1.5 text-left text-xs font-semibold text-foreground transition-colors hover:border-brand-red"
                                                 >
-                                                    <Trash2 className="size-4" />
-                                                </button>
-
-                                                <div className="flex items-center overflow-hidden rounded-md border-2 border-black">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            decrement(item.key)
-                                                        }
-                                                        disabled={
-                                                            item.quantity <= 1
-                                                        }
-                                                        aria-label="Decrease quantity"
-                                                        className="flex size-8 items-center justify-center bg-card transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:text-muted-foreground/40 disabled:hover:bg-card"
-                                                    >
-                                                        <Minus className="size-3.5" />
-                                                    </button>
-                                                    <span className="w-8 text-center text-sm font-extrabold tabular-nums">
-                                                        {item.quantity}
+                                                    <StickyNote className="mt-0.5 size-3.5 shrink-0 text-brand-red" />
+                                                    <span className="flex-1 break-words">
+                                                        {item.note}
                                                     </span>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            increment(item.key)
-                                                        }
-                                                        aria-label="Increase quantity"
-                                                        className="flex size-8 items-center justify-center bg-card transition-colors hover:bg-muted"
-                                                    >
-                                                        <Plus className="size-3.5" />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
+                                                    <Pencil className="mt-0.5 size-3 shrink-0 text-muted-foreground" />
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        openNoteEditor(
+                                                            item.key,
+                                                            '',
+                                                        )
+                                                    }
+                                                    className="inline-flex items-center gap-1.5 self-start text-xs font-bold text-muted-foreground transition-colors hover:text-brand-red"
+                                                >
+                                                    <StickyNote className="size-3.5" />
+                                                    Add a note
+                                                </button>
+                                            )}
+                                        </li>
+                                    ))}
+                                </ul>
 
-                                        {item.note &&
-                                        item.note.trim() !== '' ? (
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    openNoteEditor(
-                                                        item.key,
-                                                        item.note ?? '',
-                                                    )
-                                                }
-                                                className="flex w-full items-start gap-1.5 rounded-md border-2 border-dashed border-brand-red/50 bg-brand-red/5 px-2.5 py-1.5 text-left text-xs font-semibold text-foreground transition-colors hover:border-brand-red"
-                                            >
-                                                <StickyNote className="mt-0.5 size-3.5 shrink-0 text-brand-red" />
-                                                <span className="flex-1 break-words">
-                                                    {item.note}
-                                                </span>
-                                                <Pencil className="mt-0.5 size-3 shrink-0 text-muted-foreground" />
-                                            </button>
-                                        ) : (
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    openNoteEditor(item.key, '')
-                                                }
-                                                className="inline-flex items-center gap-1.5 self-start text-xs font-bold text-muted-foreground transition-colors hover:text-brand-red"
-                                            >
-                                                <StickyNote className="size-3.5" />
-                                                Add a note
-                                            </button>
-                                        )}
-                                    </li>
-                                ))}
-                            </ul>
+                                {scrollFades.bottom && (
+                                    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-8 bg-gradient-to-t from-card to-transparent" />
+                                )}
+                            </div>
 
                             <div className="flex shrink-0 flex-col gap-3 border-t-2 border-neutral-700 p-4">
                                 {deliveryFeeUsd !== null && (
