@@ -1,5 +1,6 @@
 import { usePage } from '@inertiajs/react';
 import {
+    ArrowRight,
     MapPin,
     MapPinOff,
     Minus,
@@ -119,8 +120,10 @@ export function CartSheet() {
     // so the warning never flashes during SSR.
     const isSecureContext =
         typeof window === 'undefined' ? true : window.isSecureContext;
-    // An optional free-text note for the whole order.
+    // An optional free-text note for the whole order, collected as its own step
+    // in the checkout flow (after details, just before sending).
     const [orderNote, setOrderNote] = useState('');
+    const [enteringNote, setEnteringNote] = useState(false);
     // The cart line whose note is being edited in the popup, plus the working
     // draft. Editing happens in a focused dialog instead of a cramped inline box.
     const [noteEditingKey, setNoteEditingKey] = useState<string | null>(null);
@@ -211,6 +214,7 @@ export function CartSheet() {
             setLocationDenied(false);
             setSending(false);
             setWhatsappUrl(null);
+            setEnteringNote(false);
             closeNoteEditor();
             // Block any in-flight location lookup from sending after the
             // customer has closed the cart.
@@ -355,21 +359,22 @@ export function CartSheet() {
             return;
         }
 
-        // Collect the customer's details first when the shop requires any.
+        // Collect the customer's details first when the shop requires any,
+        // otherwise go straight to the order-note step.
         if (requireFullName || requirePhoneNumber) {
             setEnteringDetails(true);
 
             return;
         }
 
-        beginSend();
+        setEnteringNote(true);
     };
 
     const handleConfirmDetails = (): void => {
         const trimmedName = name.trim();
         const trimmedPhone = phone.trim();
 
-        // Required fields must be filled before the order can be sent.
+        // Required fields must be filled before moving on.
         if (requireFullName && trimmedName === '') {
             return;
         }
@@ -391,10 +396,27 @@ export function CartSheet() {
             setPhone(trimmedPhone);
         }
 
+        // Advance to the order-note step before sending.
+        setEnteringDetails(false);
+        setEnteringNote(true);
+    };
+
+    // The final step: send the order (name/phone already captured, note optional).
+    const handleConfirmNote = (): void => {
+        setEnteringNote(false);
         beginSend(
-            requireFullName ? trimmedName : null,
-            requirePhoneNumber ? trimmedPhone : null,
+            requireFullName ? name.trim() : null,
+            requirePhoneNumber ? phone.trim() : null,
         );
+    };
+
+    // Step back from the note step to details (if required) or the cart.
+    const handleNoteBack = (): void => {
+        setEnteringNote(false);
+
+        if (requireFullName || requirePhoneNumber) {
+            setEnteringDetails(true);
+        }
     };
 
     return (
@@ -682,35 +704,6 @@ export function CartSheet() {
                                     </span>
                                 </div>
 
-                                {isOpen &&
-                                    !sending &&
-                                    !locating &&
-                                    !locationError &&
-                                    !confirmingClear && (
-                                        <div className="flex flex-col gap-1.5">
-                                            <label
-                                                htmlFor="order-note"
-                                                className="flex items-center gap-1.5 text-xs font-extrabold tracking-wide text-muted-foreground uppercase"
-                                            >
-                                                <StickyNote className="size-3.5" />
-                                                Note for the order
-                                            </label>
-                                            <textarea
-                                                id="order-note"
-                                                value={orderNote}
-                                                onChange={(event) =>
-                                                    setOrderNote(
-                                                        event.target.value,
-                                                    )
-                                                }
-                                                rows={2}
-                                                maxLength={300}
-                                                placeholder="Anything we should know? (e.g. ring the bell, call on arrival)"
-                                                className="w-full resize-none rounded-md border-2 border-black bg-card px-2.5 py-1.5 text-xs font-semibold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                            />
-                                        </div>
-                                    )}
-
                                 {sending ? (
                                     <div className="flex flex-col items-center gap-2.5 rounded-md border-2 border-dashed border-brand-red/60 p-3 text-center">
                                         <img
@@ -975,29 +968,61 @@ export function CartSheet() {
                                                         name.trim() === '') ||
                                                     (requirePhoneNumber &&
                                                         phoneDigitCount(phone) <
-                                                            PHONE_MIN_DIGITS) ||
-                                                    locating
+                                                            PHONE_MIN_DIGITS)
                                                 }
                                                 className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_#000]"
                                             >
-                                                {locating ? (
-                                                    <>
-                                                        <MapPin className="size-5 animate-pulse" />
-                                                        Getting location…
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <img
-                                                            src="/social-icons/whatsapp.svg"
-                                                            alt=""
-                                                            className="size-5 brightness-0 invert"
-                                                        />
-                                                        Send order
-                                                    </>
-                                                )}
+                                                Continue
+                                                <ArrowRight className="size-4" />
                                             </button>
                                         </div>
                                     </form>
+                                ) : enteringNote ? (
+                                    <div className="flex flex-col gap-2 rounded-md border-2 border-dashed border-brand-red/60 p-2.5">
+                                        <label
+                                            htmlFor="order-note"
+                                            className="flex items-center gap-1.5 text-sm font-extrabold tracking-wide uppercase"
+                                        >
+                                            <StickyNote className="size-4" />
+                                            Note for your order
+                                            <span className="font-bold text-muted-foreground normal-case">
+                                                (optional)
+                                            </span>
+                                        </label>
+                                        <textarea
+                                            id="order-note"
+                                            autoFocus
+                                            value={orderNote}
+                                            onChange={(event) =>
+                                                setOrderNote(event.target.value)
+                                            }
+                                            rows={3}
+                                            maxLength={300}
+                                            placeholder="e.g. ring the bell, call on arrival, extra napkins"
+                                            className="w-full resize-none rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-semibold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                        />
+                                        <div className="flex gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={handleNoteBack}
+                                                className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                            >
+                                                Back
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={handleConfirmNote}
+                                                className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                            >
+                                                <img
+                                                    src="/social-icons/whatsapp.svg"
+                                                    alt=""
+                                                    className="size-5 brightness-0 invert"
+                                                />
+                                                Send order
+                                            </button>
+                                        </div>
+                                    </div>
                                 ) : (
                                     <div className="flex gap-2">
                                         <button
