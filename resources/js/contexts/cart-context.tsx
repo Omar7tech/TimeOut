@@ -27,6 +27,8 @@ export type CartItem = {
     addons: CartAddon[];
     image: string | null;
     quantity: number;
+    /** Optional free-text note for this line, e.g. "no pickles, extra sauce". */
+    note?: string;
 };
 
 export type AddToCartInput = {
@@ -71,6 +73,7 @@ type CartActions = {
     increment: (key: string) => void;
     decrement: (key: string) => void;
     removeItem: (key: string) => void;
+    setNote: (key: string, note: string) => void;
     clear: () => void;
 };
 
@@ -183,11 +186,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setItems((previous) => previous.filter((item) => item.key !== key));
     }, []);
 
+    const setNote = useCallback((key: string, note: string): void => {
+        setItems((previous) =>
+            previous.map((item) =>
+                item.key === key ? { ...item, note } : item,
+            ),
+        );
+    }, []);
+
     const clear = useCallback((): void => setItems([]), []);
 
     const actions = useMemo<CartActions>(
-        () => ({ setOpen, addItem, increment, decrement, removeItem, clear }),
-        [addItem, increment, decrement, removeItem, clear],
+        () => ({
+            setOpen,
+            addItem,
+            increment,
+            decrement,
+            removeItem,
+            setNote,
+            clear,
+        }),
+        [addItem, increment, decrement, removeItem, setNote, clear],
     );
 
     const state = useMemo<CartState>(

@@ -22,6 +22,8 @@ type OrderSummary = {
      * shop to expect a pinned location to follow.
      */
     locationPending?: boolean;
+    /** A free-text note for the whole order, included when provided. */
+    orderNote?: string | null;
 };
 
 /**
@@ -59,6 +61,7 @@ export function buildOrderMessage({
     customerPhone,
     location,
     locationPending,
+    orderNote,
 }: OrderSummary): string {
     const divider = '———————————————';
     const lines: string[] = ['🛒 *New Order — Time Out Snack*', ''];
@@ -107,8 +110,7 @@ export function buildOrderMessage({
         );
 
         item.addons.forEach((addon) => {
-            const addonTotalUsd =
-                addon.price * addon.quantity * item.quantity;
+            const addonTotalUsd = addon.price * addon.quantity * item.quantity;
 
             lines.push(
                 `   ➕ ${addon.quantity * item.quantity}× ${addon.name} (+${money(pricing, addonTotalUsd)})`,
@@ -117,6 +119,10 @@ export function buildOrderMessage({
 
         if (item.addons.length > 0) {
             lines.push(`   = ${money(pricing, lineTotalUsd)}`);
+        }
+
+        if (item.note && item.note.trim() !== '') {
+            lines.push(`   📝 _${item.note.trim()}_`);
         }
 
         lines.push('');
@@ -130,6 +136,10 @@ export function buildOrderMessage({
     }
 
     lines.push(`*TOTAL: ${money(pricing, totalUsd)}*`);
+
+    if (orderNote && orderNote.trim() !== '') {
+        lines.push('', divider, `📝 *Order note:* ${orderNote.trim()}`);
+    }
 
     return lines.join('\n');
 }

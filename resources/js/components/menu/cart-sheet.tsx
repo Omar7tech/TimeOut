@@ -5,6 +5,7 @@ import {
     Minus,
     Plus,
     ShoppingCart,
+    StickyNote,
     Trash2,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -70,6 +71,7 @@ export function CartSheet() {
         increment,
         decrement,
         removeItem,
+        setNote,
         clear,
     } = useCart();
     const pricing = usePricing();
@@ -115,6 +117,28 @@ export function CartSheet() {
     // so the warning never flashes during SSR.
     const isSecureContext =
         typeof window === 'undefined' ? true : window.isSecureContext;
+    // An optional free-text note for the whole order.
+    const [orderNote, setOrderNote] = useState('');
+    // Per-item note editors that are currently expanded, keyed by cart line.
+    const [openNotes, setOpenNotes] = useState<Record<string, boolean>>({});
+    // Live textarea elements per cart line, so we can focus only the note the
+    // customer just opened — not whichever one was open last on a re-render.
+    const noteRefs = useRef<Record<string, HTMLTextAreaElement | null>>({});
+
+    const toggleNote = (key: string): void => {
+        setOpenNotes((previous) => ({ ...previous, [key]: !previous[key] }));
+        // Focus the field once it has rendered, without relying on autoFocus
+        // (which re-fires on every remount and steals focus).
+        requestAnimationFrame(() => noteRefs.current[key]?.focus());
+    };
+
+    // Empty the cart and drop every note that belonged to it.
+    const handleClear = (): void => {
+        clear();
+        setOrderNote('');
+        setOpenNotes({});
+        setConfirmingClear(false);
+    };
 
     // Auto-dismiss the clear confirmation after a few seconds.
     useEffect(() => {
@@ -179,6 +203,7 @@ export function CartSheet() {
             customerPhone,
             location,
             locationPending,
+            orderNote,
         });
 
         const url = buildWhatsAppUrl(whatsappNumber, message);
@@ -209,7 +234,10 @@ export function CartSheet() {
         sentRef.current = false;
 
         // Remember the details so a retry can finish without re-collecting them.
-        pendingDetailsRef.current = { name: customerName, phone: customerPhone };
+        pendingDetailsRef.current = {
+            name: customerName,
+            phone: customerPhone,
+        };
 
         if (!getClientLocation) {
             sendOrder(customerName, customerPhone);
@@ -351,139 +379,175 @@ export function CartSheet() {
                             {items.map((item) => (
                                 <li
                                     key={item.key}
-                                    className="flex items-center gap-3 p-3"
+                                    className="flex flex-col gap-2 p-3"
                                 >
-                                    {item.image && (
-                                        <SmartImage
-                                            src={item.image}
-                                            alt={item.title}
-                                            className="size-14 shrink-0 rounded-md border-2 border-black"
-                                            imgClassName="object-cover"
-                                            draggable={false}
-                                        />
-                                    )}
-
-                                    <div className="flex min-w-0 flex-1 flex-col gap-1">
-                                        <p className="truncate text-sm leading-tight font-bold">
-                                            {item.title}
-                                        </p>
-                                        {item.variantName && (
-                                            <p className="truncate text-xs font-semibold text-muted-foreground">
-                                                {item.variantName}
-                                            </p>
+                                    <div className="flex items-center gap-3">
+                                        {item.image && (
+                                            <SmartImage
+                                                src={item.image}
+                                                alt={item.title}
+                                                className="size-14 shrink-0 rounded-md border-2 border-black"
+                                                imgClassName="object-cover"
+                                                draggable={false}
+                                            />
                                         )}
-                                        {item.addons.length > 0 ? (
-                                            <div className="mt-0.5 flex flex-col gap-0.5 rounded-md border border-dashed border-neutral-400 p-1.5 text-[11px] font-semibold text-muted-foreground">
-                                                <div className="flex items-center justify-between gap-2">
-                                                    <span>Item</span>
-                                                    <span className="tabular-nums">
-                                                        {fmtPrimary(
-                                                            item.unitUsd *
-                                                                item.quantity,
-                                                        )}
-                                                    </span>
-                                                </div>
 
-                                                {item.addons.map((addon) => (
-                                                    <div
-                                                        key={addon.name}
-                                                        className="flex items-center justify-between gap-2"
-                                                    >
-                                                        <span className="min-w-0 truncate">
-                                                            <span className="tabular-nums">
-                                                                {addon.quantity *
-                                                                    item.quantity}
-                                                                ×
-                                                            </span>{' '}
-                                                            {addon.name}
-                                                        </span>
-                                                        <span className="shrink-0 tabular-nums">
-                                                            +
+                                        <div className="flex min-w-0 flex-1 flex-col gap-1">
+                                            <p className="truncate text-sm leading-tight font-bold">
+                                                {item.title}
+                                            </p>
+                                            {item.variantName && (
+                                                <p className="truncate text-xs font-semibold text-muted-foreground">
+                                                    {item.variantName}
+                                                </p>
+                                            )}
+                                            {item.addons.length > 0 ? (
+                                                <div className="mt-0.5 flex flex-col gap-0.5 rounded-md border border-dashed border-neutral-400 p-1.5 text-[11px] font-semibold text-muted-foreground">
+                                                    <div className="flex items-center justify-between gap-2">
+                                                        <span>Item</span>
+                                                        <span className="tabular-nums">
                                                             {fmtPrimary(
-                                                                addon.price *
-                                                                    addon.quantity *
+                                                                item.unitUsd *
                                                                     item.quantity,
                                                             )}
                                                         </span>
                                                     </div>
-                                                ))}
 
-                                                <div className="mt-0.5 flex items-center justify-between gap-2 border-t border-neutral-300 pt-0.5 text-xs font-extrabold text-foreground">
-                                                    <span className="tracking-wide uppercase">
-                                                        Total
-                                                    </span>
-                                                    <span className="tabular-nums">
-                                                        {fmtPrimary(
-                                                            cartItemUnitUsd(
-                                                                item,
-                                                            ) * item.quantity,
-                                                        )}
-                                                    </span>
+                                                    {item.addons.map(
+                                                        (addon) => (
+                                                            <div
+                                                                key={addon.name}
+                                                                className="flex items-center justify-between gap-2"
+                                                            >
+                                                                <span className="min-w-0 truncate">
+                                                                    <span className="tabular-nums">
+                                                                        {addon.quantity *
+                                                                            item.quantity}
+                                                                        ×
+                                                                    </span>{' '}
+                                                                    {addon.name}
+                                                                </span>
+                                                                <span className="shrink-0 tabular-nums">
+                                                                    +
+                                                                    {fmtPrimary(
+                                                                        addon.price *
+                                                                            addon.quantity *
+                                                                            item.quantity,
+                                                                    )}
+                                                                </span>
+                                                            </div>
+                                                        ),
+                                                    )}
+
+                                                    <div className="mt-0.5 flex items-center justify-between gap-2 border-t border-neutral-300 pt-0.5 text-xs font-extrabold text-foreground">
+                                                        <span className="tracking-wide uppercase">
+                                                            Total
+                                                        </span>
+                                                        <span className="tabular-nums">
+                                                            {fmtPrimary(
+                                                                cartItemUnitUsd(
+                                                                    item,
+                                                                ) *
+                                                                    item.quantity,
+                                                            )}
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ) : (
-                                            <div className="flex flex-col text-xs leading-tight font-extrabold">
-                                                {pricing.showUsd && (
-                                                    <span>
-                                                        {pricing.usd(
-                                                            item.unitUsd *
-                                                                item.quantity,
-                                                        )}
-                                                    </span>
-                                                )}
-                                                {pricing.showLbp && (
-                                                    <span
-                                                        className={cn(
-                                                            pricing.showUsd &&
-                                                                'text-[11px] text-muted-foreground',
-                                                        )}
-                                                    >
-                                                        {pricing.lbp(
-                                                            item.unitUsd *
-                                                                item.quantity,
-                                                        )}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
+                                            ) : (
+                                                <div className="flex flex-col text-xs leading-tight font-extrabold">
+                                                    {pricing.showUsd && (
+                                                        <span>
+                                                            {pricing.usd(
+                                                                item.unitUsd *
+                                                                    item.quantity,
+                                                            )}
+                                                        </span>
+                                                    )}
+                                                    {pricing.showLbp && (
+                                                        <span
+                                                            className={cn(
+                                                                pricing.showUsd &&
+                                                                    'text-[11px] text-muted-foreground',
+                                                            )}
+                                                        >
+                                                            {pricing.lbp(
+                                                                item.unitUsd *
+                                                                    item.quantity,
+                                                            )}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
 
-                                    <div className="flex shrink-0 flex-col items-end gap-1.5">
-                                        <button
-                                            type="button"
-                                            onClick={() => removeItem(item.key)}
-                                            aria-label={`Remove ${item.title}`}
-                                            className="text-muted-foreground transition-colors hover:text-brand-red"
-                                        >
-                                            <Trash2 className="size-4" />
-                                        </button>
-
-                                        <div className="flex items-center overflow-hidden rounded-md border-2 border-black">
+                                        <div className="flex shrink-0 flex-col items-end gap-1.5">
                                             <button
                                                 type="button"
                                                 onClick={() =>
-                                                    decrement(item.key)
+                                                    removeItem(item.key)
                                                 }
-                                                aria-label="Decrease quantity"
-                                                className="flex size-7 items-center justify-center bg-card transition-colors hover:bg-muted"
+                                                aria-label={`Remove ${item.title}`}
+                                                className="text-muted-foreground transition-colors hover:text-brand-red"
                                             >
-                                                <Minus className="size-3.5" />
+                                                <Trash2 className="size-4" />
                                             </button>
-                                            <span className="w-7 text-center text-sm font-extrabold tabular-nums">
-                                                {item.quantity}
-                                            </span>
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    increment(item.key)
-                                                }
-                                                aria-label="Increase quantity"
-                                                className="flex size-7 items-center justify-center bg-card transition-colors hover:bg-muted"
-                                            >
-                                                <Plus className="size-3.5" />
-                                            </button>
+
+                                            <div className="flex items-center overflow-hidden rounded-md border-2 border-black">
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        decrement(item.key)
+                                                    }
+                                                    aria-label="Decrease quantity"
+                                                    className="flex size-7 items-center justify-center bg-card transition-colors hover:bg-muted"
+                                                >
+                                                    <Minus className="size-3.5" />
+                                                </button>
+                                                <span className="w-7 text-center text-sm font-extrabold tabular-nums">
+                                                    {item.quantity}
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        increment(item.key)
+                                                    }
+                                                    aria-label="Increase quantity"
+                                                    className="flex size-7 items-center justify-center bg-card transition-colors hover:bg-muted"
+                                                >
+                                                    <Plus className="size-3.5" />
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
+
+                                    {openNotes[item.key] ||
+                                    (item.note && item.note.trim() !== '') ? (
+                                        <textarea
+                                            ref={(el) => {
+                                                noteRefs.current[item.key] = el;
+                                            }}
+                                            value={item.note ?? ''}
+                                            onChange={(event) =>
+                                                setNote(
+                                                    item.key,
+                                                    event.target.value,
+                                                )
+                                            }
+                                            rows={2}
+                                            maxLength={200}
+                                            placeholder="Add a note (e.g. no pickles, extra sauce)"
+                                            className="w-full resize-none rounded-md border-2 border-black bg-card px-2.5 py-1.5 text-xs font-semibold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                        />
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={() => toggleNote(item.key)}
+                                            className="inline-flex items-center gap-1.5 self-start text-xs font-bold text-muted-foreground transition-colors hover:text-brand-red"
+                                        >
+                                            <StickyNote className="size-3.5" />
+                                            Add a note
+                                        </button>
+                                    )}
                                 </li>
                             ))}
                         </ul>
@@ -528,6 +592,33 @@ export function CartSheet() {
                                     )}
                                 </span>
                             </div>
+
+                            {isOpen &&
+                                !sending &&
+                                !locating &&
+                                !locationError &&
+                                !confirmingClear && (
+                                    <div className="flex flex-col gap-1.5">
+                                        <label
+                                            htmlFor="order-note"
+                                            className="flex items-center gap-1.5 text-xs font-extrabold tracking-wide text-muted-foreground uppercase"
+                                        >
+                                            <StickyNote className="size-3.5" />
+                                            Note for the order
+                                        </label>
+                                        <textarea
+                                            id="order-note"
+                                            value={orderNote}
+                                            onChange={(event) =>
+                                                setOrderNote(event.target.value)
+                                            }
+                                            rows={2}
+                                            maxLength={300}
+                                            placeholder="Anything we should know? (e.g. ring the bell, call on arrival)"
+                                            className="w-full resize-none rounded-md border-2 border-black bg-card px-2.5 py-1.5 text-xs font-semibold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                        />
+                                    </div>
+                                )}
 
                             {sending ? (
                                 <div className="flex flex-col items-center gap-2.5 rounded-md border-2 border-dashed border-brand-red/60 p-3 text-center">
@@ -672,10 +763,7 @@ export function CartSheet() {
                                             </button>
                                             <button
                                                 type="button"
-                                                onClick={() => {
-                                                    clear();
-                                                    setConfirmingClear(false);
-                                                }}
+                                                onClick={handleClear}
                                                 className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                             >
                                                 <Trash2 className="size-4" />
@@ -766,7 +854,8 @@ export function CartSheet() {
                                                     PHONE_MIN_DIGITS && (
                                                     <p className="text-xs font-bold text-brand-red">
                                                         Please enter at least{' '}
-                                                        {PHONE_MIN_DIGITS} digits.
+                                                        {PHONE_MIN_DIGITS}{' '}
+                                                        digits.
                                                     </p>
                                                 )}
                                         </>
