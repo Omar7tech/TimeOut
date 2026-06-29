@@ -1,6 +1,13 @@
 import { usePage } from '@inertiajs/react';
-import { MapPin, Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import {
+    MapPin,
+    MapPinOff,
+    Minus,
+    Plus,
+    ShoppingCart,
+    Trash2,
+} from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { OpenCountdown } from '@/components/menu/open-countdown';
 import { SmartImage } from '@/components/smart-image';
 import {
@@ -92,6 +99,9 @@ export function CartSheet() {
     );
     // True while waiting on the browser's geolocation prompt.
     const [locating, setLocating] = useState(false);
+    // True when a required location lookup failed (denied, timed out, or
+    // unsupported); the order is held until the customer retries successfully.
+    const [locationError, setLocationError] = useState(false);
 
     // Auto-dismiss the clear confirmation after a few seconds.
     useEffect(() => {
@@ -114,17 +124,33 @@ export function CartSheet() {
             setConfirmingClear(false);
             setEnteringDetails(false);
             setLocating(false);
+            setLocationError(false);
+            // Block any in-flight location lookup from sending after the
+            // customer has closed the cart.
+            sentRef.current = true;
         }
     };
+
+    // Guards the order against opening WhatsApp twice — e.g. if the location
+    // promise resolves just after the customer chose "Send without location".
+    const sentRef = useRef(false);
+    // The name/phone captured at checkout, kept so the "Send without location"
+    // button can finish the order without re-collecting them.
+    const pendingDetailsRef = useRef<{
+        name?: string | null;
+        phone?: string | null;
+    }>({});
 
     const sendOrder = (
         customerName?: string | null,
         customerPhone?: string | null,
         location?: LocationResult | null,
     ): void => {
-        if (!whatsappNumber || items.length === 0) {
+        if (sentRef.current || !whatsappNumber || items.length === 0) {
             return;
         }
+
+        sentRef.current = true;
 
         const message = buildOrderMessage({
             items,
@@ -137,39 +163,59 @@ export function CartSheet() {
             location,
         });
 
-        window.open(
-            buildWhatsAppUrl(whatsappNumber, message),
-            '_blank',
-            'noopener,noreferrer',
-        );
+        // Same-tab navigation instead of window.open: popup blockers (notably
+        // iOS Safari, which blocks popups opened after an async await) never
+        // stop it, and on mobile this deep-links straight into the WhatsApp app.
+        window.location.href = buildWhatsAppUrl(whatsappNumber, message);
     };
 
-    // Resolve the customer's location (when enabled) then open WhatsApp. The order
-    // is never blocked: if location is denied or unavailable, it sends without it.
+    // Resolve the customer's location (when enabled) then open WhatsApp. When the
+    // shop requires a location the order is held until one is obtained: a failure
+    // surfaces an error with a retry instead of sending without it.
     const beginSend = (
         customerName?: string | null,
         customerPhone?: string | null,
     ): void => {
-        if (!getClientLocation || !('geolocation' in navigator)) {
+        sentRef.current = false;
+
+        // Remember the details so a retry can finish without re-collecting them.
+        pendingDetailsRef.current = { name: customerName, phone: customerPhone };
+
+        if (!getClientLocation) {
             sendOrder(customerName, customerPhone);
 
             return;
         }
 
+        if (!('geolocation' in navigator)) {
+            // Location is required but this device can't provide it.
+            setLocationError(true);
+
+            return;
+        }
+
+        setLocationError(false);
         setLocating(true);
 
-        getBestLocation()
+        getBestLocation({ timeoutMs: 8000 })
             .then((location) => {
                 setLocating(false);
                 setEnteringDetails(false);
                 sendOrder(customerName, customerPhone, location);
             })
             .catch(() => {
-                // Denied or unavailable — send the order without a location.
+                // Required location failed — hold the order and let them retry.
                 setLocating(false);
-                setEnteringDetails(false);
-                sendOrder(customerName, customerPhone, null);
+                setLocationError(true);
             });
+    };
+
+    // Retry a required location lookup using the details captured at checkout.
+    const retryLocation = (): void => {
+        beginSend(
+            pendingDetailsRef.current.name,
+            pendingDetailsRef.current.phone,
+        );
     };
 
     const handleCheckout = (): void => {
@@ -428,7 +474,52 @@ export function CartSheet() {
                                 </span>
                             </div>
 
-                            {!isOpen ? (
+                            {locating ? (
+                                <div className="flex flex-col items-center gap-1.5 rounded-md border-2 border-dashed border-brand-red/60 p-3 text-center">
+                                    <MapPin className="size-6 animate-pulse text-brand-red" />
+                                    <p className="text-sm font-extrabold tracking-wide uppercase">
+                                        Getting your location…
+                                    </p>
+                                    <p className="text-xs font-semibold text-muted-foreground">
+                                        Please allow location so we can deliver
+                                        to the right spot.
+                                    </p>
+                                </div>
+                            ) : locationError ? (
+                                <div className="flex flex-col gap-3 rounded-md border-2 border-dashed border-brand-red/60 p-3">
+                                    <div className="flex flex-col items-center gap-1.5 text-center">
+                                        <MapPinOff className="size-6 text-brand-red" />
+                                        <p className="text-sm font-extrabold tracking-wide uppercase">
+                                            Location needed
+                                        </p>
+                                        <p className="text-xs font-semibold text-muted-foreground">
+                                            We couldn't get your location, and
+                                            it's required to place the order.
+                                            Please enable location and try again.
+                                        </p>
+                                    </div>
+
+                                    <div className="flex gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setLocationError(false)
+                                            }
+                                            className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                        >
+                                            Back
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={retryLocation}
+                                            className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                        >
+                                            <MapPin className="size-5" />
+                                            Try again
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : !isOpen ? (
                                 <div className="flex flex-col gap-3 rounded-md border-2 border-dashed border-brand-red/60 p-3">
                                     <div className="flex flex-col items-center gap-1 text-center">
                                         <p className="text-sm font-extrabold tracking-wide uppercase">
