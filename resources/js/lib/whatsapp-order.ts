@@ -16,6 +16,12 @@ type OrderSummary = {
     customerPhone?: string | null;
     /** The customer's coordinates, included when location sharing is on. */
     location?: LocationResult | null;
+    /**
+     * True when a location was required but couldn't be captured automatically,
+     * so the customer will share it by hand in the chat. Adds a note telling the
+     * shop to expect a pinned location to follow.
+     */
+    locationPending?: boolean;
 };
 
 /**
@@ -52,6 +58,7 @@ export function buildOrderMessage({
     customerName,
     customerPhone,
     location,
+    locationPending,
 }: OrderSummary): string {
     const divider = '———————————————';
     const lines: string[] = ['🛒 *New Order — Time Out Snack*', ''];
@@ -73,12 +80,16 @@ export function buildOrderMessage({
         lines.push(
             `📍 *Location:* https://maps.google.com/?q=${location.latitude},${location.longitude}${precision}`,
         );
+    } else if (locationPending) {
+        // No automatic fix — tell the shop the customer will share it by hand.
+        lines.push('📍 *Location:* will be shared in this chat 👇');
     }
 
     if (
         (customerName && customerName.trim() !== '') ||
         (customerPhone && customerPhone.trim() !== '') ||
-        location
+        location ||
+        locationPending
     ) {
         lines.push('');
     }

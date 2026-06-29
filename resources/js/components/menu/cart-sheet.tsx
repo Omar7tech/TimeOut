@@ -161,6 +161,7 @@ export function CartSheet() {
         customerName?: string | null,
         customerPhone?: string | null,
         location?: LocationResult | null,
+        locationPending?: boolean,
     ): void => {
         if (sentRef.current || !whatsappNumber || items.length === 0) {
             return;
@@ -177,6 +178,7 @@ export function CartSheet() {
             customerName,
             customerPhone,
             location,
+            locationPending,
         });
 
         const url = buildWhatsAppUrl(whatsappNumber, message);
@@ -255,6 +257,19 @@ export function CartSheet() {
         beginSend(
             pendingDetailsRef.current.name,
             pendingDetailsRef.current.phone,
+        );
+    };
+
+    // When location can't be captured, send the order anyway and flag that the
+    // customer will share their location by hand in the WhatsApp chat.
+    const sendWithLocationLater = (): void => {
+        setLocationError(false);
+        setEnteringDetails(false);
+        sendOrder(
+            pendingDetailsRef.current.name,
+            pendingDetailsRef.current.phone,
+            null,
+            true,
         );
     };
 
@@ -594,6 +609,27 @@ export function CartSheet() {
                                         >
                                             <MapPin className="size-5" />
                                             Try again
+                                        </button>
+                                    </div>
+
+                                    <div className="flex flex-col gap-2 border-t-2 border-dashed border-neutral-300 pt-3">
+                                        <p className="text-center text-xs font-semibold text-muted-foreground">
+                                            Can’t share your location? Send your
+                                            order now, then share your location
+                                            directly in the WhatsApp chat.
+                                        </p>
+                                        <button
+                                            type="button"
+                                            onClick={sendWithLocationLater}
+                                            className="inline-flex items-center justify-center gap-2 rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                        >
+                                            <img
+                                                src="/social-icons/whatsapp.svg"
+                                                alt=""
+                                                className="size-5"
+                                            />
+                                            Send order &amp; share location
+                                            later
                                         </button>
                                     </div>
                                 </div>
