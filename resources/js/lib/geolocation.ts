@@ -10,6 +10,12 @@ type Options = {
     timeoutMs?: number;
     /** Stop early once a reading is at least this accurate, in meters. */
     desiredAccuracyM?: number;
+    /**
+     * Reject the lookup when the best fix is coarser than this, in meters.
+     * Guards against IP/Wi-Fi fallbacks (common on laptops with no GPS) that
+     * report a position kilometres off — a useless pin is worse than none.
+     */
+    maxAccuracyM?: number;
 };
 
 /**
@@ -24,6 +30,7 @@ type Options = {
 export function getBestLocation({
     timeoutMs = 12000,
     desiredAccuracyM = 50,
+    maxAccuracyM = 1000,
 }: Options = {}): Promise<LocationResult> {
     return new Promise((resolve, reject) => {
         if (!('geolocation' in navigator)) {
@@ -44,14 +51,17 @@ export function getBestLocation({
             navigator.geolocation.clearWatch(watchId);
             window.clearTimeout(timer);
 
-            if (best) {
+            // Reject a too-coarse fix (e.g. an IP-based estimate kilometres off)
+            // so the caller can fall back to manual sharing instead of pinning
+            // the wrong place.
+            if (best && best.coords.accuracy <= maxAccuracyM) {
                 resolve({
                     latitude: best.coords.latitude,
                     longitude: best.coords.longitude,
                     accuracy: best.coords.accuracy,
                 });
             } else {
-                reject(new Error('Could not determine location.'));
+                reject(new Error('Could not determine an accurate location.'));
             }
         };
 
