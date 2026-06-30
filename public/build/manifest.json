@@ -1,0 +1,155 @@
+{
+  "_brand-logo-d0tHHrNt.js": {
+    "file": "assets/brand-logo-d0tHHrNt.js",
+    "name": "brand-logo",
+    "imports": [
+      "resources/js/app.tsx",
+      "_jsx-runtime-DCBq3KmK.js"
+    ]
+  },
+  "_button-RlXY9G1L.js": {
+    "file": "assets/button-RlXY9G1L.js",
+    "name": "button",
+    "imports": [
+      "resources/js/app.tsx",
+      "_jsx-runtime-DCBq3KmK.js"
+    ]
+  },
+  "_createLucideIcon-BZ-Gqja-.js": {
+    "file": "assets/createLucideIcon-BZ-Gqja-.js",
+    "name": "createLucideIcon",
+    "imports": [
+      "resources/js/app.tsx"
+    ]
+  },
+  "_fonts-EFE_Fxq1.css": {
+    "file": "assets/fonts-EFE_Fxq1.css",
+    "src": "_fonts-EFE_Fxq1.css"
+  },
+  "_jsx-runtime-DCBq3KmK.js": {
+    "file": "assets/jsx-runtime-DCBq3KmK.js",
+    "name": "jsx-runtime",
+    "imports": [
+      "resources/js/app.tsx"
+    ]
+  },
+  "_noto-sans-arabic-400-normal-BJ6p-EzA.woff2": {
+    "file": "assets/noto-sans-arabic-400-normal-BJ6p-EzA.woff2",
+    "src": "_noto-sans-arabic-400-normal-BJ6p-EzA.woff2"
+  },
+  "_noto-sans-arabic-400-normal-BQEJrIpl.woff2": {
+    "file": "assets/noto-sans-arabic-400-normal-BQEJrIpl.woff2",
+    "src": "_noto-sans-arabic-400-normal-BQEJrIpl.woff2"
+  },
+  "_noto-sans-arabic-400-normal-BhzieyvS.woff2": {
+    "file": "assets/noto-sans-arabic-400-normal-BhzieyvS.woff2",
+    "src": "_noto-sans-arabic-400-normal-BhzieyvS.woff2"
+  },
+  "_noto-sans-arabic-400-normal-CIz31GGw.woff2": {
+    "file": "assets/noto-sans-arabic-400-normal-CIz31GGw.woff2",
+    "src": "_noto-sans-arabic-400-normal-CIz31GGw.woff2"
+  },
+  "_noto-sans-arabic-400-normal-pS2d8anF.woff2": {
+    "file": "assets/noto-sans-arabic-400-normal-pS2d8anF.woff2",
+    "src": "_noto-sans-arabic-400-normal-pS2d8anF.woff2"
+  },
+  "_open-countdown-BLoiTepm.js": {
+    "file": "assets/open-countdown-BLoiTepm.js",
+    "name": "open-countdown",
+    "imports": [
+      "resources/js/app.tsx",
+      "_jsx-runtime-DCBq3KmK.js",
+      "_createLucideIcon-BZ-Gqja-.js",
+      "_brand-logo-d0tHHrNt.js"
+    ]
+  },
+  "_smart-image-OCNoToRl.js": {
+    "file": "assets/smart-image-OCNoToRl.js",
+    "name": "smart-image",
+    "imports": [
+      "resources/js/app.tsx",
+      "_jsx-runtime-DCBq3KmK.js",
+      "_createLucideIcon-BZ-Gqja-.js"
+    ]
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-C91ByDmA.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/css/filament/admin/theme.css": {
+    "file": "assets/theme-CDL7Ggke.css",
+    "name": "theme",
+    "names": [
+      "theme.css"
+    ],
+    "src": "resources/css/filament/admin/theme.css",
+    "isEntry": true
+  },
+  "resources/js/app.tsx": {
+    "file": "assets/app-DRg7g3vA.js",
+    "name": "app",
+    "src": "resources/js/app.tsx",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/pages/board.tsx",
+      "resources/js/pages/error-page.tsx",
+      "resources/js/pages/menu.tsx",
+      "resources/js/pages/welcome.tsx"
+    ]
+  },
+  "resources/js/pages/board.tsx": {
+    "file": "assets/board-BZ5qn65V.js",
+    "name": "board",
+    "src": "resources/js/pages/board.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.tsx",
+      "_jsx-runtime-DCBq3KmK.js",
+      "_smart-image-OCNoToRl.js"
+    ]
+  },
+  "resources/js/pages/error-page.tsx": {
+    "file": "assets/error-page-DzEzxVP7.js",
+    "name": "error-page",
+    "src": "resources/js/pages/error-page.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.tsx",
+      "_button-RlXY9G1L.js",
+      "_jsx-runtime-DCBq3KmK.js",
+      "_brand-logo-d0tHHrNt.js"
+    ]
+  },
+  "resources/js/pages/menu.tsx": {
+    "file": "assets/menu-BMCbd2O8.js",
+    "name": "menu",
+    "src": "resources/js/pages/menu.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.tsx",
+      "_button-RlXY9G1L.js",
+      "_jsx-runtime-DCBq3KmK.js",
+      "_smart-image-OCNoToRl.js",
+      "_createLucideIcon-BZ-Gqja-.js",
+      "_open-countdown-BLoiTepm.js",
+      "_brand-logo-d0tHHrNt.js"
+    ]
+  },
+  "resources/js/pages/welcome.tsx": {
+    "file": "assets/welcome-C2_fGZ63.js",
+    "name": "welcome",
+    "src": "resources/js/pages/welcome.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.tsx",
+      "_jsx-runtime-DCBq3KmK.js",
+      "_open-countdown-BLoiTepm.js",
+      "_brand-logo-d0tHHrNt.js"
+    ]
+  }
+}
