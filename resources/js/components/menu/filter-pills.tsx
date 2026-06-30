@@ -76,7 +76,7 @@ function useScrollEdges(deps: unknown): {
             el.removeEventListener('scroll', updateEdges);
             observer.disconnect();
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+         
     }, [updateEdges, deps]);
 
     return { scrollRef, edges };

@@ -10,21 +10,38 @@ import { cn } from '@/lib/utils';
  */
 export function CartToast() {
     const { lastAdded, setOpen, count } = useCart();
-    const [visible, setVisible] = useState(false);
-    const [title, setTitle] = useState('');
+    // Which add has been dismissed (auto-timeout or "View"). The toast is shown
+    // while the latest add hasn't been dismissed yet. Deriving visibility this
+    // way keeps the effect free of synchronous setState.
+    const [dismissedNonce, setDismissedNonce] = useState<number | null>(null);
 
+    const visible = lastAdded !== null && lastAdded.nonce !== dismissedNonce;
+    // `lastAdded` is never cleared, so the title stays put during the fade-out.
+    const title = lastAdded?.title ?? '';
+
+    // Schedule the auto-dismiss for each new add; the only state update happens
+    // inside the timeout callback, not synchronously in the effect body.
     useEffect(() => {
-        if (!lastAdded) {
+        if (lastAdded === null) {
             return;
         }
 
-        setTitle(lastAdded.title);
-        setVisible(true);
-
-        const timeout = window.setTimeout(() => setVisible(false), 2600);
+        const { nonce } = lastAdded;
+        const timeout = window.setTimeout(
+            () => setDismissedNonce(nonce),
+            2600,
+        );
 
         return () => window.clearTimeout(timeout);
     }, [lastAdded]);
+
+    const handleView = (): void => {
+        if (lastAdded !== null) {
+            setDismissedNonce(lastAdded.nonce);
+        }
+
+        setOpen(true);
+    };
 
     return (
         <div
@@ -50,10 +67,7 @@ export function CartToast() {
                 </span>
                 <button
                     type="button"
-                    onClick={() => {
-                        setVisible(false);
-                        setOpen(true);
-                    }}
+                    onClick={handleView}
                     className="inline-flex shrink-0 items-center gap-1.5 rounded-full border-2 border-black bg-brand-red py-1 pr-1.5 pl-3 text-xs font-extrabold tracking-wide text-white uppercase transition-colors hover:bg-brand-red/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 >
                     <ShoppingCart className="size-3.5" />
