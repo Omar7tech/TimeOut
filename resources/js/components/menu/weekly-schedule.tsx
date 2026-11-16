@@ -52,11 +52,13 @@ export function WeeklySchedule({
             <div
                 role="tablist"
                 aria-label="Day of the week"
+                dir="rtl"
                 className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 py-1 md:mx-0 md:grid md:grid-cols-7 md:px-0"
             >
                 {schedule.map((item) => {
                     const selected = item.day === day;
                     const current = item.day === today;
+                    const count = item.products.length;
 
                     return (
                         <button
@@ -66,33 +68,45 @@ export function WeeklySchedule({
                             aria-selected={selected}
                             onClick={() => setDay(item.day)}
                             className={cn(
-                                'relative flex min-w-[4.75rem] shrink-0 flex-col items-center gap-0.5 rounded-2xl px-2 py-3 transition-[background-color,color,scale] duration-200 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+                                'flex min-h-[4.5rem] min-w-[5.25rem] shrink-0 flex-col items-center justify-center gap-1.5 rounded-2xl px-3 py-2.5 ring-1 transition-[background-color,color,box-shadow,scale] duration-200 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
                                 selected
-                                    ? 'bg-foreground text-background'
-                                    : 'bg-muted text-foreground/80 hover:bg-raised',
+                                    ? 'bg-foreground text-background ring-foreground'
+                                    : 'bg-card text-foreground ring-border hover:ring-foreground/25',
+                                !selected && count === 0 && 'opacity-50',
                             )}
                         >
-                            {current && (
-                                <span
-                                    aria-label="Today"
-                                    className="absolute top-2 end-2 size-1.5 rounded-full bg-brand-red"
-                                />
-                            )}
-                            <span className="text-[0.6875rem] font-semibold tracking-wider uppercase opacity-70">
-                                {DAYS[item.day].english}
-                            </span>
-                            <span className="font-display text-sm font-bold">
+                            <span className="font-display text-[0.9375rem] leading-none font-bold">
                                 {DAYS[item.day].arabic}
                             </span>
                             <span
                                 className={cn(
-                                    'mt-1 text-[0.6875rem] tabular-nums',
+                                    'flex items-center gap-1.5 text-[0.6875rem] leading-none',
                                     selected
-                                        ? 'text-background/70'
+                                        ? 'text-background/65'
                                         : 'text-muted-foreground',
                                 )}
                             >
-                                {item.products.length} طبق
+                                {current ? (
+                                    <span
+                                        className={cn(
+                                            'rounded-full px-1.5 py-0.5 font-semibold',
+                                            selected
+                                                ? 'bg-brand-red text-brand-ink'
+                                                : 'bg-brand-red/15 text-brand-red-ink',
+                                        )}
+                                    >
+                                        اليوم
+                                    </span>
+                                ) : (
+                                    <span dir="ltr" className="font-medium uppercase tracking-wider">
+                                        {DAYS[item.day].english}
+                                    </span>
+                                )}
+                                {count > 0 && (
+                                    <span className="font-display font-bold tabular-nums">
+                                        {count}
+                                    </span>
+                                )}
                             </span>
                         </button>
                     );

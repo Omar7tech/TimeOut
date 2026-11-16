@@ -23,6 +23,8 @@ const options = [
 interface OrderTypeSwitchProps {
     current: OrderType;
     className?: string;
+    /** Text direction of the switch itself, independent of its container. */
+    dir?: 'ltr' | 'rtl';
 }
 
 /**
@@ -30,12 +32,17 @@ interface OrderTypeSwitchProps {
  * solid ink pill sliding over a soft track, each half labelled in both
  * languages so neither crowd has to guess.
  */
-export function OrderTypeSwitch({ current, className }: OrderTypeSwitchProps) {
+export function OrderTypeSwitch({
+    current,
+    className,
+    dir,
+}: OrderTypeSwitchProps) {
     const onlineOrderingActive = usePage().props.onlineOrderingActive;
     const activeIndex = current === 'takeaway' ? 1 : 0;
 
     return (
         <div
+            dir={dir}
             className={cn(
                 'relative grid grid-cols-2 rounded-full bg-muted p-1',
                 className,
