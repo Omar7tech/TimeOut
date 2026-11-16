@@ -1,5 +1,4 @@
-import { ShoppingCart } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { ShoppingBag } from 'lucide-react';
 import { useCart } from '@/contexts/cart-context';
 
 /** Header cart trigger with a live item-count badge. */
@@ -7,18 +6,21 @@ export function CartButton() {
     const { count, setOpen } = useCart();
 
     return (
-        <Button
-            size="icon"
+        <button
+            type="button"
             onClick={() => setOpen(true)}
-            className="relative size-11 rounded-full bg-brand-red text-white hover:bg-brand-red/90 sm:size-9"
             aria-label={`Cart, ${count} ${count === 1 ? 'item' : 'items'}`}
+            className="relative inline-flex size-11 items-center justify-center rounded-full bg-brand-red text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-95 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
         >
-            <ShoppingCart className="size-5.5 sm:size-5" />
+            <ShoppingBag className="size-5" strokeWidth={2.2} />
             {count > 0 && (
-                <span className="absolute -top-1 -right-1 inline-flex min-w-5 items-center justify-center rounded-full border-2 border-black bg-brand-yellow px-1 text-[11px] leading-none font-extrabold text-black">
+                <span
+                    key={count}
+                    className="absolute -top-1 -right-1 inline-flex h-5 min-w-5 animate-pop items-center justify-center rounded-full bg-brand-yellow px-1 text-[0.6875rem] leading-none font-bold text-black tabular-nums ring-2 ring-background"
+                >
                     {count > 99 ? '99+' : count}
                 </span>
             )}
-        </Button>
+        </button>
     );
 }

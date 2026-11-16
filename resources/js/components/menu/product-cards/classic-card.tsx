@@ -1,15 +1,20 @@
-import { Eye, Plus, Star } from 'lucide-react';
-import { DietIcons } from '@/components/menu/diet-icons';
 import { ProductPrice } from '@/components/menu/product-price';
 import { VariantSelector } from '@/components/menu/variant-selector';
 import { SmartImage } from '@/components/smart-image';
-import { cn } from '@/lib/utils';
+import {
+    AddButton,
+    CardTarget,
+    ProductInitial,
+    ProductMarks,
+    ViewButton,
+} from './parts';
 import type { ProductCardViewProps } from './types';
 
 /**
- * Classic design: a compact neo-brutalist card with the thumbnail on the left
- * and a single-line title/subtitle/description plus price and quick actions on
- * the right. This is the storefront's default layout.
+ * Classic design (the default): a row with the photograph at the start and the
+ * name, a line of description and the price beside it. The card follows the
+ * dish's own language, so an Arabic dish reads right to left with its photo on
+ * the right. The whole card opens the dish.
  */
 export function ClassicCard({
     product,
@@ -24,116 +29,72 @@ export function ClassicCard({
     discountPrice,
     onOpen,
     onQuickAdd,
+    fallbackCategory,
 }: ProductCardViewProps) {
+    const blurb = product.description ?? product.subtitle;
+
     return (
-        <div className="group flex h-full min-w-0 flex-col rounded-lg border-2 border-neutral-700 bg-card p-2.5 text-card-foreground shadow-[4px_4px_0_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000]">
-            <div className="flex gap-3">
-                {image && (
-                    <button
-                        type="button"
-                        onClick={onOpen}
-                        aria-label="View details"
-                        className="shrink-0 cursor-pointer rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                    >
-                        <SmartImage
-                            src={image}
-                            alt={product.title}
-                            className="size-20 rounded-md md:size-28"
-                            imgClassName="object-cover transition-transform duration-300 group-hover:scale-105"
-                            draggable={false}
-                        >
-                            {product.available_today && (
-                                <span className="absolute top-1 left-1 rounded border border-black bg-brand-yellow px-1 py-0.5 text-[9px] font-extrabold tracking-wide text-black uppercase">
-                                    Today
-                                </span>
-                            )}
-                        </SmartImage>
-                    </button>
+        <article
+            dir={rtl ? 'rtl' : 'ltr'}
+            className="group relative flex h-full flex-col gap-3 rounded-[1.25rem] bg-card p-2.5 text-card-foreground ring-1 ring-border transition-[translate,box-shadow] duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_16px_36px_-18px_rgb(0_0_0/0.45)]"
+        >
+            <CardTarget title={product.title} onOpen={onOpen} />
+
+            <div className="pointer-events-none flex gap-3.5">
+                {image ? (
+                    <SmartImage
+                        src={image}
+                        alt={product.title}
+                        className="size-[6.5rem] shrink-0 rounded-[0.9rem] md:size-28"
+                        imgClassName="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                        draggable={false}
+                    />
+                ) : (
+                    <ProductInitial
+                        title={product.title}
+                        category={fallbackCategory}
+                        className="size-[6.5rem] shrink-0 rounded-[0.9rem] md:size-28"
+                    />
                 )}
 
-                <div className="flex min-w-0 flex-1 flex-col">
-                    <div
-                        className={cn(
-                            'flex items-center gap-1.5',
-                            rtl && 'flex-row-reverse',
-                        )}
-                    >
-                        <h3
-                            dir={rtl ? 'rtl' : undefined}
-                            className={cn(
-                                'min-w-0 flex-1 truncate text-sm leading-tight font-black',
-                                rtl && 'text-right',
-                            )}
-                        >
-                            {product.title}
-                        </h3>
-                        {!image && product.available_today && (
-                            <span className="shrink-0 rounded border border-black bg-brand-yellow px-1 py-0.5 text-[9px] font-extrabold tracking-wide text-black uppercase">
-                                Today
-                            </span>
-                        )}
-                        {product.is_featured && (
-                            <Star className="size-3.5 shrink-0 fill-brand-yellow text-brand-yellow" />
-                        )}
-                        <DietIcons product={product} />
-                    </div>
+                <div className="flex min-w-0 flex-1 flex-col py-0.5">
+                    <ProductMarks product={product} className="mb-1" />
 
-                    {product.subtitle && (
-                        <p
-                            dir={rtl ? 'rtl' : undefined}
-                            className={cn(
-                                'truncate text-xs text-muted-foreground',
-                                rtl && 'text-right',
-                            )}
-                        >
-                            {product.subtitle}
+                    <h2 className="line-clamp-1 text-base leading-snug font-semibold md:text-[1.0625rem]">
+                        {product.title}
+                    </h2>
+
+                    {blurb && (
+                        <p className="mt-0.5 line-clamp-2 text-[0.8125rem] leading-relaxed text-muted-foreground">
+                            {blurb}
                         </p>
                     )}
 
-                    {product.description && (
-                        <p
-                            dir={rtl ? 'rtl' : undefined}
-                            className={cn(
-                                'truncate text-xs text-muted-foreground/80',
-                                rtl && 'text-right',
-                            )}
-                        >
-                            {product.description}
-                        </p>
-                    )}
-
-                    <div className="mt-auto flex items-center justify-between gap-2 pt-1.5">
+                    <div className="mt-auto flex items-end justify-between gap-2 pt-2">
                         <ProductPrice
                             basePrice={basePrice}
                             discountPrice={discountPrice}
                         />
 
-                        <div className="flex shrink-0 items-center gap-1.5">
-                            <button
-                                type="button"
-                                onClick={onOpen}
-                                aria-label="View details"
-                                className="inline-flex size-9 items-center justify-center rounded-md border-2 border-black bg-card text-card-foreground shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                            >
-                                <Eye className="size-4" />
-                            </button>
-                            {enableCart && (
-                                <button
-                                    type="button"
+                        <span className="pointer-events-auto">
+                            {enableCart ? (
+                                <AddButton
+                                    title={product.title}
                                     onClick={onQuickAdd}
-                                    aria-label="Add to cart"
-                                    className="inline-flex size-9 items-center justify-center rounded-md border-2 border-black bg-brand-red text-white shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                >
-                                    <Plus className="size-4" />
-                                </button>
+                                />
+                            ) : (
+                                <ViewButton
+                                    title={product.title}
+                                    onClick={onOpen}
+                                />
                             )}
-                        </div>
+                        </span>
                     </div>
                 </div>
             </div>
 
             {hasVariants && (
-                <div className="mt-2.5 border-t-2 border-dashed border-neutral-700 pt-2.5">
+                <div className="relative z-10">
                     <VariantSelector
                         variants={variants}
                         selectedIndex={selectedIndex}
@@ -141,6 +102,6 @@ export function ClassicCard({
                     />
                 </div>
             )}
-        </div>
+        </article>
     );
 }

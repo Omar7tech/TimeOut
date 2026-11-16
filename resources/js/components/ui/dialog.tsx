@@ -17,7 +17,7 @@ function DialogOverlay({
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "fixed inset-0 z-50 bg-black/60 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+        "fixed inset-0 z-50 bg-scrim/70 backdrop-blur-[3px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         className
       )}
       {...props}
@@ -46,19 +46,19 @@ function DialogContent({
         <DialogPrimitive.Content
           data-slot="dialog-content"
           className={cn(
-            "pointer-events-auto relative flex w-full max-h-[85vh] flex-col gap-4 overflow-y-auto rounded-t-2xl border-2 border-black bg-card p-5 text-card-foreground shadow-[0_-6px_0_0_#000] sm:max-w-lg sm:rounded-2xl sm:shadow-[6px_6px_0_0_#000]",
-            "duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
+            "pointer-events-auto relative flex w-full max-h-[88dvh] flex-col gap-4 overflow-y-auto rounded-t-[1.75rem] bg-card p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-card-foreground shadow-[0_-12px_40px_rgb(0_0_0/0.35)] ring-1 ring-border sm:max-w-lg sm:rounded-[1.75rem] sm:pb-5",
+            "duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
             className
           )}
           {...props}
         >
           {/* Grab handle hint for the mobile bottom-sheet feel. */}
-          <span className="mx-auto -mt-1 mb-1 h-1.5 w-12 rounded-full bg-muted-foreground/40 sm:hidden" />
+          <span aria-hidden className="mx-auto -mt-1 mb-1 h-1 w-10 shrink-0 rounded-full bg-foreground/20 sm:hidden" />
 
           {children}
 
           {showCloseButton && (
-            <DialogPrimitive.Close className="absolute right-3 top-3 z-10 inline-flex size-8 items-center justify-center rounded-full border-2 border-black bg-card text-card-foreground shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <DialogPrimitive.Close className="absolute right-3 top-3 z-10 inline-flex size-11 items-center justify-center rounded-full bg-background/80 text-foreground ring-1 ring-border backdrop-blur transition-[scale,background-color] hover:bg-background active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <X className="size-4" />
               <span className="sr-only">Close</span>
             </DialogPrimitive.Close>
@@ -86,7 +86,7 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn("text-xl font-black leading-tight", className)}
+      className={cn("font-display text-2xl font-extrabold leading-tight", className)}
       {...props}
     />
   )

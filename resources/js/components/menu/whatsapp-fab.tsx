@@ -7,14 +7,16 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 import { buildWhatsAppUrl } from '@/lib/whatsapp-order';
 
 /**
- * Floating WhatsApp button pinned to the bottom-right corner. Opens a small
+ * Floating WhatsApp button pinned to the bottom-right corner (lifted above the
+ * order bar while it shows, via `raised`). Opens a small
  * dialog where the customer types a message, then hands off to WhatsApp with it
  * pre-filled. Controlled by the WhatsApp badge settings.
  */
-export function WhatsAppFab() {
+export function WhatsAppFab({ raised = false }: { raised?: boolean }) {
     const { whatsappBadge } = usePage().props;
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState('');
@@ -46,12 +48,17 @@ export function WhatsAppFab() {
                 type="button"
                 onClick={() => setOpen(true)}
                 aria-label="Chat on WhatsApp"
-                className="fixed right-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-40 flex size-14 items-center justify-center rounded-full border-2 border-black bg-brand-yellow shadow-[3px_3px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:translate-y-0 active:shadow-[2px_2px_0_0_#000] md:right-6 md:bottom-[calc(1.5rem+env(safe-area-inset-bottom))] md:size-16"
+                className={cn(
+                    'fixed right-4 z-40 flex size-14 items-center justify-center rounded-full bg-[#25d366] shadow-[0_12px_28px_-10px_rgb(37_211_102/0.8)] transition-[bottom,scale] duration-300 ease-out hover:scale-105 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none active:scale-95 md:right-6',
+                    raised
+                        ? 'bottom-[calc(6.5rem+env(safe-area-inset-bottom))] md:bottom-[calc(7.5rem+env(safe-area-inset-bottom))]'
+                        : 'bottom-[calc(1rem+env(safe-area-inset-bottom))] md:bottom-[calc(1.5rem+env(safe-area-inset-bottom))]',
+                )}
             >
                 <img
                     src="/social-icons/whatsapp.svg"
                     alt=""
-                    className="size-7 brightness-0 md:size-8"
+                    className="size-7 brightness-0 invert"
                 />
             </button>
 
@@ -64,7 +71,7 @@ export function WhatsAppFab() {
                                 alt=""
                                 className="size-6"
                             />
-                            Chat with us
+                            Chat with us · راسلنا
                         </DialogTitle>
                         <p className="text-sm font-semibold text-muted-foreground">
                             Send us a message on WhatsApp and we'll get back to
@@ -84,14 +91,15 @@ export function WhatsAppFab() {
                             value={message}
                             onChange={(event) => setMessage(event.target.value)}
                             rows={4}
-                            placeholder="Type your message…"
-                            className="w-full resize-none rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-medium shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                            placeholder="Type your message… · اكتب رسالتك"
+                            dir="auto"
+                            className="w-full resize-none rounded-2xl bg-muted px-4 py-3 text-base ring-1 ring-border placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                         />
 
                         <button
                             type="submit"
                             disabled={message.trim() === ''}
-                            className="inline-flex w-full items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-yellow px-4 py-3 font-extrabold tracking-wide text-black uppercase shadow-[3px_3px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[3px_3px_0_0_#000]"
+                            className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[#25d366] px-4 font-semibold text-black transition-[scale,opacity] duration-200 hover:opacity-90 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-40"
                         >
                             <Send className="size-4" />
                             Send on WhatsApp

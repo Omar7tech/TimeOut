@@ -1,45 +1,86 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import { Bike, UtensilsCrossed } from 'lucide-react';
+import { ArrowRight, Bike, UtensilsCrossed } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { BrandLogo } from '@/components/brand-logo';
 import { OpenCountdown } from '@/components/menu/open-countdown';
+import { ShopStatus } from '@/components/menu/shop-status';
+import { ThemeToggle } from '@/components/menu/theme-toggle';
 import { useShopOpen } from '@/lib/shop';
 import { cn } from '@/lib/utils';
 
-const buttonClass = cn(
-    'group relative h-12 flex-1 overflow-hidden rounded-md border-2 border-black bg-brand-red text-base font-extrabold tracking-wide text-white uppercase',
-    'shadow-[4px_4px_0_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000]',
-    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
-);
-
 /**
- * Landing CTA: shows its label by default, and on desktop hover the text slides
- * up out of view while the related icon rises in to replace it.
+ * One way into the menu: a big tile with the menu's name in both languages,
+ * its icon, and an arrow that slides on hover. The red tile is the main way in.
  */
 function MenuLink({
     href,
     label,
+    arabic,
+    note,
     icon: Icon,
+    primary = false,
+    delay,
 }: {
     href: string;
     label: string;
+    arabic: string;
+    note: string;
     icon: LucideIcon;
+    primary?: boolean;
+    delay: string;
 }) {
     return (
-        <Link href={href} className={buttonClass}>
-            <span className="absolute inset-0 flex items-center justify-center transition-all duration-300 ease-out group-hover:translate-y-[-160%] group-hover:opacity-0">
-                {label}
-            </span>
+        <Link
+            href={href}
+            style={{ animationDelay: delay }}
+            className={cn(
+                'group flex animate-rise items-center gap-4 rounded-[1.5rem] p-4 pe-5 transition-[translate,box-shadow,background-color] duration-300 ease-out hover:-translate-y-0.5 active:translate-y-0 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none',
+                primary
+                    ? 'bg-brand-red text-brand-ink hover:shadow-[0_20px_40px_-16px_rgb(255_102_0/0.8)]'
+                    : 'bg-card ring-1 ring-border hover:shadow-[0_20px_40px_-18px_rgb(0_0_0/0.5)]',
+            )}
+        >
             <span
-                aria-hidden
-                className="absolute inset-0 flex translate-y-[160%] items-center justify-center opacity-0 transition-all duration-400 ease-out group-hover:translate-y-0 group-hover:opacity-100"
+                className={cn(
+                    'grid size-14 shrink-0 place-items-center rounded-2xl',
+                    primary ? 'bg-black/20' : 'bg-muted text-brand-red-ink',
+                )}
             >
-                <Icon className="size-6" />
+                <Icon className="size-6" strokeWidth={2.2} />
             </span>
+            <span className="flex min-w-0 flex-1 flex-col">
+                <span className="flex items-baseline gap-2">
+                    <span className="font-display text-xl font-extrabold">
+                        {label}
+                    </span>
+                    <span
+                        lang="ar"
+                        className={cn(
+                            'font-display text-lg font-bold',
+                            primary ? 'text-brand-ink/70' : 'text-muted-foreground',
+                        )}
+                    >
+                        {arabic}
+                    </span>
+                </span>
+                <span
+                    className={cn(
+                        'text-sm',
+                        primary ? 'text-brand-ink/70' : 'text-muted-foreground',
+                    )}
+                >
+                    {note}
+                </span>
+            </span>
+            <ArrowRight className="size-5 shrink-0 transition-transform duration-300 group-hover:translate-x-1" />
         </Link>
     );
 }
 
+/**
+ * The front door: the logo, the open/closed state, and the two ways into the menu. While closed, a
+ * bilingual note and the countdown to opening sit under the buttons.
+ */
 export default function Welcome() {
     const open = useShopOpen();
     const onlineOrderingActive = usePage().props.onlineOrderingActive;
@@ -48,47 +89,70 @@ export default function Welcome() {
         <>
             <Head title="Time Out Snack" />
 
-            <main className="flex min-h-dvh flex-col items-center justify-center gap-12 px-6 py-16">
-                <BrandLogo className="w-full max-w-xs" />
+            <div className="relative isolate flex min-h-dvh flex-col overflow-hidden">
+                <div className="mx-auto flex w-full max-w-md items-center justify-end gap-2 px-5 pt-5">
+                    <ShopStatus />
+                    <ThemeToggle />
+                </div>
 
-                <div className="flex w-full max-w-xs flex-col items-center gap-5">
-                    <div className="flex w-full items-center justify-center gap-4">
-                        <MenuLink
-                            href="/menu/dine-in"
-                            label="Dine In"
-                            icon={UtensilsCrossed}
-                        />
+                <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-10 px-5 pt-6 pb-12">
+                    <div className="relative grid animate-rise place-items-center py-8">
+                        <h1 className="sr-only">
+                            Time Out Snack · شاورما وبرغر في عاليه
+                        </h1>
+                        <BrandLogo alt="" className="w-full max-w-[17rem]" />
+                        <p className="mt-6 text-center text-sm text-muted-foreground">
+                            Shawarma, burgers & sandwiches · Aley
+                            <span lang="ar" dir="rtl" className="mt-0.5 block">
+                                شاورما، برغر وسندويشات · عاليه
+                            </span>
+                        </p>
+                    </div>
 
+                    <nav aria-label="Menus" className="flex flex-col gap-3">
                         {onlineOrderingActive && (
                             <MenuLink
                                 href="/menu/delivery"
                                 label="Delivery"
+                                arabic="توصيل"
+                                note="Order to your door on WhatsApp"
                                 icon={Bike}
+                                primary
+                                delay="120ms"
                             />
                         )}
-                    </div>
+                        <MenuLink
+                            href="/menu/dine-in"
+                            label="Dine-in"
+                            arabic="بالمحل"
+                            note="Browse the menu at your table"
+                            icon={UtensilsCrossed}
+                            primary={!onlineOrderingActive}
+                            delay="200ms"
+                        />
+                    </nav>
 
                     {!open && (
-                        <div className="w-full rounded-xl border-2 border-black bg-card p-5 text-center shadow-[4px_4px_0_0_#000]">
-                            <p className="text-sm font-bold">
-                                We're closed
-                                <span className="text-brand-red">.</span> Fill
-                                your cart and order the moment we reopen.
+                        <div className="animate-rise rounded-[1.5rem] bg-surface p-5 text-center [animation-delay:280ms]">
+                            <p className="text-sm font-semibold">
+                                We're closed right now. Fill your cart and order
+                                the moment we reopen.
                             </p>
                             <p
+                                lang="ar"
                                 dir="rtl"
-                                className="mt-1 text-sm font-semibold text-muted-foreground"
+                                className="mt-1 text-sm text-muted-foreground"
                             >
-                                نحن مغلقون
-                                <span className="text-brand-red">.</span> املأ
-                                سلتك واطلب فور أن نفتح.
+                                نحن مغلقون حالياً. املأ سلّتك واطلب فور ما نفتح.
                             </p>
 
                             <OpenCountdown />
                         </div>
                     )}
-                </div>
-            </main>
+                </main>
+
+                
+            </div>
         </>
     );
 }

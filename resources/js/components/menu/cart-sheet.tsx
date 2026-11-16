@@ -423,12 +423,15 @@ export function CartSheet() {
         <>
             <Dialog open={open} onOpenChange={handleOpenChange}>
                 <DialogContent className="flex h-[90dvh] flex-col gap-0 overflow-hidden p-0 sm:h-auto sm:max-h-[88vh]">
-                    <DialogHeader className="shrink-0 border-b-2 border-neutral-700 p-4 pr-12">
+                    <DialogHeader className="shrink-0 border-b border-border p-4 pr-12">
                         <DialogTitle className="flex items-center gap-2">
                             <ShoppingCart className="size-5" />
                             Your cart
+                            <span className="font-bold text-muted-foreground">
+                                · سلّتك
+                            </span>
                             {count > 0 && (
-                                <span className="rounded-full bg-brand-red px-2 py-0.5 text-xs font-extrabold text-white">
+                                <span className="rounded-full bg-brand-red px-2 py-0.5 text-xs font-extrabold text-brand-ink">
                                     {count}
                                 </span>
                             )}
@@ -445,7 +448,7 @@ export function CartSheet() {
                             <button
                                 type="button"
                                 onClick={() => setOpen(false)}
-                                className="mt-3 inline-flex items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-4 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                className="mt-3 inline-flex items-center justify-center gap-2 min-h-12 rounded-full bg-brand-red px-5 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                             >
                                 Browse menu
                             </button>
@@ -460,7 +463,7 @@ export function CartSheet() {
                                 <ul
                                     ref={listRef}
                                     onScroll={updateScrollFades}
-                                    className="flex min-h-0 flex-1 flex-col divide-y-2 divide-neutral-700 overflow-y-auto"
+                                    className="flex min-h-0 flex-1 flex-col divide-y divide-border overflow-y-auto"
                                 >
                                     {items.map((item) => (
                                         <li
@@ -472,23 +475,29 @@ export function CartSheet() {
                                                     <SmartImage
                                                         src={item.image}
                                                         alt={item.title}
-                                                        className="size-14 shrink-0 rounded-md border-2 border-black"
+                                                        className="size-16 shrink-0 rounded-xl"
                                                         imgClassName="object-cover"
                                                         draggable={false}
                                                     />
                                                 )}
 
                                                 <div className="flex min-w-0 flex-1 flex-col gap-1">
-                                                    <p className="truncate text-sm leading-tight font-bold">
+                                                    <p
+                                                        dir="auto"
+                                                        className="truncate text-start text-sm leading-tight font-bold"
+                                                    >
                                                         {item.title}
                                                     </p>
                                                     {item.variantName && (
-                                                        <p className="truncate text-xs font-semibold text-muted-foreground">
+                                                        <p
+                                                            dir="auto"
+                                                            className="truncate text-start text-xs font-semibold text-muted-foreground"
+                                                        >
                                                             {item.variantName}
                                                         </p>
                                                     )}
                                                     {item.addons.length > 0 ? (
-                                                        <div className="mt-0.5 flex flex-col gap-0.5 rounded-md border border-dashed border-neutral-400 p-1.5 text-[11px] font-semibold text-muted-foreground">
+                                                        <div className="mt-0.5 flex flex-col gap-0.5 rounded-lg bg-muted p-1.5 text-[11px] font-semibold text-muted-foreground">
                                                             <div className="flex items-center justify-between gap-2">
                                                                 <span>
                                                                     Item
@@ -532,7 +541,7 @@ export function CartSheet() {
                                                                 ),
                                                             )}
 
-                                                            <div className="mt-0.5 flex items-center justify-between gap-2 border-t border-neutral-300 pt-0.5 text-xs font-extrabold text-foreground">
+                                                            <div className="mt-0.5 flex items-center justify-between gap-2 border-t border-border pt-0.5 text-xs font-extrabold text-foreground">
                                                                 <span className="tracking-wide uppercase">
                                                                     Total
                                                                 </span>
@@ -580,12 +589,12 @@ export function CartSheet() {
                                                             removeItem(item.key)
                                                         }
                                                         aria-label={`Remove ${item.title}`}
-                                                        className="-m-1 rounded-md p-1 text-muted-foreground transition-colors hover:text-brand-red"
+                                                        className="-m-1 rounded-md p-1 text-muted-foreground transition-colors hover:text-brand-red-ink"
                                                     >
                                                         <Trash2 className="size-5" />
                                                     </button>
 
-                                                    <div className="flex items-center overflow-hidden rounded-md border-2 border-black">
+                                                    <div className="flex items-center gap-1 rounded-full bg-muted p-1">
                                                         <button
                                                             type="button"
                                                             onClick={() =>
@@ -598,11 +607,11 @@ export function CartSheet() {
                                                                 1
                                                             }
                                                             aria-label="Decrease quantity"
-                                                            className="flex size-10 items-center justify-center bg-card transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:text-muted-foreground/40 disabled:hover:bg-card"
+                                                            className="flex size-9 items-center justify-center rounded-full bg-background transition-[scale,background-color] hover:bg-raised active:scale-90 disabled:cursor-not-allowed disabled:text-muted-foreground/40 disabled:hover:bg-background"
                                                         >
                                                             <Minus className="size-3.5" />
                                                         </button>
-                                                        <span className="w-10 text-center text-sm font-extrabold tabular-nums">
+                                                        <span className="w-7 text-center font-display text-sm font-bold tabular-nums">
                                                             {item.quantity}
                                                         </span>
                                                         <button
@@ -613,7 +622,7 @@ export function CartSheet() {
                                                                 )
                                                             }
                                                             aria-label="Increase quantity"
-                                                            className="flex size-10 items-center justify-center bg-card transition-colors hover:bg-muted"
+                                                            className="flex size-9 items-center justify-center rounded-full bg-background transition-[scale,background-color] hover:bg-raised active:scale-90"
                                                         >
                                                             <Plus className="size-3.5" />
                                                         </button>
@@ -631,7 +640,7 @@ export function CartSheet() {
                                                             item.note ?? '',
                                                         )
                                                     }
-                                                    className="flex w-full items-start gap-1.5 rounded-md border-2 border-dashed border-brand-red/50 bg-brand-red/5 px-2.5 py-1.5 text-left text-xs font-semibold text-foreground transition-colors hover:border-brand-red"
+                                                    className="flex w-full items-start gap-1.5 rounded-xl bg-muted px-2.5 py-1.5 text-left text-xs font-semibold text-foreground transition-colors hover:bg-raised"
                                                 >
                                                     <StickyNote className="mt-0.5 size-3.5 shrink-0 text-brand-red" />
                                                     <span className="flex-1 break-words">
@@ -648,7 +657,7 @@ export function CartSheet() {
                                                             '',
                                                         )
                                                     }
-                                                    className="inline-flex items-center gap-1.5 self-start text-xs font-bold text-muted-foreground transition-colors hover:text-brand-red"
+                                                    className="inline-flex items-center gap-1.5 self-start text-xs font-bold text-muted-foreground transition-colors hover:text-brand-red-ink"
                                                 >
                                                     <StickyNote className="size-3.5" />
                                                     Add a note
@@ -663,7 +672,7 @@ export function CartSheet() {
                                 )}
                             </div>
 
-                            <div className="flex shrink-0 flex-col gap-3 border-t-2 border-neutral-700 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+                            <div className="flex shrink-0 flex-col gap-3 border-t border-border p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
                                 {deliveryFeeUsd !== null && (
                                     <div className="flex flex-col gap-1.5 text-sm font-bold">
                                         <div className="flex items-center justify-between text-muted-foreground">
@@ -705,13 +714,13 @@ export function CartSheet() {
                                 </div>
 
                                 {sending ? (
-                                    <div className="flex flex-col items-center gap-2.5 rounded-md border-2 border-dashed border-brand-red/60 p-3 text-center">
+                                    <div className="flex flex-col items-center gap-2.5 rounded-2xl bg-muted/60 p-3 text-center">
                                         <img
                                             src="/social-icons/whatsapp.svg"
                                             alt=""
                                             className="size-7 animate-pulse"
                                         />
-                                        <p className="text-sm font-extrabold tracking-wide uppercase">
+                                        <p className="font-display text-sm font-bold">
                                             Opening WhatsApp…
                                         </p>
                                         <p className="text-xs font-semibold text-muted-foreground">
@@ -724,21 +733,21 @@ export function CartSheet() {
                                                 href={whatsappUrl}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="inline-flex w-full items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                className="inline-flex w-full items-center justify-center gap-2 min-h-12 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                             >
                                                 <img
                                                     src="/social-icons/whatsapp.svg"
                                                     alt=""
-                                                    className="size-5 brightness-0 invert"
+                                                    className="size-5 brightness-0"
                                                 />
                                                 Open WhatsApp
                                             </a>
                                         )}
                                     </div>
                                 ) : locating ? (
-                                    <div className="flex flex-col items-center gap-1.5 rounded-md border-2 border-dashed border-brand-red/60 p-3 text-center">
+                                    <div className="flex flex-col items-center gap-1.5 rounded-2xl bg-muted/60 p-3 text-center">
                                         <MapPin className="size-6 animate-pulse text-brand-red" />
-                                        <p className="text-sm font-extrabold tracking-wide uppercase">
+                                        <p className="font-display text-sm font-bold">
                                             Getting your location…
                                         </p>
                                         <p className="text-xs font-semibold text-muted-foreground">
@@ -747,10 +756,10 @@ export function CartSheet() {
                                         </p>
                                     </div>
                                 ) : locationError ? (
-                                    <div className="flex flex-col gap-3 rounded-md border-2 border-dashed border-brand-red/60 p-3">
+                                    <div className="flex flex-col gap-3 rounded-2xl bg-muted/60 p-3">
                                         <div className="flex flex-col items-center gap-1.5 text-center">
                                             <MapPinOff className="size-6 text-brand-red" />
-                                            <p className="text-sm font-extrabold tracking-wide uppercase">
+                                            <p className="font-display text-sm font-bold">
                                                 Location needed
                                             </p>
                                             <p className="text-xs font-semibold text-muted-foreground">
@@ -759,7 +768,7 @@ export function CartSheet() {
                                                     : 'We couldn’t pin down your location. Make sure GPS/location is turned on, move somewhere with a clearer signal, then try again.'}
                                             </p>
                                             {!isSecureContext && (
-                                                <p className="text-[11px] font-bold text-brand-red">
+                                                <p className="text-[11px] font-bold text-brand-red-ink">
                                                     This page must be opened
                                                     over a secure (https) link
                                                     for location to work.
@@ -773,21 +782,21 @@ export function CartSheet() {
                                                 onClick={() =>
                                                     setLocationError(false)
                                                 }
-                                                className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                className="inline-flex flex-1 items-center justify-center min-h-12 rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                             >
                                                 Back
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={retryLocation}
-                                                className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                className="inline-flex flex-1 items-center justify-center gap-2 min-h-12 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                             >
                                                 <MapPin className="size-5" />
                                                 Try again
                                             </button>
                                         </div>
 
-                                        <div className="flex flex-col gap-2 border-t-2 border-dashed border-neutral-300 pt-3">
+                                        <div className="flex flex-col gap-2 border-t-2 border-dashed border-border pt-3">
                                             <p className="text-center text-xs font-semibold text-muted-foreground">
                                                 Can’t share your location? Send
                                                 your order now, then share your
@@ -797,7 +806,7 @@ export function CartSheet() {
                                             <button
                                                 type="button"
                                                 onClick={sendWithLocationLater}
-                                                className="inline-flex items-center justify-center gap-2 rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                className="inline-flex items-center justify-center gap-2 min-h-12 rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                             >
                                                 <img
                                                     src="/social-icons/whatsapp.svg"
@@ -810,9 +819,9 @@ export function CartSheet() {
                                         </div>
                                     </div>
                                 ) : !isOpen ? (
-                                    <div className="flex flex-col gap-3 rounded-md border-2 border-dashed border-brand-red/60 p-3">
+                                    <div className="flex flex-col gap-3 rounded-2xl bg-muted/60 p-3">
                                         <div className="flex flex-col items-center gap-1 text-center">
-                                            <p className="text-sm font-extrabold tracking-wide uppercase">
+                                            <p className="font-display text-sm font-bold">
                                                 We're closed
                                                 <span className="text-brand-red">
                                                     .
@@ -831,7 +840,7 @@ export function CartSheet() {
                                             onClick={() =>
                                                 setConfirmingClear(true)
                                             }
-                                            className="inline-flex items-center justify-center gap-1.5 self-center text-xs font-extrabold tracking-wide text-muted-foreground uppercase transition-colors hover:text-brand-red"
+                                            className="inline-flex items-center justify-center gap-1.5 self-center text-xs font-extrabold tracking-wide text-muted-foreground uppercase transition-colors hover:text-brand-red-ink"
                                         >
                                             <Trash2 className="size-3.5" />
                                             Clear cart
@@ -846,14 +855,14 @@ export function CartSheet() {
                                                             false,
                                                         )
                                                     }
-                                                    className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                    className="inline-flex flex-1 items-center justify-center min-h-12 rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                                 >
                                                     Cancel
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={handleClear}
-                                                    className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                    className="inline-flex flex-1 items-center justify-center gap-1.5 min-h-12 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                                 >
                                                     <Trash2 className="size-4" />
                                                     Clear
@@ -862,7 +871,7 @@ export function CartSheet() {
                                         )}
                                     </div>
                                 ) : confirmingClear ? (
-                                    <div className="flex flex-col gap-2 rounded-md border-2 border-dashed border-brand-red/60 p-2.5">
+                                    <div className="flex flex-col gap-2 rounded-2xl bg-muted/60 p-2.5">
                                         <p className="text-center text-sm font-bold">
                                             Clear all items from your cart?
                                         </p>
@@ -872,14 +881,14 @@ export function CartSheet() {
                                                 onClick={() =>
                                                     setConfirmingClear(false)
                                                 }
-                                                className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                className="inline-flex flex-1 items-center justify-center min-h-12 rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                             >
                                                 Cancel
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={handleClear}
-                                                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                className="inline-flex flex-1 items-center justify-center gap-1.5 min-h-12 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                             >
                                                 <Trash2 className="size-4" />
                                                 Clear
@@ -892,13 +901,13 @@ export function CartSheet() {
                                             event.preventDefault();
                                             handleConfirmDetails();
                                         }}
-                                        className="flex flex-col gap-2 rounded-md border-2 border-dashed border-brand-red/60 p-2.5"
+                                        className="flex flex-col gap-2 rounded-2xl bg-muted/60 p-2.5"
                                     >
                                         {requireFullName && (
                                             <>
                                                 <label
                                                     htmlFor="checkout-name"
-                                                    className="text-sm font-extrabold tracking-wide uppercase"
+                                                    className="font-display text-sm font-bold"
                                                 >
                                                     Your name
                                                 </label>
@@ -913,7 +922,7 @@ export function CartSheet() {
                                                         )
                                                     }
                                                     placeholder="Your full name"
-                                                    className="w-full rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-bold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                    className="w-full min-h-12 rounded-2xl bg-muted px-4 py-3 text-base ring-1 ring-border placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                                 />
                                             </>
                                         )}
@@ -921,7 +930,7 @@ export function CartSheet() {
                                             <>
                                                 <label
                                                     htmlFor="checkout-phone"
-                                                    className="text-sm font-extrabold tracking-wide uppercase"
+                                                    className="font-display text-sm font-bold"
                                                 >
                                                     Your phone number
                                                 </label>
@@ -937,12 +946,12 @@ export function CartSheet() {
                                                         )
                                                     }
                                                     placeholder="e.g. 03 123 456"
-                                                    className="w-full rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-bold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                    className="w-full min-h-12 rounded-2xl bg-muted px-4 py-3 text-base ring-1 ring-border placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                                 />
                                                 {phone.trim() !== '' &&
                                                     phoneDigitCount(phone) <
                                                         PHONE_MIN_DIGITS && (
-                                                        <p className="text-xs font-bold text-brand-red">
+                                                        <p className="text-xs font-bold text-brand-red-ink">
                                                             Please enter at
                                                             least{' '}
                                                             {PHONE_MIN_DIGITS}{' '}
@@ -957,7 +966,7 @@ export function CartSheet() {
                                                 onClick={() =>
                                                     setEnteringDetails(false)
                                                 }
-                                                className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                className="inline-flex flex-1 items-center justify-center min-h-12 rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                             >
                                                 Back
                                             </button>
@@ -970,7 +979,7 @@ export function CartSheet() {
                                                         phoneDigitCount(phone) <
                                                             PHONE_MIN_DIGITS)
                                                 }
-                                                className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_#000]"
+                                                className="inline-flex flex-1 items-center justify-center gap-2 min-h-12 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                                             >
                                                 Continue
                                                 <ArrowRight className="size-4" />
@@ -978,7 +987,7 @@ export function CartSheet() {
                                         </div>
                                     </form>
                                 ) : enteringNote ? (
-                                    <div className="flex flex-col gap-2 rounded-md border-2 border-dashed border-brand-red/60 p-2.5">
+                                    <div className="flex flex-col gap-2 rounded-2xl bg-muted/60 p-2.5">
                                         <label
                                             htmlFor="order-note"
                                             className="flex items-center gap-1.5 text-sm font-extrabold tracking-wide uppercase"
@@ -999,25 +1008,25 @@ export function CartSheet() {
                                             rows={3}
                                             maxLength={300}
                                             placeholder="e.g. ring the bell, call on arrival, extra napkins"
-                                            className="w-full resize-none rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-semibold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                            className="w-full resize-none rounded-2xl bg-muted px-4 py-3 text-base ring-1 ring-border placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                         />
                                         <div className="flex gap-2">
                                             <button
                                                 type="button"
                                                 onClick={handleNoteBack}
-                                                className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                className="inline-flex flex-1 items-center justify-center min-h-12 rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                             >
                                                 Back
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={handleConfirmNote}
-                                                className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                className="inline-flex flex-1 items-center justify-center gap-2 min-h-12 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                             >
                                                 <img
                                                     src="/social-icons/whatsapp.svg"
                                                     alt=""
-                                                    className="size-5 brightness-0 invert"
+                                                    className="size-5 brightness-0"
                                                 />
                                                 Send order
                                             </button>
@@ -1031,7 +1040,7 @@ export function CartSheet() {
                                                 setConfirmingClear(true)
                                             }
                                             aria-label="Clear cart"
-                                            className="inline-flex items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                            className="inline-flex items-center justify-center min-h-12 rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                         >
                                             <Trash2 className="size-4" />
                                         </button>
@@ -1039,7 +1048,7 @@ export function CartSheet() {
                                             type="button"
                                             onClick={handleCheckout}
                                             disabled={locating}
-                                            className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_#000]"
+                                            className="inline-flex flex-1 items-center justify-center gap-2 min-h-12 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-70"
                                         >
                                             {locating ? (
                                                 <>
@@ -1051,7 +1060,7 @@ export function CartSheet() {
                                                     <img
                                                         src="/social-icons/whatsapp.svg"
                                                         alt=""
-                                                        className="size-5 brightness-0 invert"
+                                                        className="size-5 brightness-0"
                                                     />
                                                     Checkout
                                                     <span className="font-black">
@@ -1111,7 +1120,7 @@ export function CartSheet() {
                             rows={4}
                             maxLength={200}
                             placeholder="e.g. no pickles, extra sauce, well done"
-                            className="w-full resize-none rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-semibold shadow-[2px_2px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                            className="w-full resize-none rounded-2xl bg-muted px-4 py-3 text-base ring-1 ring-border placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                         />
                         <p className="-mt-1 text-right text-[11px] font-semibold text-muted-foreground">
                             {noteDraft.length}/200
@@ -1121,13 +1130,13 @@ export function CartSheet() {
                             <button
                                 type="button"
                                 onClick={closeNoteEditor}
-                                className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-black bg-card px-3 py-2 text-sm font-extrabold tracking-wide text-card-foreground uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                className="inline-flex flex-1 items-center justify-center min-h-12 rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
-                                className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border-2 border-black bg-brand-red px-3 py-2 text-sm font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                className="inline-flex flex-1 items-center justify-center gap-2 min-h-12 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                             >
                                 Save note
                             </button>

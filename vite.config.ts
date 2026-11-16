@@ -11,8 +11,14 @@ export default defineConfig({
             input: ['resources/css/app.css', 'resources/js/app.tsx' ,'resources/css/filament/admin/theme.css'],
             refresh: true,
             fonts: [
-            
-                google  ('Noto Sans Arabic', {
+                // Display face: heavy geometric poster type drawn for Arabic
+                // and Latin together, so a bilingual heading reads as one voice.
+                google('Alexandria', {
+                    weights: [600, 700, 800, 900],
+                }),
+                // Body face: IBM Plex Sans Arabic keeps long Arabic dish names
+                // and descriptions open and legible at small sizes.
+                google('IBM Plex Sans Arabic', {
                     weights: [400, 500, 600, 700],
                 }),
             ],

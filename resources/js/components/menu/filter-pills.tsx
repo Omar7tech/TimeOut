@@ -1,5 +1,6 @@
-import { CalendarRange, ChevronDown } from 'lucide-react';
+import { CalendarRange, Check, ChevronDown, LayoutGrid, Sun } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { CategoryIcon } from '@/components/menu/category-icon';
 import { useMenuFilterDesign } from '@/hooks/use-menu-filter-design';
 import { cn } from '@/lib/utils';
 import type { Category } from '@/types';
@@ -10,14 +11,16 @@ interface FilterPillsProps {
     categories: Category[];
     activeId: MenuFilter;
     onSelect: (id: MenuFilter) => void;
-    /** Whether to show the weekly schedule pill. */
+    /** Back to the sections overview; omit to hide the "All" control. */
+    onReset?: () => void;
+    /** Whether to show the weekly schedule option. */
     showSchedule?: boolean;
 }
 
 /**
- * Renders the menu's category filter controls in the design chosen from the
- * dashboard settings: bold pills (default), an underline tab bar, or a compact
- * dropdown. All three share the same props and selection behaviour.
+ * The menu's section switcher, in the design chosen from the dashboard
+ * settings: a scrolling rail of photo pills (default), wrapping chips, or a
+ * compact dropdown. All three share the same props and selection behaviour.
  */
 export function FilterPills(props: FilterPillsProps) {
     const design = useMenuFilterDesign();
@@ -52,10 +55,11 @@ function useScrollEdges(deps: unknown): {
         }
 
         const max = el.scrollWidth - el.clientWidth;
+        const position = Math.abs(el.scrollLeft);
 
         setEdges({
-            start: el.scrollLeft > 1,
-            end: el.scrollLeft < max - 1,
+            start: position > 1,
+            end: position < max - 1,
         });
     }, []);
 
@@ -76,7 +80,6 @@ function useScrollEdges(deps: unknown): {
             el.removeEventListener('scroll', updateEdges);
             observer.disconnect();
         };
-         
     }, [updateEdges, deps]);
 
     return { scrollRef, edges };
@@ -84,7 +87,7 @@ function useScrollEdges(deps: unknown): {
 
 /** Builds the CSS mask that fades the scrollable edges of a filter row. */
 function edgeMask(edges: { start: boolean; end: boolean }): string | undefined {
-    const fade = '2rem';
+    const fade = '2.5rem';
 
     return edges.start && edges.end
         ? `linear-gradient(to right, transparent, #000 ${fade}, #000 calc(100% - ${fade}), transparent)`
@@ -95,113 +98,124 @@ function edgeMask(edges: { start: boolean; end: boolean }): string | undefined {
             : undefined;
 }
 
+/** Shared pill look: a soft track colour at rest, solid ink when chosen. */
+const pill =
+    'inline-flex min-h-11 shrink-0 snap-start items-center gap-2 whitespace-nowrap rounded-full text-sm font-semibold transition-[background-color,color,scale] duration-200 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none';
+const idle = 'bg-muted text-foreground/80 hover:bg-raised hover:text-foreground';
+const chosen = 'bg-foreground text-background';
+const chosenToday = 'bg-brand-yellow text-black';
+
 /* -------------------------------------------------------------------------- */
 /* Design 1 — Pills (default)                                                 */
 /* -------------------------------------------------------------------------- */
 
-const base =
-    'shrink-0 snap-start whitespace-nowrap rounded-md border-2 border-black font-bold uppercase tracking-wide transition-all px-3 py-1.5 text-sm md:px-4 md:py-2 md:text-base';
-
-/** Resting state: hard offset shadow that lifts on hover. */
-const raised =
-    'shadow-[3px_3px_0_0_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#000] md:shadow-[4px_4px_0_0_#000] md:hover:shadow-[5px_5px_0_0_#000]';
-
-/** Active state: pressed into the shadow. */
-const pressed = 'translate-x-[3px] translate-y-[3px] shadow-none';
-
-/** Polka-dot texture layered over the active pill's fill. */
-const stripesOnDark =
-    '[background-image:radial-gradient(rgba(255,255,255,0.22)_1.5px,transparent_1.5px)] [background-size:8px_8px]';
-const stripesOnLight =
-    '[background-image:radial-gradient(rgba(0,0,0,0.14)_1.5px,transparent_1.5px)] [background-size:8px_8px]';
-
 /**
- * Neo-brutalist filter pills above the products: a yellow "Available today"
- * pill first, then one per category. Selecting one swaps the products client-side.
+ * One scrolling rail: "All", Today, the schedule, then every section as a pill
+ * with its photograph. The chosen pill is filled in ink and scrolled into view,
+ * so on a phone the rail always shows where you are.
  */
 function PillsFilter({
     categories,
     activeId,
     onSelect,
+    onReset,
     showSchedule = false,
 }: FilterPillsProps) {
-    const todayActive = activeId === 'today';
-    const scheduleActive = activeId === 'schedule';
-
     const { scrollRef, edges } = useScrollEdges(categories);
     const maskImage = edgeMask(edges);
 
+    // Keep the chosen pill in view as the selection changes.
+    // Only the rail scrolls, never the page, so this can't tug the page about.
+    useEffect(() => {
+        const rail = scrollRef.current;
+        const el = rail?.querySelector<HTMLElement>('[aria-pressed="true"]');
+
+        if (!rail || !el) {
+            return;
+        }
+
+        const railBox = rail.getBoundingClientRect();
+        const box = el.getBoundingClientRect();
+        const offset =
+            box.left - railBox.left - (railBox.width - box.width) / 2;
+
+        rail.scrollBy({ left: offset, behavior: 'smooth' });
+    }, [activeId, scrollRef]);
+
     return (
-        // Mobile: categories scroll on top, Today/Schedule sit in a row underneath.
-        // Desktop: both groups collapse (md:contents) into one wrapping row, with
-        // Today/Schedule first — exactly as before.
-        <div className="flex flex-col gap-2 md:flex-row md:flex-wrap md:items-start md:gap-3">
-            {/* Today + Schedule — above the categories on mobile, first on desktop. */}
-            <div className="order-1 flex gap-2 md:contents">
+        <div
+            ref={scrollRef}
+            style={{ maskImage, WebkitMaskImage: maskImage }}
+            className="no-scrollbar -mx-4 flex snap-x scroll-px-4 gap-2 overflow-x-auto px-4 py-1 md:-mx-6 md:scroll-px-6 md:px-6"
+        >
+            {onReset && (
                 <button
                     type="button"
-                    onClick={() => onSelect('today')}
+                    onClick={onReset}
+                    aria-label="All sections · كل الأقسام"
+                    className={cn(pill, idle, 'w-11 justify-center')}
+                >
+                    <LayoutGrid className="size-[1.125rem]" />
+                </button>
+            )}
+
+            <button
+                type="button"
+                aria-pressed={activeId === 'today'}
+                onClick={() => onSelect('today')}
+                className={cn(
+                    pill,
+                    'px-4',
+                    activeId === 'today' ? chosenToday : idle,
+                )}
+            >
+                <Sun className="size-4" strokeWidth={2.4} />
+                اليوم · Today
+            </button>
+
+            {showSchedule && (
+                <button
+                    type="button"
+                    aria-pressed={activeId === 'schedule'}
+                    onClick={() => onSelect('schedule')}
                     className={cn(
-                        base,
-                        'flex-1 text-center md:flex-none',
-                        'bg-brand-yellow text-black',
-                        todayActive ? cn(pressed, stripesOnLight) : raised,
+                        pill,
+                        'px-4',
+                        activeId === 'schedule' ? chosen : idle,
                     )}
                 >
-                    Today - اليوم
+                    <CalendarRange className="size-4" />
+                    الجدول · Week
                 </button>
+            )}
 
-                {showSchedule && (
+            <span aria-hidden className="mx-1 w-px shrink-0 self-stretch bg-border" />
+
+            {categories.map((category) => {
+                const active = category.id === activeId;
+
+                return (
                     <button
+                        key={category.id}
                         type="button"
-                        onClick={() => onSelect('schedule')}
+                        aria-pressed={active}
+                        onClick={() => onSelect(category.id)}
                         className={cn(
-                            base,
-                            'inline-flex flex-1 items-center justify-center gap-1.5 md:flex-none',
-                            scheduleActive
-                                ? cn(
-                                      'bg-brand-red text-white',
-                                      pressed,
-                                      stripesOnDark,
-                                  )
-                                : cn('bg-white text-black', raised),
+                            pill,
+                            'ps-1.5 pe-4',
+                            active ? chosen : idle,
                         )}
                     >
-                        <CalendarRange className="size-4" />
-                        Schedule - الجدول
+                        <span className="grid size-8 shrink-0 place-items-center rounded-full bg-brand-red text-brand-ink">
+                            <CategoryIcon
+                                category={category}
+                                className="size-[1.125rem]"
+                            />
+                        </span>
+                        <span dir="auto">{category.title}</span>
                     </button>
-                )}
-            </div>
-
-            {/* Categories — horizontal scroll row on mobile, inline-wrapped on desktop. */}
-            <div
-                ref={scrollRef}
-                style={{ maskImage, WebkitMaskImage: maskImage }}
-                className="order-2 -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:mx-0 md:contents md:overflow-visible md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden">
-                {categories.map((category) => {
-                    const active = category.id === activeId;
-
-                    return (
-                        <button
-                            key={category.id}
-                            type="button"
-                            onClick={() => onSelect(category.id)}
-                            className={cn(
-                                base,
-                                active
-                                    ? cn(
-                                          'bg-brand-red text-white',
-                                          pressed,
-                                          stripesOnDark,
-                                      )
-                                    : cn('bg-white text-black', raised),
-                            )}
-                        >
-                            {category.title}
-                        </button>
-                    );
-                })}
-            </div>
+                );
+            })}
         </div>
     );
 }
@@ -211,50 +225,56 @@ function PillsFilter({
 /* -------------------------------------------------------------------------- */
 
 /**
- * Mobile-first chips: Today and the optional Schedule first, then one chip per
- * category, all wrapping freely onto as many lines as needed. Nothing scrolls
- * sideways, so every option is visible and tappable on a phone. The selected
- * chip is filled (yellow for Today, red otherwise); the rest are soft outlines.
+ * Every option visible at once: chips that wrap onto as many lines as needed,
+ * nothing scrolling sideways, so every section is one tap away on a phone.
  */
 function ChipsFilter({
     categories,
     activeId,
     onSelect,
+    onReset,
     showSchedule = false,
 }: FilterPillsProps) {
-    const chip =
-        'rounded-full border px-4 py-2 text-sm font-semibold transition-colors';
-    const idle = 'border-border bg-card text-foreground hover:bg-muted';
-
     return (
         <div className="flex flex-wrap gap-2">
+            {onReset && (
+                <button
+                    type="button"
+                    onClick={onReset}
+                    className={cn(pill, idle, 'px-4')}
+                >
+                    <LayoutGrid className="size-4" />
+                    الكل · All
+                </button>
+            )}
+
             <button
                 type="button"
+                aria-pressed={activeId === 'today'}
                 onClick={() => onSelect('today')}
                 className={cn(
-                    chip,
-                    activeId === 'today'
-                        ? 'border-brand-yellow bg-brand-yellow text-black'
-                        : idle,
+                    pill,
+                    'px-4',
+                    activeId === 'today' ? chosenToday : idle,
                 )}
             >
-                Today - اليوم
+                <Sun className="size-4" strokeWidth={2.4} />
+                اليوم · Today
             </button>
 
             {showSchedule && (
                 <button
                     type="button"
+                    aria-pressed={activeId === 'schedule'}
                     onClick={() => onSelect('schedule')}
                     className={cn(
-                        chip,
-                        'inline-flex items-center gap-1.5',
-                        activeId === 'schedule'
-                            ? 'border-brand-red bg-brand-red text-white'
-                            : idle,
+                        pill,
+                        'px-4',
+                        activeId === 'schedule' ? chosen : idle,
                     )}
                 >
                     <CalendarRange className="size-4" />
-                    Schedule - الجدول
+                    الجدول · Week
                 </button>
             )}
 
@@ -262,15 +282,15 @@ function ChipsFilter({
                 <button
                     key={category.id}
                     type="button"
+                    aria-pressed={category.id === activeId}
                     onClick={() => onSelect(category.id)}
                     className={cn(
-                        chip,
-                        category.id === activeId
-                            ? 'border-brand-red bg-brand-red text-white'
-                            : idle,
+                        pill,
+                        'px-4',
+                        category.id === activeId ? chosen : idle,
                     )}
                 >
-                    {category.title}
+                    <span dir="auto">{category.title}</span>
                 </button>
             ))}
         </div>
@@ -282,20 +302,21 @@ function ChipsFilter({
 /* -------------------------------------------------------------------------- */
 
 /**
- * A space-saving control: quick Today and Schedule buttons beside a dropdown
- * that lists every category. The trigger shows the active category's name, so the
- * whole filter stays on one tidy row no matter how many categories there are.
+ * A space-saving control: Today and the schedule beside a dropdown listing
+ * every section. The trigger names the open section, so the whole filter stays
+ * on one tidy row however long the menu is.
  */
 function DropdownFilter({
     categories,
     activeId,
     onSelect,
+    onReset,
     showSchedule = false,
 }: FilterPillsProps) {
     const [open, setOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // Close the menu when clicking anywhere outside it.
+    // Close the menu when clicking anywhere outside it, or on Escape.
     useEffect(() => {
         if (!open) {
             return;
@@ -309,10 +330,19 @@ function DropdownFilter({
                 setOpen(false);
             }
         };
+        const handleKey = (event: KeyboardEvent): void => {
+            if (event.key === 'Escape') {
+                setOpen(false);
+            }
+        };
 
         document.addEventListener('mousedown', handleClick);
+        document.addEventListener('keydown', handleKey);
 
-        return () => document.removeEventListener('mousedown', handleClick);
+        return () => {
+            document.removeEventListener('mousedown', handleClick);
+            document.removeEventListener('keydown', handleKey);
+        };
     }, [open]);
 
     const activeCategory =
@@ -320,41 +350,8 @@ function DropdownFilter({
             ? (categories.find((category) => category.id === activeId) ?? null)
             : null;
 
-    const quick =
-        'rounded-full border-2 border-black px-4 py-1.5 text-sm font-bold tracking-wide uppercase transition-colors md:text-base';
-
     return (
-        <div className="flex flex-wrap items-center gap-2 md:gap-3">
-            <button
-                type="button"
-                onClick={() => onSelect('today')}
-                className={cn(
-                    quick,
-                    activeId === 'today'
-                        ? 'bg-brand-yellow text-black'
-                        : 'bg-card text-foreground hover:bg-muted',
-                )}
-            >
-                Today - اليوم
-            </button>
-
-            {showSchedule && (
-                <button
-                    type="button"
-                    onClick={() => onSelect('schedule')}
-                    className={cn(
-                        quick,
-                        'inline-flex items-center gap-1.5',
-                        activeId === 'schedule'
-                            ? 'bg-brand-red text-white'
-                            : 'bg-card text-foreground hover:bg-muted',
-                    )}
-                >
-                    <CalendarRange className="size-4" />
-                    Schedule - الجدول
-                </button>
-            )}
-
+        <div className="flex flex-wrap items-center gap-2">
             <div ref={containerRef} className="relative">
                 <button
                     type="button"
@@ -362,17 +359,17 @@ function DropdownFilter({
                     aria-haspopup="listbox"
                     aria-expanded={open}
                     className={cn(
-                        quick,
-                        'inline-flex items-center gap-2',
-                        activeCategory
-                            ? 'bg-brand-red text-white'
-                            : 'bg-card text-foreground hover:bg-muted',
+                        pill,
+                        'px-4',
+                        activeCategory ? chosen : idle,
                     )}
                 >
-                    {activeCategory?.title ?? 'Categories - الأصناف'}
+                    <span dir="auto">
+                        {activeCategory?.title ?? 'الأقسام · Sections'}
+                    </span>
                     <ChevronDown
                         className={cn(
-                            'size-4 transition-transform',
+                            'size-4 transition-transform duration-200',
                             open && 'rotate-180',
                         )}
                     />
@@ -381,12 +378,17 @@ function DropdownFilter({
                 {open && (
                     <ul
                         role="listbox"
-                        className="absolute z-20 mt-2 max-h-72 w-56 overflow-y-auto rounded-lg border-2 border-black bg-card p-1 shadow-[4px_4px_0_0_#000]">
+                        className="absolute start-0 z-40 mt-2 max-h-80 w-64 animate-in overflow-y-auto rounded-2xl bg-popover p-1.5 shadow-[0_24px_48px_-16px_rgb(0_0_0/0.5)] ring-1 ring-border fade-in-0 zoom-in-95"
+                    >
                         {categories.map((category) => {
                             const active = category.id === activeId;
 
                             return (
-                                <li key={category.id} role="option" aria-selected={active}>
+                                <li
+                                    key={category.id}
+                                    role="option"
+                                    aria-selected={active}
+                                >
                                     <button
                                         type="button"
                                         onClick={() => {
@@ -394,13 +396,24 @@ function DropdownFilter({
                                             setOpen(false);
                                         }}
                                         className={cn(
-                                            'w-full rounded-md px-3 py-2 text-left text-sm font-bold tracking-wide uppercase transition-colors',
+                                            'flex min-h-11 w-full items-center gap-3 rounded-xl px-2.5 text-start text-sm font-semibold transition-colors',
                                             active
-                                                ? 'bg-brand-red text-white'
-                                                : 'text-foreground hover:bg-muted',
+                                                ? 'bg-muted text-foreground'
+                                                : 'text-foreground/80 hover:bg-muted hover:text-foreground',
                                         )}
                                     >
-                                        {category.title}
+                                        <span className="grid size-8 shrink-0 place-items-center rounded-full bg-brand-red text-brand-ink">
+                                            <CategoryIcon
+                                                category={category}
+                                                className="size-[1.125rem]"
+                                            />
+                                        </span>
+                                        <span dir="auto" className="flex-1">
+                                            {category.title}
+                                        </span>
+                                        {active && (
+                                            <Check className="size-4 text-brand-red-ink" />
+                                        )}
                                     </button>
                                 </li>
                             );
@@ -408,6 +421,47 @@ function DropdownFilter({
                     </ul>
                 )}
             </div>
+
+            <button
+                type="button"
+                aria-pressed={activeId === 'today'}
+                onClick={() => onSelect('today')}
+                className={cn(
+                    pill,
+                    'px-4',
+                    activeId === 'today' ? chosenToday : idle,
+                )}
+            >
+                <Sun className="size-4" strokeWidth={2.4} />
+                اليوم
+            </button>
+
+            {showSchedule && (
+                <button
+                    type="button"
+                    aria-pressed={activeId === 'schedule'}
+                    onClick={() => onSelect('schedule')}
+                    className={cn(
+                        pill,
+                        'px-4',
+                        activeId === 'schedule' ? chosen : idle,
+                    )}
+                >
+                    <CalendarRange className="size-4" />
+                    الجدول
+                </button>
+            )}
+
+            {onReset && (
+                <button
+                    type="button"
+                    onClick={onReset}
+                    aria-label="All sections · كل الأقسام"
+                    className={cn(pill, idle, 'w-11 justify-center')}
+                >
+                    <LayoutGrid className="size-[1.125rem]" />
+                </button>
+            )}
         </div>
     );
 }

@@ -9,7 +9,12 @@ import type { CartAddon } from '@/contexts/cart-context';
 import { useCartActions } from '@/contexts/cart-context';
 import { useProductCardDesign } from '@/hooks/use-product-card-design';
 import { isArabic } from '@/lib/utils';
-import type { CategoryAddon, Product, ProductCardDesign } from '@/types';
+import type {
+    Category,
+    CategoryAddon,
+    Product,
+    ProductCardDesign,
+} from '@/types';
 
 interface ProductCardProps {
     product: Product;
@@ -17,6 +22,8 @@ interface ProductCardProps {
     addons?: CategoryAddon[];
     /** Whether add-to-cart actions are available (delivery menu only). */
     enableCart?: boolean;
+    /** The dish's section, whose icon stands in when there is no photo. */
+    category?: Pick<Category, 'title' | 'image'> | null;
 }
 
 /** The presentational card for each storefront-selectable design. */
@@ -39,6 +46,7 @@ function ProductCardComponent({
     product,
     addons = [],
     enableCart = false,
+    category = null,
 }: ProductCardProps) {
     const { addItem } = useCartActions();
     const design = useProductCardDesign();
@@ -105,6 +113,7 @@ function ProductCardComponent({
                 discountPrice={discountPrice}
                 onOpen={() => setOpen(true)}
                 onQuickAdd={handleQuickAdd}
+                fallbackCategory={category}
             />
 
             <ProductDialog

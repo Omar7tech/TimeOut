@@ -46,10 +46,10 @@ export default function ErrorPage({ status }: ErrorPageProps) {
                 <BrandLogo isOpen className="h-12 md:h-16" />
 
                 <div className="flex flex-col items-center gap-3">
-                    <span className="text-7xl font-extrabold tracking-tight text-brand-red md:text-8xl">
+                    <span className="font-display text-7xl font-black tracking-tight text-brand-red md:text-8xl">
                         {status}
                     </span>
-                    <h1 className="text-xl font-bold md:text-2xl">{title}</h1>
+                    <h1 className="font-display text-xl font-bold md:text-2xl">{title}</h1>
                     <p className="max-w-sm text-sm text-muted-foreground md:text-base">
                         {description}
                     </p>
@@ -58,7 +58,7 @@ export default function ErrorPage({ status }: ErrorPageProps) {
                 <Button
                     asChild
                     size="lg"
-                    className="h-11 bg-brand-red px-8 font-bold text-white hover:bg-brand-red/90"
+                    className="h-12 rounded-full bg-brand-red px-8 font-semibold text-brand-ink hover:bg-brand-red/90"
                 >
                     <Link href="/">Back to home</Link>
                 </Button>

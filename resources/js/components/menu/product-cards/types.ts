@@ -1,4 +1,4 @@
-import type { Product, ProductVariant } from '@/types';
+import type { Category, Product, ProductVariant } from '@/types';
 
 /**
  * The computed view-model shared by every product card design. The dispatcher
@@ -23,4 +23,6 @@ export interface ProductCardViewProps {
     onOpen: () => void;
     /** Quick-adds to cart, or opens the dialog when add-ons must be chosen. */
     onQuickAdd: () => void;
+    /** The dish's section, whose icon stands in when there is no photo. */
+    fallbackCategory?: Pick<Category, 'title' | 'image'> | null;
 }

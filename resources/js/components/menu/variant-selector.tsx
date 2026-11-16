@@ -1,4 +1,4 @@
-import { Layers } from 'lucide-react';
+import { usePricing } from '@/hooks/use-pricing';
 import { cn } from '@/lib/utils';
 import type { ProductVariant } from '@/types';
 
@@ -6,47 +6,76 @@ interface VariantSelectorProps {
     variants: ProductVariant[];
     selectedIndex: number;
     onSelect: (index: number) => void;
+    /** Roomier options with each size's price, for the detail sheet. */
+    size?: 'sm' | 'lg';
 }
 
-/** Joined segmented control for picking a product variant, with a clear hint. */
+/**
+ * The sizes a product comes in, as a row of options. The chosen one is filled
+ * in ink so it reads at a glance; in the detail sheet each option also carries
+ * its own price, so the customer never has to tap to compare.
+ */
 export function VariantSelector({
     variants,
     selectedIndex,
     onSelect,
+    size = 'sm',
 }: VariantSelectorProps) {
+    const pricing = usePricing();
+    const large = size === 'lg';
+
     return (
-        <div className="flex flex-col gap-1.5">
-            <span className="inline-flex items-center gap-1 text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
-                <Layers className="size-3" />
-                Choose an option
-            </span>
+        <div
+            role="radiogroup"
+            aria-label="Size · الحجم"
+            className={cn(
+                'flex w-full gap-1 rounded-full bg-muted p-1',
+                large && 'gap-1.5 rounded-2xl p-1.5',
+            )}
+        >
+            {variants.map((variant, index) => {
+                const selected = index === selectedIndex;
+                const price = variant.discount_price ?? variant.price;
 
-            <div
-                role="group"
-                aria-label="Choose a variant"
-                className="flex w-full overflow-hidden rounded-md border-2 border-black shadow-[2px_2px_0_0_#000]"
-            >
-                {variants.map((variant, index) => {
-                    const selected = index === selectedIndex;
-
-                    return (
-                        <button
-                            key={index}
-                            type="button"
-                            aria-pressed={selected}
-                            onClick={() => onSelect(index)}
-                            className={cn(
-                                'min-w-0 flex-1 truncate px-2 py-1.5 text-xs font-bold tracking-wide uppercase transition-colors not-first:-ml-px not-first:border-l-2 not-first:border-black',
-                                selected
-                                    ? 'bg-brand-yellow text-black'
-                                    : 'bg-card text-card-foreground hover:bg-muted',
-                            )}
-                        >
+                return (
+                    <button
+                        key={index}
+                        type="button"
+                        role="radio"
+                        aria-checked={selected}
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            onSelect(index);
+                        }}
+                        className={cn(
+                            'relative z-10 flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center rounded-full px-2 text-xs font-semibold transition-[background-color,color,scale] duration-200 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+                            large && 'min-h-14 rounded-xl text-sm',
+                            selected
+                                ? 'bg-foreground text-background shadow-sm'
+                                : 'text-muted-foreground hover:bg-background/60 hover:text-foreground',
+                        )}
+                    >
+                        <span dir="auto" className="max-w-full truncate">
                             {variant.name}
-                        </button>
-                    );
-                })}
-            </div>
+                        </span>
+                        {large && (
+                            <span
+                                dir="ltr"
+                                className={cn(
+                                    'mt-0.5 text-[0.6875rem] font-medium tabular-nums',
+                                    selected
+                                        ? 'text-background/70'
+                                        : 'text-muted-foreground',
+                                )}
+                            >
+                                {pricing.showUsd
+                                    ? pricing.usd(price)
+                                    : pricing.lbp(price)}
+                            </span>
+                        )}
+                    </button>
+                );
+            })}
         </div>
     );
 }

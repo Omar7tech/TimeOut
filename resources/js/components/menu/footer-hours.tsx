@@ -1,11 +1,10 @@
-import { Clock } from 'lucide-react';
 import { formatTime, isShopOpen, useShop, weeklyHours } from '@/lib/shop';
 import { cn } from '@/lib/utils';
 
 /**
- * Weekly opening-hours card for the footer, shown only when the shop runs on the
- * automatic schedule. Consecutive days with the same hours are merged into ranges,
- * today's row is highlighted, and a live "Open now / Closed" badge sits on top.
+ * Weekly opening hours for the footer, shown only when the shop runs on the
+ * automatic schedule. Consecutive days with the same hours are merged into
+ * ranges, today's row is marked, and a live open/closed word heads the list.
  */
 export function FooterHours() {
     const shop = useShop();
@@ -19,39 +18,39 @@ export function FooterHours() {
 
     return (
         <div>
-            <h3 className="mb-3 flex items-baseline gap-2 text-xs font-black tracking-widest uppercase">
-                <span className="text-brand-red">Hours</span>
-                <span className="text-foreground/30">/</span>
+            <h3 className="mb-3 flex items-center gap-2 text-xs font-semibold tracking-[0.18em] text-muted-foreground uppercase">
+                Hours · الدوام
                 <span
                     className={cn(
-                        open ? 'text-foreground' : 'text-muted-foreground',
+                        'rounded-full px-2 py-0.5 tracking-normal normal-case',
+                        open
+                            ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                            : 'bg-brand-red/15 text-brand-red-ink',
                     )}
                 >
-                    {open ? 'Open' : 'Closed'}
+                    {open ? 'Open now' : 'Closed'}
                 </span>
             </h3>
 
-            <ul className="flex flex-col gap-1">
+            <ul className="flex flex-col">
                 {rows.map((row) => (
                     <li
                         key={row.label}
                         className={cn(
-                            'flex items-center justify-between gap-6 rounded-md px-2 py-1 text-sm font-bold tracking-wide',
+                            'flex items-center justify-between gap-6 border-b border-border py-2 text-sm last:border-b-0',
                             row.isToday
-                                ? 'bg-foreground/5 text-foreground'
+                                ? 'font-semibold text-foreground'
                                 : 'text-foreground/70',
                         )}
                     >
-                        <span className="flex items-center gap-1.5 uppercase">
+                        <span className="flex items-center gap-2">
                             {row.isToday && (
-                                <Clock className="size-3.5 text-brand-red" />
+                                <span className="size-1.5 rounded-full bg-brand-red" />
                             )}
                             {row.label}
                         </span>
                         {row.isClosed ? (
-                            <span className="font-extrabold text-brand-red uppercase">
-                                Closed
-                            </span>
+                            <span className="text-brand-red-ink">Closed</span>
                         ) : (
                             <span className="tabular-nums">
                                 {formatTime(row.opensAt)} –{' '}

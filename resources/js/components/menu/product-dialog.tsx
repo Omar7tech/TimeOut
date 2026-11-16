@@ -1,6 +1,6 @@
-import { Clock, Minus, Plus, ShoppingCart, Star } from 'lucide-react';
+import { Clock, Minus, Plus, ShoppingBag } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { DietIcons } from '@/components/menu/diet-icons';
+import { ProductMarks } from '@/components/menu/product-cards/parts';
 import { ProductPrice } from '@/components/menu/product-price';
 import { VariantSelector } from '@/components/menu/variant-selector';
 import { SmartImage } from '@/components/smart-image';
@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import type { CartAddon } from '@/contexts/cart-context';
 import { usePricing } from '@/hooks/use-pricing';
+import { isArabic } from '@/lib/utils';
 import type { CategoryAddon, Product } from '@/types';
 
 interface ProductDialogProps {
@@ -91,83 +92,88 @@ export function ProductDialog({
         });
     };
 
+    const rtl = isArabic(product.title);
+    const totalUsd = (discountPrice ?? basePrice) + extrasUsd;
+    const money = (usd: number): string =>
+        pricing.showUsd ? pricing.usd(usd) : pricing.lbp(usd);
+    const hasPrepTime =
+        product.preparation_time !== null && product.preparation_time > 0;
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            {/* The panel itself doesn't scroll: the image and footer stay fixed
-                and only the description scrolls within its own bounds. */}
-            <DialogContent className="gap-0 overflow-y-hidden p-0">
+            {/* The sheet does not scroll as a whole: the photo heads it, the
+                details scroll in the middle, and the order bar stays put. */}
+            <DialogContent className="gap-0 overflow-hidden p-0 pb-0 sm:max-w-xl sm:pb-0 [&>span:first-child]:absolute [&>span:first-child]:inset-x-0 [&>span:first-child]:top-2 [&>span:first-child]:z-10 [&>span:first-child]:bg-white/70">
                 {image ? (
-                    <div className="shrink-0 px-5 pt-2 sm:pt-14">
-                        <SmartImage
-                            src={image}
-                            alt={product.title}
-                            className="aspect-video w-full rounded-xl border-2 border-black shadow-[3px_3px_0_0_#000]"
-                            imgClassName="object-cover"
-                            draggable={false}
-                        >
-                            {product.available_today && (
-                                <span className="absolute top-2 left-2 rounded border border-black bg-brand-yellow px-1.5 py-0.5 text-[10px] font-extrabold tracking-wide text-black uppercase">
-                                    Today
-                                </span>
-                            )}
-                        </SmartImage>
-                    </div>
+                    <SmartImage
+                        src={image}
+                        alt={product.title}
+                        className="aspect-[16/10] w-full shrink-0 sm:aspect-[16/9]"
+                        imgClassName="object-cover"
+                        draggable={false}
+                        loading="eager"
+                    />
                 ) : (
-                    // Keep the close button clear of the title when there's no image.
-                    <div className="h-10 shrink-0 sm:h-12" />
+                    // Keep the close button clear of the title when there is no photo.
+                    <div className="h-14 shrink-0" />
                 )}
 
-                {/* Details column. Title, variants, extras and the footer stay
-                    put; only the description scrolls within its own bounds. The
-                    wrapper keeps a fallback scroll so nothing is ever clipped. */}
-                <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-5">
-                    <DialogHeader className="shrink-0">
-                        <DialogTitle className="flex items-start gap-2 pr-6">
-                            <span className="flex-1">{product.title}</span>
-                            {product.is_featured && (
-                                <Star className="mt-1 size-5 shrink-0 fill-brand-yellow text-brand-yellow" />
-                            )}
-                            <DietIcons
-                                product={product}
-                                iconClassName="size-5"
-                                className="mt-0.5 gap-1.5"
-                            />
+                <div
+                    dir={rtl ? 'rtl' : 'ltr'}
+                    className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto overscroll-contain px-5 pt-5 pb-6 md:px-6"
+                >
+                    <DialogHeader className="shrink-0 gap-2 text-start">
+                        <ProductMarks product={product} />
+                        <DialogTitle className="pe-10 text-[1.75rem]">
+                            {product.title}
                         </DialogTitle>
                         {product.subtitle && (
-                            <p className="text-sm font-semibold text-muted-foreground">
+                            <p className="text-sm font-medium text-muted-foreground">
                                 {product.subtitle}
                             </p>
                         )}
-                        {product.preparation_time !== null &&
-                            product.preparation_time > 0 && (
-                                <span className="mt-1 inline-flex w-fit items-center gap-1.5 rounded-md border-2 border-black bg-brand-red px-2 py-0.5 text-xs font-extrabold tracking-wide text-white uppercase shadow-[2px_2px_0_0_#000]">
-                                    <Clock className="size-3.5" />
-                                    Ready in ~{product.preparation_time} min
-                                </span>
-                            )}
                     </DialogHeader>
 
-                    {product.description && (
-                        <p className="max-h-[35vh] overflow-y-auto overscroll-contain pr-1 text-sm leading-relaxed text-muted-foreground">
-                            {product.description}
-                        </p>
+                    {(hasPrepTime || product.description) && (
+                        <div className="flex flex-col gap-3">
+                            {product.description && (
+                                <p className="text-[0.9375rem] leading-relaxed text-foreground/85">
+                                    {product.description}
+                                </p>
+                            )}
+                            {hasPrepTime && (
+                                <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-xs font-semibold">
+                                    <Clock className="size-3.5 text-brand-red-ink" />
+                                    <span dir="ltr">
+                                        ~{product.preparation_time} min
+                                    </span>
+                                    <span className="text-muted-foreground">
+                                        · وقت التحضير
+                                    </span>
+                                </span>
+                            )}
+                        </div>
                     )}
 
                     {hasVariants && (
-                        <VariantSelector
-                            variants={variants}
-                            selectedIndex={selectedIndex}
-                            onSelect={onSelectVariant}
-                        />
+                        <div className="flex flex-col gap-2.5">
+                            <SheetLabel
+                                english="Choose a size"
+                                arabic="اختر الحجم"
+                            />
+                            <VariantSelector
+                                variants={variants}
+                                selectedIndex={selectedIndex}
+                                onSelect={onSelectVariant}
+                                size="lg"
+                            />
+                        </div>
                     )}
 
                     {onAddToCart && addons.length > 0 && (
-                        <div className="flex flex-col gap-2">
-                            <p className="flex items-center gap-2 text-xs font-extrabold tracking-wide text-muted-foreground uppercase">
-                                <span>Add extras</span>
-                                <span dir="rtl">الإضافات</span>
-                            </p>
-                            <ul className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-2.5">
+                            <SheetLabel english="Add extras" arabic="الإضافات" />
+                            <ul className="flex flex-col divide-y divide-border overflow-hidden rounded-2xl bg-muted/60">
                                 {addons.map((addon, index) => {
                                     const quantity =
                                         addonQuantities[index] ?? 0;
@@ -176,28 +182,27 @@ export function ProductDialog({
                                     return (
                                         <li
                                             key={index}
-                                            className="flex items-center justify-between gap-3 rounded-lg border-2 border-neutral-700 bg-background px-3 py-2"
+                                            className="flex items-center justify-between gap-3 px-4 py-2.5"
                                         >
                                             <div className="flex min-w-0 flex-col">
-                                                <span className="truncate font-bold">
+                                                <span
+                                                    dir="auto"
+                                                    className="truncate text-sm font-semibold"
+                                                >
                                                     {addon.name}
                                                 </span>
-                                                <span className="text-xs font-bold text-muted-foreground">
-                                                    {pricing.showUsd
-                                                        ? pricing.usd(
-                                                              Number(
-                                                                  addon.price,
-                                                              ),
-                                                          )
-                                                        : pricing.lbp(
-                                                              Number(
-                                                                  addon.price,
-                                                              ),
-                                                          )}
+                                                <span
+                                                    dir="ltr"
+                                                    className="text-start text-xs text-muted-foreground tabular-nums"
+                                                >
+                                                    +{money(Number(addon.price))}
                                                 </span>
                                             </div>
 
-                                            <div className="flex shrink-0 items-center overflow-hidden rounded-md border-2 border-black">
+                                            <div
+                                                dir="ltr"
+                                                className="flex shrink-0 items-center gap-1 rounded-full bg-background p-1 ring-1 ring-border"
+                                            >
                                                 <button
                                                     type="button"
                                                     onClick={() =>
@@ -208,11 +213,11 @@ export function ProductDialog({
                                                     }
                                                     disabled={!active}
                                                     aria-label={`Less ${addon.name}`}
-                                                    className="flex size-9 items-center justify-center bg-card transition-colors hover:bg-muted disabled:opacity-40"
+                                                    className="grid size-9 place-items-center rounded-full transition-[background-color,scale] hover:bg-muted active:scale-90 disabled:opacity-30 disabled:hover:bg-transparent"
                                                 >
-                                                    <Minus className="size-3.5" />
+                                                    <Minus className="size-4" />
                                                 </button>
-                                                <span className="w-9 text-center text-sm font-extrabold tabular-nums">
+                                                <span className="w-5 text-center font-display text-sm font-bold tabular-nums">
                                                     {quantity}
                                                 </span>
                                                 <button
@@ -224,9 +229,9 @@ export function ProductDialog({
                                                         )
                                                     }
                                                     aria-label={`More ${addon.name}`}
-                                                    className="flex size-9 items-center justify-center bg-card transition-colors hover:bg-muted"
+                                                    className="grid size-9 place-items-center rounded-full bg-foreground text-background transition-[scale] hover:scale-105 active:scale-90"
                                                 >
-                                                    <Plus className="size-3.5" />
+                                                    <Plus className="size-4" />
                                                 </button>
                                             </div>
                                         </li>
@@ -237,9 +242,9 @@ export function ProductDialog({
                     )}
                 </div>
 
-                {/* Fixed footer: price and add-to-cart stay visible no matter
-                    how long the description scrolls. */}
-                <div className="flex shrink-0 items-center justify-between gap-3 border-t-2 border-neutral-700 p-5">
+                {/* The order bar: price and add stay in reach however long the
+                    details run. */}
+                <div className="flex shrink-0 items-center justify-between gap-3 border-t border-border bg-card px-5 pt-3.5 pb-[max(0.875rem,env(safe-area-inset-bottom))] md:px-6">
                     <ProductPrice
                         basePrice={basePrice}
                         discountPrice={discountPrice}
@@ -249,22 +254,31 @@ export function ProductDialog({
                         <button
                             type="button"
                             onClick={() => onAddToCart(selectedAddons)}
-                            className="inline-flex items-center gap-2 rounded-md border-2 border-black bg-brand-red px-4 py-2 font-extrabold tracking-wide text-white uppercase shadow-[3px_3px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#000] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                            className="inline-flex min-h-12 items-center gap-2.5 rounded-full bg-brand-red ps-5 pe-1.5 text-[0.9375rem] font-semibold text-brand-ink shadow-[0_10px_24px_-10px_rgb(255_102_0/0.8)] transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card focus-visible:outline-none"
                         >
-                            <ShoppingCart className="size-4" />
-                            Add to cart
-                            {extrasUsd > 0 && (
-                                <span className="font-bold text-white/80">
-                                    +
-                                    {pricing.showUsd
-                                        ? pricing.usd(extrasUsd)
-                                        : pricing.lbp(extrasUsd)}
-                                </span>
-                            )}
+                            <ShoppingBag className="size-[1.125rem]" />
+                            <span>Add · أضف</span>
+                            <span
+                                dir="ltr"
+                                className="rounded-full bg-black/20 px-3 py-1.5 font-display text-sm font-bold tabular-nums"
+                            >
+                                {money(totalUsd)}
+                            </span>
                         </button>
                     )}
                 </div>
             </DialogContent>
         </Dialog>
+    );
+}
+
+/** A small bilingual label over a group of choices in the sheet. */
+function SheetLabel({ english, arabic }: { english: string; arabic: string }) {
+    return (
+        <p className="flex items-center gap-2 text-xs font-semibold tracking-wide text-muted-foreground">
+            <span className="uppercase">{english}</span>
+            <span aria-hidden className="h-px flex-1 bg-border" />
+            <span lang="ar">{arabic}</span>
+        </p>
     );
 }

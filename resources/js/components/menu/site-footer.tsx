@@ -5,62 +5,34 @@ import type { Category } from '@/types';
 
 interface SiteFooterProps {
     categories: Category[];
-    /** Jump to a category in the menu above (same client-side filter as the pills). */
+    /** Jump to a section of the menu above (same client-side filter as the pills). */
     onSelectCategory?: (id: number) => void;
 }
 
 /**
- * Footer that mirrors the header: the same cream zigzag band, logo, and uppercase
- * type. A torn-paper edge runs along the top so it reads as the page's closing strip.
+ * The close of the page: the logo with the shop's line, the sections as a
+ * quick index, the hours, and the socials, on the darker surface band. The
+ * logo's red lines run the full width at the very foot.
  */
 export function SiteFooter({ categories, onSelectCategory }: SiteFooterProps) {
     const socials = usePage().props.socials;
 
     return (
-        <footer className="footer-zigzag mt-16 pt-12">
-            <div className="mx-auto max-w-7xl px-4 pb-8 md:px-10">
-                <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
-                    {/* Brand */}
-                    <div className="max-w-xs">
-                        <BrandLogo className="h-12 md:h-14" />
-                        <p className="mt-3 text-sm font-medium text-muted-foreground">
-                            Fresh snacks, made to order. Take a time out and
-                            treat yourself.
+        <footer className="mt-20 bg-surface">
+            <div className="mx-auto max-w-6xl px-4 pt-12 pb-10 md:px-6 md:pt-16">
+                <div className="grid gap-10 md:grid-cols-[1.3fr_1fr_1fr] md:gap-12">
+                    <div className="flex flex-col items-start gap-4">
+                        <BrandLogo className="h-14 md:h-16" />
+                        <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
+                            Shawarma, burgers and sandwiches made to order in
+                            Aley.
+                            <span lang="ar" dir="rtl" className="mt-1 block">
+                                شاورما، برغر وسندويشات عالطلب في عاليه.
+                            </span>
                         </p>
-                    </div>
 
-                    {/* Category quick-jump */}
-                    <nav>
-                        <h3 className="mb-3 text-xs font-black tracking-widest text-brand-red uppercase">
-                            Categories
-                        </h3>
-                        <ul className="grid grid-cols-2 gap-x-8 gap-y-1.5">
-                            {categories.map((category) => (
-                                <li key={category.id}>
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            onSelectCategory?.(category.id)
-                                        }
-                                        className="text-sm font-bold tracking-wide text-foreground/70 uppercase transition-colors hover:text-foreground"
-                                    >
-                                        {category.title}
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    </nav>
-
-                    {/* Opening hours (automatic mode only) */}
-                    <FooterHours />
-
-                    {/* Socials */}
-                    {socials.length > 0 && (
-                        <nav>
-                            <h3 className="mb-3 text-xs font-black tracking-widest text-brand-red uppercase">
-                                Follow
-                            </h3>
-                            <ul className="flex items-center gap-3">
+                        {socials.length > 0 && (
+                            <ul className="mt-1 flex items-center gap-2">
                                 {socials.map((social) => (
                                     <li key={social.platform}>
                                         <a
@@ -69,26 +41,51 @@ export function SiteFooter({ categories, onSelectCategory }: SiteFooterProps) {
                                             rel="noreferrer"
                                             aria-label={social.label}
                                             title={social.label}
-                                            className="flex size-11 items-center justify-center rounded-md border-2 border-black bg-white shadow-[3px_3px_0_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#000] focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 focus-visible:outline-none active:translate-x-[3px] active:translate-y-[3px] active:shadow-none"
+                                            className="flex size-11 items-center justify-center rounded-full bg-card ring-1 ring-border transition-[translate,background-color] duration-200 hover:-translate-y-0.5 hover:bg-raised active:translate-y-0 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                         >
                                             <img
                                                 src={social.icon}
                                                 alt=""
-                                                className="size-6"
+                                                className="size-5"
                                             />
                                         </a>
                                     </li>
                                 ))}
                             </ul>
-                        </nav>
-                    )}
+                        )}
+                    </div>
+
+                    <nav aria-label="Menu sections">
+                        <h3 className="mb-3 text-xs font-semibold tracking-[0.18em] text-muted-foreground uppercase">
+                            Sections · الأقسام
+                        </h3>
+                        <ul className="grid grid-cols-2 gap-x-6">
+                            {categories.map((category) => (
+                                <li key={category.id}>
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            onSelectCategory?.(category.id)
+                                        }
+                                        dir="auto"
+                                        className="inline-flex min-h-11 items-center font-display text-[0.9375rem] font-bold text-foreground/80 rounded-md underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                    >
+                                        {category.title}
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+
+                    <FooterHours />
                 </div>
 
-                <div className="mt-10 flex flex-col items-center justify-between gap-1 border-t-2 border-black/10 pt-4 text-xs font-bold tracking-wide text-muted-foreground uppercase md:flex-row">
+                <div className="mt-12 flex flex-col justify-between gap-1 border-t border-border pt-5 text-xs text-muted-foreground sm:flex-row">
                     <span>© {new Date().getFullYear()} Time Out Snack</span>
-                    <span>All rights reserved</span>
+                    <span>Aley, Lebanon · عاليه، لبنان</span>
                 </div>
             </div>
+
         </footer>
     );
 }

@@ -35,10 +35,10 @@ function whenLabel(target: Date, now: Date): string {
 function Segment({ value, label }: { value: number; label: string }) {
     return (
         <div className="flex flex-col items-center">
-            <span className="text-3xl leading-none font-black tabular-nums md:text-4xl">
+            <span className="font-display text-3xl leading-none font-black tabular-nums md:text-4xl">
                 {pad(value)}
             </span>
-            <span className="mt-1 text-[9px] font-extrabold tracking-[0.2em] text-muted-foreground uppercase">
+            <span className="mt-1 text-[0.625rem] font-semibold tracking-[0.2em] text-muted-foreground uppercase">
                 {label}
             </span>
         </div>
@@ -47,7 +47,7 @@ function Segment({ value, label }: { value: number; label: string }) {
 
 function Colon() {
     return (
-        <span className="-mt-3 text-2xl font-black text-brand-red md:text-3xl">
+        <span className="-mt-3 font-display text-2xl font-black text-brand-red md:text-3xl">
             :
         </span>
     );
@@ -95,7 +95,7 @@ export function OpenCountdown({ className }: { className?: string }) {
                     'mt-4 border-t-2 border-dashed border-black/15 pt-4',
             )}
         >
-            <p className="text-[11px] font-black tracking-widest text-brand-red uppercase">
+            <p className="text-[0.6875rem] font-semibold tracking-widest text-brand-red-ink uppercase">
                 Opens {whenLabel(target, now)} ·{' '}
                 {formatTime(`${target.getHours()}:${pad(target.getMinutes())}`)}
             </p>
