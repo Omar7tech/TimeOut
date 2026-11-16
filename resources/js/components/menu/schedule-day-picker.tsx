@@ -21,7 +21,7 @@ export function todayIso(): number {
 }
 
 /** The day of the month for an ISO weekday in the current week. */
-function dateOf(isoDay: number): number {
+export function dateOf(isoDay: number): number {
     const now = new Date();
     const date = new Date(now);
     date.setDate(now.getDate() + (isoDay - todayIso()));

@@ -258,6 +258,7 @@ function MenuView({
                             categories={categories}
                             onSelect={(category) => openFromBelow(category.id)}
                             onSelectToday={() => openFromBelow('today')}
+                            schedule={schedule ?? []}
                             onSelectSchedule={
                                 showSchedule
                                     ? () => openFromBelow('schedule')
