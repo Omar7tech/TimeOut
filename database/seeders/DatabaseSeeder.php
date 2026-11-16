@@ -8,7 +8,13 @@ use Illuminate\Database\Seeder;
 class DatabaseSeeder extends Seeder
 {
     /**
-     * Seed the application's database.
+     * Seed the application with the live Time Out Snack menu: its categories,
+     * products, photos, carousel and shop settings. Every menu seeder only
+     * adds what is missing, so it is safe to run on a server that already
+     * has the menu.
+     *
+     * Model events stay on: category and product slugs go through
+     * spatie/laravel-sluggable on `creating`, which keeps the live slugs given.
      */
     public function run(): void
     {
@@ -20,9 +26,12 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password'),
         ]);
 
-        /*  $this->call([
-             CategorySeeder::class,
-             ProductSeeder::class,
-         ]); */
+        $this->call([
+            GeneralSettingsSeeder::class,
+            CategorySeeder::class,
+            ProductSeeder::class,
+            MenuImageSeeder::class,
+            SlideSeeder::class,
+        ]);
     }
 }
