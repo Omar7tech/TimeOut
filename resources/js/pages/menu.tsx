@@ -19,7 +19,7 @@ import { WeeklySchedule } from '@/components/menu/weekly-schedule';
 import { WhatsAppFab } from '@/components/menu/whatsapp-fab';
 import { CartProvider, useCart } from '@/contexts/cart-context';
 import { useProductCardDesign } from '@/hooks/use-product-card-design';
-import { cn } from '@/lib/utils';
+import { cn, isArabic } from '@/lib/utils';
 import type {
     Category,
     OrderType,
@@ -293,6 +293,7 @@ function MenuView({
 
                         <div
                             key={String(active)}
+                            dir={isArabic(heading.title) ? 'rtl' : 'ltr'}
                             className="mt-6 mb-5 flex animate-rise flex-wrap items-end justify-between gap-x-4 gap-y-3 md:mt-8 md:mb-7"
                         >
                             <div className="flex min-w-0 flex-col gap-2">

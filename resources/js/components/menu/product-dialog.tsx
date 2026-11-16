@@ -254,7 +254,7 @@ export function ProductDialog({
                         <button
                             type="button"
                             onClick={() => onAddToCart(selectedAddons)}
-                            className="inline-flex min-h-12 items-center gap-2.5 rounded-full bg-brand-red ps-5 pe-1.5 text-[0.9375rem] font-semibold text-brand-ink shadow-[0_10px_24px_-10px_rgb(255_102_0/0.8)] transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card focus-visible:outline-none"
+                            className="inline-flex min-h-12 items-center gap-2.5 rounded-full bg-brand-red ps-5 pe-1.5 text-[0.9375rem] font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card focus-visible:outline-none"
                         >
                             <ShoppingBag className="size-[1.125rem]" />
                             <span>Add · أضف</span>

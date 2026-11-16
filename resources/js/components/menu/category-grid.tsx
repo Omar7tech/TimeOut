@@ -69,7 +69,7 @@ export function CategoryGrid({
                 <button
                     type="button"
                     onClick={onSelectToday}
-                    className="group relative isolate flex min-h-36 flex-col justify-between overflow-hidden rounded-[1.5rem] bg-brand-yellow p-5 text-start text-black transition-[translate,box-shadow] duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-18px_rgb(247_226_28/0.6)] active:translate-y-0 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none md:min-h-44 md:p-6"
+                    className="group relative isolate flex min-h-36 flex-col justify-between overflow-hidden rounded-[1.5rem] bg-brand-yellow p-5 text-start text-black transition-[translate,box-shadow] duration-300 ease-out hover:-translate-y-0.5 active:translate-y-0 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none md:min-h-44 md:p-6"
                 >
                     <span
                         aria-hidden

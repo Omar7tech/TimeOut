@@ -36,7 +36,7 @@ function MenuLink({
             className={cn(
                 'group flex animate-rise items-center gap-4 rounded-[1.5rem] p-4 pe-5 transition-[translate,box-shadow,background-color] duration-300 ease-out hover:-translate-y-0.5 active:translate-y-0 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none',
                 primary
-                    ? 'bg-brand-red text-brand-ink hover:shadow-[0_20px_40px_-16px_rgb(255_102_0/0.8)]'
+                    ? 'bg-brand-red text-brand-ink'
                     : 'bg-card ring-1 ring-border hover:shadow-[0_20px_40px_-18px_rgb(0_0_0/0.5)]',
             )}
         >

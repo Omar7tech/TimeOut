@@ -49,16 +49,16 @@ export function WhatsAppFab({ raised = false }: { raised?: boolean }) {
                 onClick={() => setOpen(true)}
                 aria-label="Chat on WhatsApp"
                 className={cn(
-                    'fixed right-4 z-40 flex size-14 items-center justify-center rounded-full bg-[#25d366] shadow-[0_12px_28px_-10px_rgb(37_211_102/0.8)] transition-[bottom,scale] duration-300 ease-out hover:scale-105 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none active:scale-95 md:right-6',
+                    'fixed right-4 z-40 flex size-12 items-center justify-center rounded-full bg-card shadow-[0_8px_20px_-10px_rgb(0_0_0/0.5)] ring-1 ring-border transition-[bottom,scale,background-color] duration-300 ease-out hover:bg-raised focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none active:scale-95 md:right-6',
                     raised
-                        ? 'bottom-[calc(6.5rem+env(safe-area-inset-bottom))] md:bottom-[calc(7.5rem+env(safe-area-inset-bottom))]'
+                        ? 'bottom-[calc(5.75rem+env(safe-area-inset-bottom))] md:bottom-[calc(6.5rem+env(safe-area-inset-bottom))]'
                         : 'bottom-[calc(1rem+env(safe-area-inset-bottom))] md:bottom-[calc(1.5rem+env(safe-area-inset-bottom))]',
                 )}
             >
                 <img
                     src="/social-icons/whatsapp.svg"
                     alt=""
-                    className="size-7 brightness-0 invert"
+                    className="size-6"
                 />
             </button>
 

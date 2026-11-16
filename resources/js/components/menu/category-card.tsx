@@ -29,7 +29,7 @@ export function CategoryCard({ category, index, onSelect }: CategoryCardProps) {
             className={cn(
                 'group relative isolate flex aspect-[4/5] flex-col justify-between overflow-hidden rounded-[1.5rem] p-4 text-start transition-[translate,box-shadow] duration-300 ease-out hover:-translate-y-1 active:translate-y-0 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none md:p-5',
                 lit
-                    ? 'bg-brand-red text-brand-ink hover:shadow-[0_22px_44px_-20px_rgb(255_102_0/0.8)]'
+                    ? 'bg-brand-red text-brand-ink'
                     : 'bg-card text-foreground ring-1 ring-border hover:shadow-[0_22px_44px_-22px_rgb(0_0_0/0.6)] hover:ring-brand-red/50',
             )}
         >

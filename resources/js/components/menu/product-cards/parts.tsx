@@ -96,7 +96,7 @@ export function AddButton({
             }}
             aria-label={`Add ${title} to cart`}
             className={cn(
-                'relative z-10 inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-brand-red text-brand-ink shadow-[0_6px_16px_-6px_rgb(255_102_0/0.7)] transition-[scale,background-color] duration-200 hover:scale-105 hover:bg-brand-red/90 active:scale-95 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card focus-visible:outline-none',
+                'relative z-10 inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-brand-red text-brand-ink transition-[scale,background-color] duration-200 hover:scale-105 hover:bg-brand-red/90 active:scale-95 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card focus-visible:outline-none',
                 className,
             )}
         >
