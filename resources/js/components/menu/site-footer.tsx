@@ -91,14 +91,17 @@ export function SiteFooter({ categories, onSelectCategory }: SiteFooterProps) {
                     />
 
                     <div>
-                        <p className="font-display text-4xl leading-none font-black md:text-5xl">
+                        <p className="font-display text-4xl leading-tight font-black md:text-5xl">
                             جوعان؟
-                        </p>
-                        <p className="mt-2 text-sm font-medium text-brand-ink/70">
-                            نحنا بعاليه، والأكل سخن عالطلب.
-                            <span dir="ltr" className="block">
-                                Hungry? We're right here in Aley.
+                            <span className="block text-2xl md:text-3xl">
+                                ما إلك إلا تايم آوت
                             </span>
+                        </p>
+                        <p
+                            dir="ltr"
+                            className="mt-2 text-end text-sm font-medium text-brand-ink/70"
+                        >
+                            Hungry? Nothing hits like Time Out.
                         </p>
                     </div>
 
