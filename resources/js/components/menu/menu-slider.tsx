@@ -33,7 +33,7 @@ export function MenuSlider({ slides, enableCart = false }: MenuSliderProps) {
         [],
     );
     const [emblaRef, emblaApi] = useEmblaCarousel(
-        { loop: true, align: 'start', containScroll: 'trimSnaps' },
+        { loop: true, align: 'center' },
         plugins,
     );
 
@@ -108,8 +108,11 @@ export function MenuSlider({ slides, enableCart = false }: MenuSliderProps) {
 
     return (
         <section aria-label="Featured · مميز" className="flex flex-col gap-3">
-            <div ref={emblaRef} className="-mx-4 overflow-hidden select-none md:mx-0">
-                <div className="ms-1 flex md:-ms-3">
+            <div
+                ref={emblaRef}
+                className="-mx-4 overflow-hidden select-none md:-mx-6 md:[mask-image:linear-gradient(to_right,transparent,#000_7%,#000_93%,transparent)]"
+            >
+                <div className="flex">
                     {slides.map((slide) => {
                         const image = slide.image ? (
                             <SmartImage
@@ -154,11 +157,11 @@ export function MenuSlider({ slides, enableCart = false }: MenuSliderProps) {
                                         )}
                                     </span>
                                     {slide.product && (
-                                        <span className="grid size-11 shrink-0 place-items-center rounded-full bg-brand-red text-brand-ink transition-transform duration-300 group-hover:scale-105">
+                                        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-white/15 text-white ring-1 ring-white/25 backdrop-blur-md transition-[background-color,scale] duration-300 group-hover:scale-105 group-hover:bg-white/25">
                                             {rtl ? (
-                                                <ArrowLeft className="size-5" />
+                                                <ArrowLeft className="size-4" />
                                             ) : (
-                                                <ArrowRight className="size-5" />
+                                                <ArrowRight className="size-4" />
                                             )}
                                         </span>
                                     )}
@@ -168,20 +171,20 @@ export function MenuSlider({ slides, enableCart = false }: MenuSliderProps) {
                         return (
                             <div
                                 key={slide.id}
-                                className="min-w-0 flex-[0_0_88%] ps-3 sm:flex-[0_0_60%] md:flex-[0_0_50%] lg:flex-[0_0_33.333%]"
+                                className="min-w-0 flex-[0_0_84%] px-1.5 sm:flex-[0_0_62%] lg:flex-[0_0_40%]"
                             >
                                 {slide.product ? (
                                     <button
                                         type="button"
                                         onClick={() => openSlide(slide)}
                                         aria-label={`View ${slide.product.title}`}
-                                        className="group relative block w-full cursor-pointer overflow-hidden rounded-[1.5rem] ring-1 ring-border focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                        className="group relative block w-full cursor-pointer overflow-hidden rounded-[1.5rem] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring focus-visible:outline-none"
                                     >
                                         {image}
                                         {caption}
                                     </button>
                                 ) : (
-                                    <div className="group relative block w-full overflow-hidden rounded-[1.5rem] ring-1 ring-border">
+                                    <div className="group relative block w-full overflow-hidden rounded-[1.5rem]">
                                         {image}
                                         {caption}
                                     </div>

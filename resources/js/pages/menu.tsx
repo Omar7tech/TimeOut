@@ -144,14 +144,6 @@ function MenuView({
         window.history.replaceState(window.history.state, '', url);
     }, [active, categories]);
 
-    const itemCount = useMemo(
-        () =>
-            categories.reduce(
-                (total, category) => total + (category.products?.length ?? 0),
-                0,
-            ),
-        [categories],
-    );
 
     // Derive the visible products, heading and per-product add-ons for the active
     // filter. Memoized so this only recomputes when the filter or data changes,
@@ -258,11 +250,7 @@ function MenuView({
             >
                 {active === null ? (
                     <div className="flex flex-col gap-6 md:gap-8">
-                        <MenuMasthead
-                            orderType={orderType}
-                            itemCount={itemCount}
-                            categoryCount={categories.length}
-                        />
+                        <MenuMasthead orderType={orderType} />
 
                         <MenuSlider slides={slides} enableCart={cartEnabled} />
 
