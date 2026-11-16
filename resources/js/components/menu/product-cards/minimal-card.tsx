@@ -76,7 +76,7 @@ export function MinimalCard({
                             <AddButton
                                 title={product.title}
                                 onClick={onQuickAdd}
-                                className="size-10"
+                                className="size-8"
                             />
                         </span>
                     )}
