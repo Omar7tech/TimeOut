@@ -30,11 +30,11 @@ export function CategoryCard({ category, onSelect }: CategoryCardProps) {
                 the icon in it. It straightens up as the card lifts. */}
             <span
                 aria-hidden
-                className="absolute -end-4 -top-4 -z-10 grid size-24 rotate-[14deg] place-items-center rounded-[1.75rem] bg-white/20 transition-[rotate,scale] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-105 group-hover:rotate-0 rtl:rotate-[-14deg] rtl:group-hover:rotate-0 md:size-28"
+                className="absolute -end-4 -top-4 -z-10 grid size-28 rotate-[14deg] place-items-center rounded-[1.75rem] bg-white/20 transition-[rotate,scale] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-105 group-hover:rotate-0 rtl:rotate-[-14deg] rtl:group-hover:rotate-0 md:size-32"
             >
                 <CategoryIcon
                     category={category}
-                    className="size-12 -translate-x-2 translate-y-2 rotate-[-14deg] transition-[rotate] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:rotate-0 rtl:translate-x-2 rtl:rotate-[14deg] rtl:group-hover:rotate-0 md:size-14"
+                    className="size-14 -translate-x-2.5 translate-y-2.5 rotate-[-14deg] transition-[rotate] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:rotate-0 rtl:translate-x-2.5 rtl:rotate-[14deg] rtl:group-hover:rotate-0 md:size-16"
                 />
             </span>
 
