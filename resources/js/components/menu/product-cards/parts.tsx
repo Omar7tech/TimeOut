@@ -96,7 +96,7 @@ export function AddButton({
             }}
             aria-label={`Add ${title} to cart`}
             className={cn(
-                'relative z-10 inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-red after:absolute after:-inset-1 after:content-[''] text-brand-ink transition-[scale,background-color] duration-200 hover:scale-105 hover:bg-brand-red/90 active:scale-95 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card focus-visible:outline-none',
+                'relative z-10 inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-red after:absolute after:-inset-1 after:content-[""] text-brand-ink transition-[scale,background-color] duration-200 hover:scale-105 hover:bg-brand-red/90 active:scale-95 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card focus-visible:outline-none',
                 className,
             )}
         >
@@ -124,7 +124,7 @@ export function ViewButton({
             }}
             aria-label={`View ${title}`}
             className={cn(
-                'relative z-10 inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-muted after:absolute after:-inset-1 after:content-[''] text-foreground transition-[scale,background-color] duration-200 hover:bg-foreground hover:text-background active:scale-95 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+                'relative z-10 inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-muted after:absolute after:-inset-1 after:content-[""] text-foreground transition-[scale,background-color] duration-200 hover:bg-foreground hover:text-background active:scale-95 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
                 className,
             )}
         >

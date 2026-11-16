@@ -71,7 +71,10 @@ export function CategoryGrid({
                 </h2>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-5">
+            <div
+                dir="rtl"
+                className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:gap-3 lg:grid-cols-5"
+            >
                 {categories.map((category, index) => (
                     <CategoryCard
                         key={category.id}

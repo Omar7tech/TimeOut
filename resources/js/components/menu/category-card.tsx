@@ -1,74 +1,50 @@
 import { CategoryIcon } from '@/components/menu/category-icon';
-import { cn, isArabic } from '@/lib/utils';
+import { isArabic } from '@/lib/utils';
 import type { Category } from '@/types';
 
 interface CategoryCardProps {
     category: Category;
-    /** Position in the menu; every fifth tile, starting with the first, is lit orange. */
+    /** Position in the menu (kept for callers; not printed). */
     index: number;
     onSelect: (category: Category) => void;
 }
 
 /**
- * One section of the menu as a small poster: the name set huge in the display
- * face at the foot, the section's icon on a plate up top, and the same icon
- * again as a giant watermark breaking off the corner. Every fifth tile is lit
- * in the house orange so the grid has a beat. On hover the watermark swings
- * upright and warms, and the plate lifts.
+ * One section of the menu as a slab of the house orange: the name set in the
+ * display face at the top corner with its dish count under it, and the
+ * section's icon, big, in a lighter circle breaking off the opposite corner.
+ * The slab follows the language of the name, so an Arabic section reads from
+ * the right with its icon on the left. On hover it lifts and the icon swells.
  */
-export function CategoryCard({ category, index, onSelect }: CategoryCardProps) {
+export function CategoryCard({ category, onSelect }: CategoryCardProps) {
     const count = category.products?.length ?? 0;
     const rtl = isArabic(category.title);
-    const lit = index % 5 === 0;
 
     return (
         <button
             type="button"
             onClick={() => onSelect(category)}
             dir={rtl ? 'rtl' : 'ltr'}
-            className={cn(
-                'group relative isolate flex aspect-[4/5] flex-col justify-between overflow-hidden rounded-[1.5rem] p-4 text-start transition-[translate,box-shadow] duration-300 ease-out hover:-translate-y-1 active:translate-y-0 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none md:p-5',
-                lit
-                    ? 'bg-brand-red text-brand-ink'
-                    : 'bg-card text-foreground ring-1 ring-border hover:shadow-[0_22px_44px_-22px_rgb(0_0_0/0.6)] hover:ring-brand-red/50',
-            )}
+            className="group relative isolate flex min-h-28 flex-col overflow-hidden rounded-[1.375rem] bg-brand-red p-3.5 text-start text-brand-ink transition-[translate,scale] duration-300 ease-out hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none md:min-h-32 md:p-4"
         >
-            {/* The watermark: the icon again, huge, breaking off the corner. */}
-            <CategoryIcon
-                category={category}
-                className={cn(
-                    'absolute -end-[22%] -top-[12%] -z-10 size-[78%] rotate-[-14deg] transition-[rotate,color,scale] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-105 group-hover:rotate-0',
-                    lit
-                        ? 'text-brand-ink/12'
-                        : 'text-foreground/[0.05] group-hover:text-brand-red/15',
-                )}
-            />
-
-            <span className="flex items-center gap-2.5">
-                <span
-                    className={cn(
-                        'grid size-11 place-items-center rounded-full transition-transform duration-300 ease-out group-hover:-translate-y-0.5',
-                        lit
-                            ? 'bg-brand-ink text-brand-red'
-                            : 'bg-brand-red text-brand-ink',
-                    )}
-                >
-                    <CategoryIcon category={category} className="size-6" />
-                </span>
-                <span
-                    className={cn(
-                        'text-xs font-semibold tabular-nums',
-                        lit ? 'text-brand-ink/70' : 'text-muted-foreground',
-                    )}
-                >
-                    {rtl
-                        ? `${count} ${count > 2 && count < 11 ? 'أصناف' : 'صنف'}`
-                        : `${count} ${count === 1 ? 'item' : 'items'}`}
-                </span>
+            {/* The lighter circle and the icon in it, breaking off the corner. */}
+            <span
+                aria-hidden
+                className="absolute -end-5 -bottom-5 -z-10 grid size-24 place-items-center rounded-full bg-white/20 transition-[scale] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-110 md:size-28"
+            >
+                <CategoryIcon
+                    category={category}
+                    className="size-12 -translate-x-1.5 -translate-y-1.5 rtl:translate-x-1.5 md:size-14"
+                />
             </span>
 
-            <span className="font-display text-[clamp(1.375rem,1rem+1.6vw,2rem)] leading-[1.15] font-black text-balance">
+            <span className="max-w-[72%] font-display text-lg leading-tight font-black text-balance md:text-xl">
                 {category.title}
+            </span>
+            <span className="mt-1 text-xs font-medium text-brand-ink/65">
+                {rtl
+                    ? `${count} ${count > 2 && count < 11 ? 'أصناف' : 'صنف'}`
+                    : `${count} ${count === 1 ? 'item' : 'items'}`}
             </span>
         </button>
     );
