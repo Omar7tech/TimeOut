@@ -10,7 +10,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
 
 /**
- * A realistic Arabic demo menu for local development: Lebanese snack
+ * A realistic bilingual (Arabic and English, mixed as real Lebanese menus are) demo menu for local development: Lebanese snack
  * categories, products with sizes, add-ons, schedules and carousel slides.
  *
  * Not called by DatabaseSeeder on purpose, so it never touches a live menu.

@@ -42,9 +42,7 @@ export function CartBar() {
                     </span>
                 </span>
                 <span className="font-display text-lg font-extrabold tabular-nums">
-                    {pricing.showUsd
-                        ? pricing.usd(subtotalUsd)
-                        : pricing.lbp(subtotalUsd)}
+                    {pricing.primary(subtotalUsd)}
                 </span>
             </button>
         </div>

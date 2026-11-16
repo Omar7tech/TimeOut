@@ -68,9 +68,7 @@ export function VariantSelector({
                                         : 'text-muted-foreground',
                                 )}
                             >
-                                {pricing.showUsd
-                                    ? pricing.usd(price)
-                                    : pricing.lbp(price)}
+                                {pricing.primary(price)}
                             </span>
                         )}
                     </button>

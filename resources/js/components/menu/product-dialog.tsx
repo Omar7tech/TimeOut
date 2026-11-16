@@ -95,7 +95,7 @@ export function ProductDialog({
     const rtl = isArabic(product.title);
     const totalUsd = (discountPrice ?? basePrice) + extrasUsd;
     const money = (usd: number): string =>
-        pricing.showUsd ? pricing.usd(usd) : pricing.lbp(usd);
+        pricing.primary(usd);
     const hasPrepTime =
         product.preparation_time !== null && product.preparation_time > 0;
 

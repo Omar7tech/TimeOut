@@ -3,7 +3,10 @@ import { VariantSelector } from '@/components/menu/variant-selector';
 import { SmartImage } from '@/components/smart-image';
 import {
     AddButton,
+    BidiText,
     CardTarget,
+    PhotoBadges,
+    PrepTime,
     ProductInitial,
     ProductMarks,
     ViewButton,
@@ -56,22 +59,34 @@ export function SpotlightCard({
                     />
                 )}
 
-                <ProductMarks
+                <PhotoBadges
                     product={product}
-                    className="absolute start-3 top-3 rounded-full bg-black/45 px-2 py-1 backdrop-blur-md empty:hidden [&_svg.text-green-600]:text-green-400"
+                    basePrice={basePrice}
+                    discountPrice={discountPrice}
                 />
             </div>
 
             <div className="pointer-events-none flex flex-1 flex-col p-4">
-                <h2 className="font-display text-lg leading-snug font-bold">
+                <ProductMarks product={product} className="mb-2" />
+
+                <BidiText
+                    as="h2"
+                    rtl={rtl}
+                    className="line-clamp-2 font-display text-lg leading-snug font-bold"
+                >
                     {product.title}
-                </h2>
+                </BidiText>
 
                 {blurb && (
-                    <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+                    <BidiText
+                        rtl={rtl}
+                        className="mt-1 line-clamp-2 text-sm leading-relaxed text-muted-foreground"
+                    >
                         {blurb}
-                    </p>
+                    </BidiText>
                 )}
+
+                <PrepTime minutes={product.preparation_time} className="mt-2" />
 
                 {hasVariants && (
                     <div className="pointer-events-auto relative z-10 mt-3">

@@ -11,6 +11,8 @@ export type PriceParts = {
     deliveryFeeUsd: number | null;
     usd: (usd: number) => string;
     lbp: (usd: number) => string;
+    /** The amount in the leading currency: LBP whenever it's shown, else USD. */
+    primary: (usd: number) => string;
 };
 
 /**
@@ -23,12 +25,16 @@ export function usePricing(): PriceParts {
     const display: Pricing['display'] =
         rate === null ? 'usd' : (pricing?.display ?? 'usd');
 
+    const showLbp = (display === 'lbp' || display === 'both') && rate !== null;
+    const lbp = (usd: number): string =>
+        rate === null ? '' : formatLbp(convertUsdToLbp(usd, rate));
+
     return {
         showUsd: display === 'usd' || display === 'both',
-        showLbp: (display === 'lbp' || display === 'both') && rate !== null,
+        showLbp,
         deliveryFeeUsd: pricing?.deliveryFeeUsd ?? null,
         usd: (usd: number) => formatUsd(usd),
-        lbp: (usd: number) =>
-            rate === null ? '' : formatLbp(convertUsdToLbp(usd, rate)),
+        lbp,
+        primary: (usd: number) => (showLbp ? lbp(usd) : formatUsd(usd)),
     };
 }

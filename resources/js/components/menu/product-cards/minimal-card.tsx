@@ -1,7 +1,7 @@
 import { ProductPrice } from '@/components/menu/product-price';
 import { VariantSelector } from '@/components/menu/variant-selector';
 import { SmartImage } from '@/components/smart-image';
-import { AddButton, CardTarget, ProductMarks } from './parts';
+import { AddButton, BidiText, CardTarget, ProductMarks } from './parts';
 import type { ProductCardViewProps } from './types';
 
 /**
@@ -44,7 +44,10 @@ export function MinimalCard({
 
             <div className="pointer-events-none flex min-w-0 flex-1 flex-col">
                 <div className="flex items-baseline gap-2">
-                    <h2 className="min-w-0 shrink truncate font-display text-base font-bold md:text-lg">
+                    <h2
+                        dir="auto"
+                        className="min-w-0 shrink truncate font-display text-base font-bold md:text-lg"
+                    >
                         {product.title}
                     </h2>
                     <span aria-hidden className="leader h-2 min-w-6 flex-1" />
@@ -58,9 +61,12 @@ export function MinimalCard({
                 <div className="mt-1 flex items-start justify-between gap-3">
                     <div className="flex min-w-0 flex-col gap-1.5">
                         {blurb && (
-                            <p className="line-clamp-2 text-[0.8125rem] leading-relaxed text-muted-foreground">
+                            <BidiText
+                                rtl={rtl}
+                                className="line-clamp-2 text-[0.8125rem] leading-relaxed text-muted-foreground"
+                            >
                                 {blurb}
-                            </p>
+                            </BidiText>
                         )}
                         <ProductMarks product={product} />
                     </div>

@@ -25,7 +25,6 @@ import { usePricing } from '@/hooks/use-pricing';
 import { getBestLocation } from '@/lib/geolocation';
 import type { LocationResult } from '@/lib/geolocation';
 import { useShopOpen } from '@/lib/shop';
-import { cn } from '@/lib/utils';
 import { buildOrderMessage, buildWhatsAppUrl } from '@/lib/whatsapp-order';
 
 const NAME_STORAGE_KEY = 'timeout-customer-name';
@@ -87,8 +86,7 @@ export function CartSheet() {
     } = usePage().props;
     // Single-currency formatter for the per-item breakdown rows (USD when shown,
     // otherwise LBP), keeping the breakdown compact.
-    const fmtPrimary = (usd: number): string =>
-        pricing.showUsd ? pricing.usd(usd) : pricing.lbp(usd);
+    const fmtPrimary = (usd: number): string => pricing.primary(usd);
     // Delivery is only added when there are items in the cart to deliver.
     const deliveryFeeUsd = items.length > 0 ? pricing.deliveryFeeUsd : null;
     const totalUsd = subtotalUsd + (deliveryFeeUsd ?? 0);
@@ -448,7 +446,7 @@ export function CartSheet() {
                             <button
                                 type="button"
                                 onClick={() => setOpen(false)}
-                                className="mt-3 inline-flex items-center justify-center gap-2 min-h-12 rounded-full bg-brand-red px-5 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                className="mt-3 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-brand-red px-5 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98]"
                             >
                                 Browse menu
                             </button>
@@ -557,27 +555,21 @@ export function CartSheet() {
                                                         </div>
                                                     ) : (
                                                         <div className="flex flex-col text-xs leading-tight font-extrabold">
-                                                            {pricing.showUsd && (
-                                                                <span>
-                                                                    {pricing.usd(
-                                                                        item.unitUsd *
-                                                                            item.quantity,
-                                                                    )}
-                                                                </span>
-                                                            )}
-                                                            {pricing.showLbp && (
-                                                                <span
-                                                                    className={cn(
-                                                                        pricing.showUsd &&
-                                                                            'text-[11px] text-muted-foreground',
-                                                                    )}
-                                                                >
-                                                                    {pricing.lbp(
-                                                                        item.unitUsd *
-                                                                            item.quantity,
-                                                                    )}
-                                                                </span>
-                                                            )}
+                                                            <span>
+                                                                {pricing.primary(
+                                                                    item.unitUsd *
+                                                                        item.quantity,
+                                                                )}
+                                                            </span>
+                                                            {pricing.showLbp &&
+                                                                pricing.showUsd && (
+                                                                    <span className="text-[11px] text-muted-foreground">
+                                                                        {pricing.usd(
+                                                                            item.unitUsd *
+                                                                                item.quantity,
+                                                                        )}
+                                                                    </span>
+                                                                )}
                                                         </div>
                                                     )}
                                                 </div>
@@ -697,17 +689,10 @@ export function CartSheet() {
                                             : 'Subtotal'}
                                     </span>
                                     <span className="flex flex-col items-end text-lg leading-tight font-black">
-                                        {pricing.showUsd && (
-                                            <span>{pricing.usd(totalUsd)}</span>
-                                        )}
-                                        {pricing.showLbp && (
-                                            <span
-                                                className={cn(
-                                                    pricing.showUsd &&
-                                                        'text-sm text-muted-foreground',
-                                                )}
-                                            >
-                                                {pricing.lbp(totalUsd)}
+                                        <span>{pricing.primary(totalUsd)}</span>
+                                        {pricing.showLbp && pricing.showUsd && (
+                                            <span className="text-sm text-muted-foreground">
+                                                {pricing.usd(totalUsd)}
                                             </span>
                                         )}
                                     </span>
@@ -733,7 +718,7 @@ export function CartSheet() {
                                                 href={whatsappUrl}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="inline-flex w-full items-center justify-center gap-2 min-h-12 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98]"
                                             >
                                                 <img
                                                     src="/social-icons/whatsapp.svg"
@@ -782,14 +767,14 @@ export function CartSheet() {
                                                 onClick={() =>
                                                     setLocationError(false)
                                                 }
-                                                className="inline-flex flex-1 items-center justify-center min-h-12 rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                className="inline-flex min-h-12 flex-1 items-center justify-center rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98]"
                                             >
                                                 Back
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={retryLocation}
-                                                className="inline-flex flex-1 items-center justify-center gap-2 min-h-12 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98]"
                                             >
                                                 <MapPin className="size-5" />
                                                 Try again
@@ -806,7 +791,7 @@ export function CartSheet() {
                                             <button
                                                 type="button"
                                                 onClick={sendWithLocationLater}
-                                                className="inline-flex items-center justify-center gap-2 min-h-12 rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98]"
                                             >
                                                 <img
                                                     src="/social-icons/whatsapp.svg"
@@ -855,14 +840,14 @@ export function CartSheet() {
                                                             false,
                                                         )
                                                     }
-                                                    className="inline-flex flex-1 items-center justify-center min-h-12 rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                    className="inline-flex min-h-12 flex-1 items-center justify-center rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98]"
                                                 >
                                                     Cancel
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={handleClear}
-                                                    className="inline-flex flex-1 items-center justify-center gap-1.5 min-h-12 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                    className="inline-flex min-h-12 flex-1 items-center justify-center gap-1.5 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98]"
                                                 >
                                                     <Trash2 className="size-4" />
                                                     Clear
@@ -881,14 +866,14 @@ export function CartSheet() {
                                                 onClick={() =>
                                                     setConfirmingClear(false)
                                                 }
-                                                className="inline-flex flex-1 items-center justify-center min-h-12 rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                className="inline-flex min-h-12 flex-1 items-center justify-center rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98]"
                                             >
                                                 Cancel
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={handleClear}
-                                                className="inline-flex flex-1 items-center justify-center gap-1.5 min-h-12 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                className="inline-flex min-h-12 flex-1 items-center justify-center gap-1.5 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98]"
                                             >
                                                 <Trash2 className="size-4" />
                                                 Clear
@@ -922,7 +907,7 @@ export function CartSheet() {
                                                         )
                                                     }
                                                     placeholder="Your full name"
-                                                    className="w-full min-h-12 rounded-2xl bg-muted px-4 py-3 text-base ring-1 ring-border placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                    className="min-h-12 w-full rounded-2xl bg-muted px-4 py-3 text-base ring-1 ring-border placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                                 />
                                             </>
                                         )}
@@ -946,7 +931,7 @@ export function CartSheet() {
                                                         )
                                                     }
                                                     placeholder="e.g. 03 123 456"
-                                                    className="w-full min-h-12 rounded-2xl bg-muted px-4 py-3 text-base ring-1 ring-border placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                    className="min-h-12 w-full rounded-2xl bg-muted px-4 py-3 text-base ring-1 ring-border placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                                 />
                                                 {phone.trim() !== '' &&
                                                     phoneDigitCount(phone) <
@@ -966,7 +951,7 @@ export function CartSheet() {
                                                 onClick={() =>
                                                     setEnteringDetails(false)
                                                 }
-                                                className="inline-flex flex-1 items-center justify-center min-h-12 rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                className="inline-flex min-h-12 flex-1 items-center justify-center rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98]"
                                             >
                                                 Back
                                             </button>
@@ -979,7 +964,7 @@ export function CartSheet() {
                                                         phoneDigitCount(phone) <
                                                             PHONE_MIN_DIGITS)
                                                 }
-                                                className="inline-flex flex-1 items-center justify-center gap-2 min-h-12 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                                                className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                                             >
                                                 Continue
                                                 <ArrowRight className="size-4" />
@@ -1014,14 +999,14 @@ export function CartSheet() {
                                             <button
                                                 type="button"
                                                 onClick={handleNoteBack}
-                                                className="inline-flex flex-1 items-center justify-center min-h-12 rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                className="inline-flex min-h-12 flex-1 items-center justify-center rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98]"
                                             >
                                                 Back
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={handleConfirmNote}
-                                                className="inline-flex flex-1 items-center justify-center gap-2 min-h-12 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98]"
                                             >
                                                 <img
                                                     src="/social-icons/whatsapp.svg"
@@ -1040,7 +1025,7 @@ export function CartSheet() {
                                                 setConfirmingClear(true)
                                             }
                                             aria-label="Clear cart"
-                                            className="inline-flex items-center justify-center min-h-12 rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                            className="inline-flex min-h-12 items-center justify-center rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98]"
                                         >
                                             <Trash2 className="size-4" />
                                         </button>
@@ -1048,7 +1033,7 @@ export function CartSheet() {
                                             type="button"
                                             onClick={handleCheckout}
                                             disabled={locating}
-                                            className="inline-flex flex-1 items-center justify-center gap-2 min-h-12 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-70"
+                                            className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
                                         >
                                             {locating ? (
                                                 <>
@@ -1130,13 +1115,13 @@ export function CartSheet() {
                             <button
                                 type="button"
                                 onClick={closeNoteEditor}
-                                className="inline-flex flex-1 items-center justify-center min-h-12 rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                className="inline-flex min-h-12 flex-1 items-center justify-center rounded-full bg-muted px-4 text-sm font-semibold text-foreground transition-[scale,background-color] duration-200 hover:bg-raised focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98]"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
-                                className="inline-flex flex-1 items-center justify-center gap-2 min-h-12 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full bg-brand-red px-4 text-sm font-semibold text-brand-ink transition-[scale,background-color] duration-200 hover:bg-brand-red/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98]"
                             >
                                 Save note
                             </button>
