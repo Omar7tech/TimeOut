@@ -6,6 +6,7 @@ use App\Enums\BannerMode;
 use App\Enums\MenuFilterDesign;
 use App\Enums\PriceDisplay;
 use App\Enums\ProductCardDesign;
+use App\Enums\ScheduleDayDesign;
 use App\Enums\ShopStatusMode;
 use App\Enums\SocialPlatform;
 use App\Enums\Weekday;
@@ -336,6 +337,21 @@ class ManageGeneral extends SettingsPage
                                     ->helperText('Adds a schedule view to the menu so customers can see which scheduled items are available each day. - يضيف عرض جدول إلى القائمة ليرى الزبائن المنتجات المتاحة في كل يوم.')
                                     ->default(false)
                                     ->columnSpanFull(),
+
+                                Radio::make('schedule_day_design')
+                                    ->label('Schedule day picker design - تصميم اختيار الأيام في الجدول')
+                                    ->validationAttribute('schedule day picker design')
+                                    ->helperText('Choose how the days look at the top of the weekly schedule. - اختر شكل الأيام أعلى الجدول الأسبوعي.')
+                                    ->options(ScheduleDayDesign::class)
+                                    ->descriptions(collect(ScheduleDayDesign::cases())
+                                        ->mapWithKeys(fn (ScheduleDayDesign $design): array => [$design->value => $design->getDescription()])
+                                        ->all())
+                                    ->default(ScheduleDayDesign::CALENDAR->value)
+                                    ->required()
+                                    ->columnSpanFull()
+                                    ->visibleJs(<<<'JS'
+                                        $get('show_product_schedule')
+                                        JS),
                             ]),
 
                         Tab::make('Social - التواصل')

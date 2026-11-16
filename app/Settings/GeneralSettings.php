@@ -6,6 +6,7 @@ use App\Enums\BannerMode;
 use App\Enums\MenuFilterDesign;
 use App\Enums\PriceDisplay;
 use App\Enums\ProductCardDesign;
+use App\Enums\ScheduleDayDesign;
 use App\Enums\ShopStatusMode;
 use App\Enums\Weekday;
 use Carbon\CarbonInterface;
@@ -135,6 +136,11 @@ class GeneralSettings extends Settings
     public MenuFilterDesign $menu_filter_design;
 
     /**
+     * The visual style of the day picker on the storefront's weekly schedule.
+     */
+    public ScheduleDayDesign $schedule_day_design;
+
+    /**
      * Whether the floating WhatsApp chat badge is shown on the storefront.
      */
     public bool $show_whatsapp_badge;
@@ -160,6 +166,7 @@ class GeneralSettings extends Settings
             'banner_mode' => new EnumCast(BannerMode::class),
             'product_card_design' => new EnumCast(ProductCardDesign::class),
             'menu_filter_design' => new EnumCast(MenuFilterDesign::class),
+            'schedule_day_design' => new EnumCast(ScheduleDayDesign::class),
         ];
     }
 
