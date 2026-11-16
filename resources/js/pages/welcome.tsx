@@ -146,10 +146,11 @@ export default function Welcome() {
                                 dir="rtl"
                                 className="font-display text-xl font-bold"
                             >
-                                شاورما، برغر وسناك عالطلب
+                                <span className="text-brand-red-ink">عنجد</span>{' '}
+                                تايم آوت سناك
                             </span>
                             <span className="text-sm text-muted-foreground">
-                                Shawarma, burgers & snacks · Aley
+                                For real, Time Out Snack · Aley
                             </span>
                         </p>
                     </div>

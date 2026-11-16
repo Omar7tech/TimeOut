@@ -15,20 +15,20 @@
     "file": "assets/alexandria-600-normal-DvU6pLYV.woff2",
     "src": "_alexandria-600-normal-DvU6pLYV.woff2"
   },
-  "_createLucideIcon-BmZ3WPXM.js": {
-    "file": "assets/createLucideIcon-BmZ3WPXM.js",
+  "_createLucideIcon-Bs23Ua_6.js": {
+    "file": "assets/createLucideIcon-Bs23Ua_6.js",
     "name": "createLucideIcon",
     "imports": [
       "resources/js/app.tsx"
     ]
   },
-  "_dist-CavVb3WO.js": {
-    "file": "assets/dist-CavVb3WO.js",
+  "_dist-DtQrnVOJ.js": {
+    "file": "assets/dist-DtQrnVOJ.js",
     "name": "dist",
     "imports": [
       "resources/js/app.tsx",
-      "_jsx-runtime-DQJzOD3p.js",
-      "_shop-CbrBJ8Mn.js"
+      "_jsx-runtime-l6lv-Bd1.js",
+      "_shop-CBGAMnCC.js"
     ]
   },
   "_fonts-CigVq_8v.css": {
@@ -99,38 +99,38 @@
     "file": "assets/ibm-plex-sans-arabic-700-normal-DrtBj6UE.woff2",
     "src": "_ibm-plex-sans-arabic-700-normal-DrtBj6UE.woff2"
   },
-  "_jsx-runtime-DQJzOD3p.js": {
-    "file": "assets/jsx-runtime-DQJzOD3p.js",
+  "_jsx-runtime-l6lv-Bd1.js": {
+    "file": "assets/jsx-runtime-l6lv-Bd1.js",
     "name": "jsx-runtime",
     "imports": [
       "resources/js/app.tsx"
     ]
   },
-  "_shop-CbrBJ8Mn.js": {
-    "file": "assets/shop-CbrBJ8Mn.js",
+  "_shop-CBGAMnCC.js": {
+    "file": "assets/shop-CBGAMnCC.js",
     "name": "shop",
     "imports": [
       "resources/js/app.tsx",
-      "_jsx-runtime-DQJzOD3p.js"
+      "_jsx-runtime-l6lv-Bd1.js"
     ]
   },
-  "_smart-image-Vv-5vz4h.js": {
-    "file": "assets/smart-image-Vv-5vz4h.js",
+  "_smart-image-BOotWOOh.js": {
+    "file": "assets/smart-image-BOotWOOh.js",
     "name": "smart-image",
     "imports": [
       "resources/js/app.tsx",
-      "_jsx-runtime-DQJzOD3p.js",
-      "_createLucideIcon-BmZ3WPXM.js"
+      "_jsx-runtime-l6lv-Bd1.js",
+      "_createLucideIcon-Bs23Ua_6.js"
     ]
   },
-  "_theme-toggle-9jUHtthd.js": {
-    "file": "assets/theme-toggle-9jUHtthd.js",
+  "_theme-toggle-B7emQcEP.js": {
+    "file": "assets/theme-toggle-B7emQcEP.js",
     "name": "theme-toggle",
     "imports": [
       "resources/js/app.tsx",
-      "_jsx-runtime-DQJzOD3p.js",
-      "_createLucideIcon-BmZ3WPXM.js",
-      "_shop-CbrBJ8Mn.js"
+      "_jsx-runtime-l6lv-Bd1.js",
+      "_createLucideIcon-Bs23Ua_6.js",
+      "_shop-CBGAMnCC.js"
     ]
   },
   "resources/css/app.css": {
@@ -152,7 +152,7 @@
     "isEntry": true
   },
   "resources/js/app.tsx": {
-    "file": "assets/app-KUcZpnct.js",
+    "file": "assets/app-CdSkc3cW.js",
     "name": "app",
     "src": "resources/js/app.tsx",
     "isEntry": true,
@@ -164,52 +164,52 @@
     ]
   },
   "resources/js/pages/board.tsx": {
-    "file": "assets/board-CQc_k_Lg.js",
+    "file": "assets/board-BrmOZlB2.js",
     "name": "board",
     "src": "resources/js/pages/board.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_jsx-runtime-DQJzOD3p.js",
-      "_smart-image-Vv-5vz4h.js"
+      "_jsx-runtime-l6lv-Bd1.js",
+      "_smart-image-BOotWOOh.js"
     ]
   },
   "resources/js/pages/error-page.tsx": {
-    "file": "assets/error-page-CKaRMcLu.js",
+    "file": "assets/error-page-DQThZM8S.js",
     "name": "error-page",
     "src": "resources/js/pages/error-page.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_dist-CavVb3WO.js",
-      "_jsx-runtime-DQJzOD3p.js"
+      "_dist-DtQrnVOJ.js",
+      "_jsx-runtime-l6lv-Bd1.js"
     ]
   },
   "resources/js/pages/menu.tsx": {
-    "file": "assets/menu-Br0_WnWs.js",
+    "file": "assets/menu-BcCI7w4E.js",
     "name": "menu",
     "src": "resources/js/pages/menu.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_dist-CavVb3WO.js",
-      "_jsx-runtime-DQJzOD3p.js",
-      "_smart-image-Vv-5vz4h.js",
-      "_createLucideIcon-BmZ3WPXM.js",
-      "_theme-toggle-9jUHtthd.js",
-      "_shop-CbrBJ8Mn.js"
+      "_dist-DtQrnVOJ.js",
+      "_jsx-runtime-l6lv-Bd1.js",
+      "_smart-image-BOotWOOh.js",
+      "_createLucideIcon-Bs23Ua_6.js",
+      "_theme-toggle-B7emQcEP.js",
+      "_shop-CBGAMnCC.js"
     ]
   },
   "resources/js/pages/welcome.tsx": {
-    "file": "assets/welcome-mv1sgAn-.js",
+    "file": "assets/welcome-CDKXpcER.js",
     "name": "welcome",
     "src": "resources/js/pages/welcome.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_jsx-runtime-DQJzOD3p.js",
-      "_theme-toggle-9jUHtthd.js",
-      "_shop-CbrBJ8Mn.js"
+      "_jsx-runtime-l6lv-Bd1.js",
+      "_theme-toggle-B7emQcEP.js",
+      "_shop-CBGAMnCC.js"
     ]
   }
 }
