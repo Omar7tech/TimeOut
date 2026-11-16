@@ -1,149 +1,200 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import { ArrowRight, Bike, UtensilsCrossed } from 'lucide-react';
+import { ArrowLeft, Bike, UtensilsCrossed } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { BrandLogo } from '@/components/brand-logo';
+import { AnimatedLogo } from '@/components/animated-logo';
 import { OpenCountdown } from '@/components/menu/open-countdown';
-import { ShopStatus } from '@/components/menu/shop-status';
 import { ThemeToggle } from '@/components/menu/theme-toggle';
 import { useShopOpen } from '@/lib/shop';
 import { cn } from '@/lib/utils';
 
 /**
- * One way into the menu: a big tile with the menu's name in both languages,
- * its icon, and an arrow that slides on hover. The red tile is the main way in.
+ * One way into the menu: a tilted icon plate and a round arrow across the top,
+ * so it reads as something to tap, and the Arabic name large at the foot with
+ * the English and a short note around it. The main way in is the solid orange
+ * slab; the other sits on the card colour with orange accents.
  */
-function MenuLink({
+function MenuTile({
     href,
-    label,
     arabic,
+    english,
     note,
     icon: Icon,
-    primary = false,
+    primary,
     delay,
+    className,
 }: {
     href: string;
-    label: string;
     arabic: string;
+    english: string;
     note: string;
     icon: LucideIcon;
-    primary?: boolean;
-    delay: string;
+    primary: boolean;
+    delay: number;
+    className?: string;
 }) {
     return (
         <Link
             href={href}
-            style={{ animationDelay: delay }}
+            dir="rtl"
+            style={{ animationDelay: `${delay}ms` }}
             className={cn(
-                'group flex animate-rise items-center gap-4 rounded-[1.5rem] p-4 pe-5 transition-[translate,box-shadow,background-color] duration-300 ease-out hover:-translate-y-0.5 active:translate-y-0 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none',
+                'group relative isolate flex min-h-44 animate-rise flex-col justify-between gap-6 overflow-hidden rounded-[1.5rem] p-4 text-start transition-[translate,scale] duration-300 ease-out hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none',
                 primary
                     ? 'bg-brand-red text-brand-ink'
-                    : 'bg-card ring-1 ring-border hover:shadow-[0_20px_40px_-18px_rgb(0_0_0/0.5)]',
+                    : 'bg-card text-foreground ring-1 ring-border',
+                className,
             )}
         >
-            <span
-                className={cn(
-                    'grid size-14 shrink-0 place-items-center rounded-2xl',
-                    primary ? 'bg-black/20' : 'bg-muted text-brand-red-ink',
-                )}
-            >
-                <Icon className="size-6" strokeWidth={2.2} />
+            <span className="flex items-start justify-between">
+                <span
+                    aria-hidden
+                    className={cn(
+                        'grid size-12 rotate-[8deg] place-items-center rounded-2xl transition-[rotate,scale] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-105 group-hover:rotate-0',
+                        primary
+                            ? 'bg-white/25 text-brand-ink'
+                            : 'bg-brand-red/15 text-brand-red-ink',
+                    )}
+                >
+                    <Icon className="size-6" strokeWidth={2.2} />
+                </span>
+                <span
+                    aria-hidden
+                    className={cn(
+                        'grid size-9 place-items-center rounded-full transition-transform duration-300 ease-out group-hover:-translate-x-1',
+                        primary
+                            ? 'bg-brand-ink text-brand-red'
+                            : 'bg-foreground text-background',
+                    )}
+                >
+                    <ArrowLeft className="size-4" strokeWidth={2.6} />
+                </span>
             </span>
-            <span className="flex min-w-0 flex-1 flex-col">
-                <span className="flex items-baseline gap-2">
-                    <span className="font-display text-xl font-extrabold">
-                        {label}
-                    </span>
-                    <span
-                        lang="ar"
-                        className={cn(
-                            'font-display text-lg font-bold',
-                            primary ? 'text-brand-ink/70' : 'text-muted-foreground',
-                        )}
-                    >
-                        {arabic}
-                    </span>
+
+            <span className="flex flex-col gap-0.5">
+                <span
+                    dir="ltr"
+                    className={cn(
+                        'self-end text-[0.6875rem] font-bold tracking-[0.16em] uppercase',
+                        primary ? 'text-brand-ink/60' : 'text-muted-foreground',
+                    )}
+                >
+                    {english}
+                </span>
+                <span className="font-display text-3xl leading-tight font-black">
+                    {arabic}
                 </span>
                 <span
                     className={cn(
-                        'text-sm',
+                        'mt-0.5 text-xs font-medium',
                         primary ? 'text-brand-ink/70' : 'text-muted-foreground',
                     )}
                 >
                     {note}
                 </span>
             </span>
-            <ArrowRight className="size-5 shrink-0 transition-transform duration-300 group-hover:translate-x-1" />
         </Link>
     );
 }
 
 /**
- * The front door: the logo, the open/closed state, and the two ways into the menu. While closed, a
- * bilingual note and the countdown to opening sit under the buttons.
+ * The front door: the logo drawing itself in over the shop's food-doodle
+ * pattern, a one-line promise in both languages, and the two ways into the
+ * menu. While closed, a "closed" stamp lands on the logo and the countdown to
+ * opening sits under the tiles.
  */
 export default function Welcome() {
     const open = useShopOpen();
-    const onlineOrderingActive = usePage().props.onlineOrderingActive;
+    const { onlineOrderingActive, socials } = usePage().props;
 
     return (
         <>
             <Head title="Time Out Snack" />
 
             <div className="relative isolate flex min-h-dvh flex-col overflow-hidden">
-                <div className="mx-auto flex w-full max-w-md items-center justify-end gap-2 px-5 pt-5">
-                    <ShopStatus />
-                    <ThemeToggle />
-                </div>
+                {/* The brand's food doodles, painted in the page's ink and
+                    faded out behind the logo so it stays clean. */}
+                <div
+                    aria-hidden
+                    className="absolute inset-0 -z-20 bg-foreground opacity-[0.07] [mask-image:url('/images/doodles.webp')] [mask-size:560px] [mask-repeat:repeat]"
+                />
+                <div
+                    aria-hidden
+                    className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_70%_45%_at_50%_32%,var(--background)_30%,transparent_100%)]"
+                />
 
-                <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-10 px-5 pt-6 pb-12">
-                    <div className="relative grid animate-rise place-items-center py-8">
-                        <h1 className="sr-only">
-                            Time Out Snack · شاورما وبرغر في عاليه
-                        </h1>
-                        <BrandLogo alt="" className="w-full max-w-[17rem]" />
-                        <p className="mt-6 text-center text-sm text-muted-foreground">
-                            Shawarma, burgers & sandwiches · Aley
-                            <span lang="ar" dir="rtl" className="mt-0.5 block">
-                                شاورما، برغر وسندويشات · عاليه
+                <header className="mx-auto flex w-full max-w-md items-center justify-end px-5 pt-5">
+                    <ThemeToggle />
+                </header>
+
+                <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-9 px-5 pb-10">
+                    <div className="flex flex-col items-center gap-6">
+                        <div className="relative w-full max-w-[22rem]">
+                            <AnimatedLogo />
+                            {!open && (
+                                <span className="logo-stamp absolute -bottom-3 left-1/2 -ml-16 rounded-xl border-[3px] border-brand-red bg-background/90 px-3 py-1 font-display text-lg font-black tracking-wide text-brand-red-ink uppercase">
+                                    Closed · مغلق
+                                </span>
+                            )}
+                        </div>
+
+                        <p
+                            className="flex animate-rise flex-col items-center gap-1 text-center"
+                            style={{ animationDelay: '1100ms' }}
+                        >
+                            <span
+                                lang="ar"
+                                dir="rtl"
+                                className="font-display text-xl font-bold"
+                            >
+                                شاورما، برغر وسناك عالطلب
+                            </span>
+                            <span className="text-sm text-muted-foreground">
+                                Shawarma, burgers & snacks · Aley
                             </span>
                         </p>
                     </div>
 
-                    <nav aria-label="Menus" className="flex flex-col gap-3">
+                    <nav
+                        aria-label="Menus"
+                        dir="rtl"
+                        className={cn(
+                            'grid gap-3',
+                            onlineOrderingActive && 'grid-cols-2',
+                        )}
+                    >
                         {onlineOrderingActive && (
-                            <MenuLink
+                            <MenuTile
                                 href="/menu/delivery"
-                                label="Delivery"
                                 arabic="توصيل"
-                                note="Order to your door on WhatsApp"
+                                english="Delivery"
+                                note="اطلب عالواتساب"
                                 icon={Bike}
                                 primary
-                                delay="120ms"
+                                delay={1250}
                             />
                         )}
-                        <MenuLink
+                        <MenuTile
                             href="/menu/dine-in"
-                            label="Dine-in"
                             arabic="بالمحل"
-                            note="Browse the menu at your table"
+                            english="Dine-in"
+                            note="تصفّح المنيو"
                             icon={UtensilsCrossed}
                             primary={!onlineOrderingActive}
-                            delay="200ms"
+                            delay={1350}
                         />
                     </nav>
 
                     {!open && (
-                        <div className="animate-rise rounded-[1.5rem] bg-surface p-5 text-center [animation-delay:280ms]">
-                            <p className="text-sm font-semibold">
+                        <div
+                            className="animate-rise rounded-[1.5rem] bg-surface p-5 text-center"
+                            style={{ animationDelay: '1450ms' }}
+                        >
+                            <p lang="ar" dir="rtl" className="text-sm font-semibold">
+                                مغلقين هلق. عبّي سلتك واطلب أول ما نفتح.
+                            </p>
+                            <p className="mt-1 text-xs text-muted-foreground">
                                 We're closed right now. Fill your cart and order
                                 the moment we reopen.
-                            </p>
-                            <p
-                                lang="ar"
-                                dir="rtl"
-                                className="mt-1 text-sm text-muted-foreground"
-                            >
-                                نحن مغلقون حالياً. املأ سلّتك واطلب فور ما نفتح.
                             </p>
 
                             <OpenCountdown />
@@ -151,7 +202,35 @@ export default function Welcome() {
                     )}
                 </main>
 
-                
+                <footer
+                    className="mx-auto flex w-full max-w-md animate-rise flex-col items-center gap-3 px-5 pb-6"
+                    style={{ animationDelay: '1500ms' }}
+                >
+                    {socials.length > 0 && (
+                        <ul className="flex items-center gap-2">
+                            {socials.map((social) => (
+                                <li key={social.platform}>
+                                    <a
+                                        href={social.url}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        aria-label={social.label}
+                                        className="grid size-11 place-items-center rounded-full bg-card ring-1 ring-border transition-[translate,background-color] duration-200 hover:-translate-y-0.5 hover:bg-raised focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                    >
+                                        <img
+                                            src={social.icon}
+                                            alt=""
+                                            className="size-5"
+                                        />
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                        Aley, Lebanon · عاليه، لبنان
+                    </p>
+                </footer>
             </div>
         </>
     );
