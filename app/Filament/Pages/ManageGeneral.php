@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Enums\BannerMode;
+use App\Enums\CategoryCardDesign;
 use App\Enums\MenuFilterDesign;
 use App\Enums\PriceDisplay;
 use App\Enums\ProductCardDesign;
@@ -308,6 +309,18 @@ class ManageGeneral extends SettingsPage
                         Tab::make('Menu - القائمة')
                             ->icon(Heroicon::OutlinedListBullet)
                             ->schema([
+                                Radio::make('category_card_design')
+                                    ->label('Section card design - تصميم بطاقات الأقسام')
+                                    ->validationAttribute('section card design')
+                                    ->helperText('Choose how the menu sections look on the menu page. - اختر شكل أقسام القائمة في صفحة المنيو.')
+                                    ->options(CategoryCardDesign::class)
+                                    ->descriptions(collect(CategoryCardDesign::cases())
+                                        ->mapWithKeys(fn (CategoryCardDesign $design): array => [$design->value => $design->getDescription()])
+                                        ->all())
+                                    ->default(CategoryCardDesign::SLAB->value)
+                                    ->required()
+                                    ->columnSpanFull(),
+
                                 Radio::make('product_card_design')
                                     ->label('Product card design - تصميم بطاقة المنتج')
                                     ->validationAttribute('product card design')

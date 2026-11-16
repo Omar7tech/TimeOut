@@ -3,6 +3,9 @@ export type OrderType = 'dine_in' | 'takeaway' | 'both';
 /** The visual layout used to render product cards on the storefront menu. */
 export type ProductCardDesign = 'classic' | 'spotlight' | 'minimal';
 
+/** The visual style of the section cards on the menu's landing view. */
+export type CategoryCardDesign = 'slab' | 'tile' | 'list' | 'bubbles';
+
 /** The visual style of the day picker on the weekly schedule. */
 export type ScheduleDayDesign = 'calendar' | 'cards' | 'chips';
 

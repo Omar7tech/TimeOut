@@ -3,6 +3,7 @@
 namespace App\Settings;
 
 use App\Enums\BannerMode;
+use App\Enums\CategoryCardDesign;
 use App\Enums\MenuFilterDesign;
 use App\Enums\PriceDisplay;
 use App\Enums\ProductCardDesign;
@@ -136,6 +137,11 @@ class GeneralSettings extends Settings
     public MenuFilterDesign $menu_filter_design;
 
     /**
+     * The visual style of the section cards on the menu's landing view.
+     */
+    public CategoryCardDesign $category_card_design;
+
+    /**
      * The visual style of the day picker on the storefront's weekly schedule.
      */
     public ScheduleDayDesign $schedule_day_design;
@@ -166,6 +172,7 @@ class GeneralSettings extends Settings
             'banner_mode' => new EnumCast(BannerMode::class),
             'product_card_design' => new EnumCast(ProductCardDesign::class),
             'menu_filter_design' => new EnumCast(MenuFilterDesign::class),
+            'category_card_design' => new EnumCast(CategoryCardDesign::class),
             'schedule_day_design' => new EnumCast(ScheduleDayDesign::class),
         ];
     }

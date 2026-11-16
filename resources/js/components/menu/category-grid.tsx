@@ -1,8 +1,12 @@
 import { useMemo } from 'react';
 import { BrandSpark } from '@/components/brand-spark';
-import { CategoryCard } from '@/components/menu/category-card';
+import {
+    CATEGORY_GRID,
+    CategoryCard,
+} from '@/components/menu/category-card';
 import { TodayTile, WeekTile } from '@/components/menu/specials-tiles';
 import type { SpecialDish } from '@/components/menu/specials-tiles';
+import { useCategoryCardDesign } from '@/hooks/use-category-card-design';
 import { cn } from '@/lib/utils';
 import type { Category, ScheduleDay } from '@/types';
 
@@ -30,6 +34,7 @@ export function CategoryGrid({
     onSelectSchedule,
     schedule = [],
 }: CategoryGridProps) {
+    const design = useCategoryCardDesign();
     const showWeek = Boolean(onSelectSchedule) && schedule.length > 0;
 
     const specials = useMemo(() => {
@@ -73,7 +78,7 @@ export function CategoryGrid({
 
             <div
                 dir="rtl"
-                className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:gap-3 lg:grid-cols-5"
+                className={CATEGORY_GRID[design]}
             >
                 {categories.map((category, index) => (
                     <CategoryCard
