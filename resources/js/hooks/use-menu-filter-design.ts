@@ -1,7 +1,13 @@
 import { usePage } from '@inertiajs/react';
 import type { MenuFilterDesign } from '@/types';
 
-const DESIGNS: readonly string[] = ['pills', 'chips', 'dropdown'];
+const DESIGNS: readonly string[] = [
+    'pills',
+    'tabs',
+    'type',
+    'chips',
+    'dropdown',
+];
 
 /**
  * Reads the storefront's chosen menu filter design from the menu page props,

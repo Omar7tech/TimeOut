@@ -139,7 +139,7 @@ export default function Welcome() {
 
                         <p
                             className="flex animate-rise flex-col items-center gap-1 text-center"
-                            style={{ animationDelay: '1100ms' }}
+                            style={{ animationDelay: '550ms' }}
                         >
                             <span
                                 lang="ar"
@@ -171,7 +171,7 @@ export default function Welcome() {
                                 note="اطلب عالواتساب"
                                 icon={Bike}
                                 primary
-                                delay={1250}
+                                delay={620}
                             />
                         )}
                         <MenuTile
@@ -181,14 +181,14 @@ export default function Welcome() {
                             note="تصفّح المنيو"
                             icon={UtensilsCrossed}
                             primary={!onlineOrderingActive}
-                            delay={1350}
+                            delay={680}
                         />
                     </nav>
 
                     {!open && (
                         <div
                             className="animate-rise rounded-[1.5rem] bg-surface p-5 text-center"
-                            style={{ animationDelay: '1450ms' }}
+                            style={{ animationDelay: '740ms' }}
                         >
                             <p lang="ar" dir="rtl" className="text-sm font-semibold">
                                 مغلقين هلق. عبّي سلتك واطلب أول ما نفتح.
@@ -205,7 +205,7 @@ export default function Welcome() {
 
                 <footer
                     className="mx-auto flex w-full max-w-md animate-rise flex-col items-center gap-3 px-5 pb-6"
-                    style={{ animationDelay: '1500ms' }}
+                    style={{ animationDelay: '780ms' }}
                 >
                     {socials.length > 0 && (
                         <ul className="flex items-center gap-2">

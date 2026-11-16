@@ -29,14 +29,13 @@ export function CategoryAddonsDialog({ category }: CategoryAddonsDialogProps) {
                 <button
                     type="button"
                     aria-label={`${category.title} add-ons / الإضافات`}
-                    className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-muted px-4 text-sm font-semibold transition-[background-color,scale] duration-200 hover:bg-raised focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.97]"
+                    className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-full bg-muted px-3.5 font-display text-sm font-bold whitespace-nowrap transition-[background-color,scale] duration-200 hover:bg-raised focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.97]"
                 >
                     <Plus
                         className="size-4 text-brand-red-ink"
                         strokeWidth={2.6}
                     />
-                    <span>Extras</span>
-                    <span className="text-muted-foreground">· الإضافات</span>
+                    <span lang="ar">الإضافات</span>
                 </button>
             </DialogTrigger>
 

@@ -94,12 +94,12 @@ export function AnimatedLogo({
                         key={index}
                         d={d}
                         className="logo-rise"
-                        style={delay(index * 70)}
+                        style={delay(index * 40)}
                     />
                 ))}
             </g>
 
-            <g className="logo-write fill-foreground" style={delay(380)}>
+            <g className="logo-write fill-foreground" style={delay(180)}>
                 {OUT.map((d, index) => (
                     <path key={index} d={d} fillRule="evenodd" />
                 ))}
@@ -111,7 +111,7 @@ export function AnimatedLogo({
                         key={index}
                         d={d}
                         className="logo-rise-sm"
-                        style={delay(620 + index * 55)}
+                        style={delay(320 + index * 35)}
                     />
                 ))}
                 {LINES.map((d, index) => (
@@ -119,7 +119,7 @@ export function AnimatedLogo({
                         key={index}
                         d={d}
                         className="logo-line"
-                        style={delay(760 + index * 60)}
+                        style={delay(400 + index * 35)}
                     />
                 ))}
             </g>
@@ -130,9 +130,7 @@ export function AnimatedLogo({
                         key={index}
                         d={d}
                         className="logo-ray"
-                        style={{
-                            animationDelay: `${1000 + index * 55}ms, ${2200 + index * 180}ms`,
-                        }}
+                        style={delay(480 + index * 30)}
                     />
                 ))}
             </g>

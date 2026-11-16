@@ -1,7 +1,6 @@
 import { Head } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { BrandSpark } from '@/components/brand-spark';
 import { CartBar } from '@/components/menu/cart-bar';
 import { CartSheet } from '@/components/menu/cart-sheet';
 import { CartToast } from '@/components/menu/cart-toast';
@@ -231,8 +230,6 @@ function MenuView({
 
         return lookup;
     }, [categories]);
-    const sectionIndex =
-        activeCategory === null ? -1 : categories.indexOf(activeCategory);
 
     return (
         <>
@@ -283,41 +280,19 @@ function MenuView({
                         <div
                             key={String(active)}
                             dir={isArabic(heading.title) ? 'rtl' : 'ltr'}
-                            className="mt-6 mb-5 flex animate-rise flex-wrap items-end justify-between gap-x-4 gap-y-3 md:mt-8 md:mb-7"
+                            className="mt-6 mb-5 flex animate-rise items-end justify-between gap-4 border-b border-border pb-4 md:mt-8 md:mb-6 md:pb-5"
                         >
-                            <div className="flex min-w-0 flex-col gap-2">
-                                <span className="flex items-center gap-3 text-xs font-semibold tracking-[0.18em] text-muted-foreground uppercase">
-                                    <BrandSpark />
-                                    {sectionIndex >= 0
-                                        ? `Section ${String(sectionIndex + 1).padStart(2, '0')}`
-                                        : heading.caption}
-                                </span>
-                                <h1
-                                    dir="auto"
-                                    className="w-fit font-display text-[clamp(2.25rem,1.5rem+3.5vw,3.75rem)] leading-[1.05] font-black"
-                                >
-                                    {heading.title}
-                                </h1>
-                            </div>
+                            <h1 className="min-w-0 font-display text-[clamp(1.875rem,1.45rem+1.8vw,2.625rem)] leading-tight font-black">
+                                {heading.title}
+                            </h1>
 
-                            <div className="flex items-center gap-3">
-                                {active !== 'schedule' && products.length > 0 && (
-                                    <span className="text-sm text-muted-foreground">
-                                        <span className="font-display font-bold text-foreground tabular-nums">
-                                            {products.length}
-                                        </span>{' '}
-                                        {products.length === 1 ? 'item' : 'items'}{' '}
-                                        · صنف
-                                    </span>
+                            {activeCategory &&
+                                activeCategory.addons &&
+                                activeCategory.addons.length > 0 && (
+                                    <CategoryAddonsDialog
+                                        category={activeCategory}
+                                    />
                                 )}
-                                {activeCategory &&
-                                    activeCategory.addons &&
-                                    activeCategory.addons.length > 0 && (
-                                        <CategoryAddonsDialog
-                                            category={activeCategory}
-                                        />
-                                    )}
-                            </div>
                         </div>
 
                         {active === 'schedule' ? (

@@ -10,7 +10,7 @@ export type CategoryCardDesign = 'slab' | 'tile' | 'list' | 'bubbles';
 export type ScheduleDayDesign = 'calendar' | 'cards' | 'chips';
 
 /** The visual style used to render the menu's category filter controls. */
-export type MenuFilterDesign = 'pills' | 'chips' | 'dropdown';
+export type MenuFilterDesign = 'pills' | 'tabs' | 'type' | 'chips' | 'dropdown';
 
 /** The visual style a Menu Board uses to present each slide on the TV. */
 export type BoardLayout =

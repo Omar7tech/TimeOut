@@ -312,31 +312,29 @@
     }
 
     .logo-animate .logo-rise {
-        animation: logo-rise 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+        animation: logo-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
     }
 
     .logo-animate .logo-rise-sm {
-        animation: logo-rise-sm 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+        animation: logo-rise-sm 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
     }
 
     .logo-animate .logo-write {
-        animation: logo-write 1s cubic-bezier(0.65, 0, 0.35, 1) both;
+        animation: logo-write 0.55s cubic-bezier(0.65, 0, 0.35, 1) both;
     }
 
     .logo-animate .logo-line {
         transform-origin: left center;
-        animation: logo-line 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+        animation: logo-line 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
     }
 
     .logo-animate .logo-ray {
         transform-origin: center;
-        animation:
-            logo-ray 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both,
-            logo-shine 3.2s ease-in-out infinite;
+        animation: logo-ray 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
     }
 
     .logo-stamp {
-        animation: logo-stamp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 1.5s both;
+        animation: logo-stamp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s both;
     }
 
     @keyframes logo-rise {
@@ -375,15 +373,6 @@
         }
     }
 
-    @keyframes logo-shine {
-        0%,
-        100% {
-            opacity: 1;
-        }
-        50% {
-            opacity: 0.4;
-        }
-    }
 
     @keyframes logo-stamp {
         from {
@@ -394,5 +383,30 @@
             opacity: 1;
             transform: rotate(-12deg) scale(1);
         }
+    }
+}
+
+@layer components {
+    /*
+     * A till receipt: torn zigzag edges top and bottom, cut from the element
+     * with a mask so the page shows through the teeth.
+     */
+    .receipt {
+        --tooth: 9px;
+        --tooth-width: 16px;
+        -webkit-mask:
+            conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg)
+                top / var(--tooth-width) var(--tooth) repeat-x,
+            linear-gradient(#000 0 0) center / 100% calc(100% - 2 * var(--tooth))
+                no-repeat,
+            conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg)
+                bottom / var(--tooth-width) var(--tooth) repeat-x;
+        mask:
+            conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg)
+                top / var(--tooth-width) var(--tooth) repeat-x,
+            linear-gradient(#000 0 0) center / 100% calc(100% - 2 * var(--tooth))
+                no-repeat,
+            conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg)
+                bottom / var(--tooth-width) var(--tooth) repeat-x;
     }
 }
