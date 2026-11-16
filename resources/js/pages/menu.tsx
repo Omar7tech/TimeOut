@@ -235,6 +235,18 @@ function MenuView({
         <>
             <Head title={`${orderTypeLabel} Menu`} />
 
+            {/* The brand's food doodles behind the header and the intro,
+                fading out before the menu itself starts. */}
+            {active === null && (
+                <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[30rem] overflow-hidden"
+                >
+                    <div className="absolute inset-0 bg-foreground opacity-[0.08] [mask-image:url('/images/doodles.webp')] [mask-size:480px] [mask-repeat:repeat]" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent from-20% to-background" />
+                </div>
+            )}
+
             <SiteBanner />
 
             <SiteHeader showCart={cartEnabled} />

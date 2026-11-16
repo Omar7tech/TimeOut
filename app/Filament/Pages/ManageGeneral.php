@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Enums\BannerMode;
 use App\Enums\CategoryCardDesign;
+use App\Enums\FooterDesign;
 use App\Enums\MenuFilterDesign;
 use App\Enums\PriceDisplay;
 use App\Enums\ProductCardDesign;
@@ -318,6 +319,18 @@ class ManageGeneral extends SettingsPage
                                         ->mapWithKeys(fn (CategoryCardDesign $design): array => [$design->value => $design->getDescription()])
                                         ->all())
                                     ->default(CategoryCardDesign::SLAB->value)
+                                    ->required()
+                                    ->columnSpanFull(),
+
+                                Radio::make('footer_design')
+                                    ->label('Footer design - تصميم أسفل الصفحة')
+                                    ->validationAttribute('footer design')
+                                    ->helperText('Choose how the footer at the bottom of the menu looks. - اختر شكل أسفل صفحة المنيو.')
+                                    ->options(FooterDesign::class)
+                                    ->descriptions(collect(FooterDesign::cases())
+                                        ->mapWithKeys(fn (FooterDesign $design): array => [$design->value => $design->getDescription()])
+                                        ->all())
+                                    ->default(FooterDesign::CLASSIC->value)
                                     ->required()
                                     ->columnSpanFull(),
 

@@ -385,3 +385,48 @@
         }
     }
 }
+
+@layer components {
+    /*
+     * A till receipt: torn zigzag edges top and bottom, cut from the element
+     * with a mask so whatever is behind it shows through the teeth.
+     */
+    .receipt {
+        --tooth: 9px;
+        --tooth-width: 16px;
+        -webkit-mask:
+            conic-gradient(
+                    from 135deg at top,
+                    #0000,
+                    #000 1deg 89deg,
+                    #0000 90deg
+                )
+                top / var(--tooth-width) var(--tooth) repeat-x,
+            linear-gradient(#000 0 0) center / 100%
+                calc(100% - 2 * var(--tooth)) no-repeat,
+            conic-gradient(
+                    from -45deg at bottom,
+                    #0000,
+                    #000 1deg 89deg,
+                    #0000 90deg
+                )
+                bottom / var(--tooth-width) var(--tooth) repeat-x;
+        mask:
+            conic-gradient(
+                    from 135deg at top,
+                    #0000,
+                    #000 1deg 89deg,
+                    #0000 90deg
+                )
+                top / var(--tooth-width) var(--tooth) repeat-x,
+            linear-gradient(#000 0 0) center / 100%
+                calc(100% - 2 * var(--tooth)) no-repeat,
+            conic-gradient(
+                    from -45deg at bottom,
+                    #0000,
+                    #000 1deg 89deg,
+                    #0000 90deg
+                )
+                bottom / var(--tooth-width) var(--tooth) repeat-x;
+    }
+}

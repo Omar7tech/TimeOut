@@ -59,6 +59,7 @@ class MenuController extends Controller
             'cardDesign' => $settings->product_card_design->value,
             'filterDesign' => $settings->menu_filter_design->value,
             'categoryDesign' => $settings->category_card_design->value,
+            'footerDesign' => $settings->footer_design->value,
             'scheduleDesign' => $settings->schedule_day_design->value,
             // The weekly schedule is only built (and queried) when the feature is on.
             'schedule' => $settings->show_product_schedule

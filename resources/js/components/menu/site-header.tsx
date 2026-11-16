@@ -34,7 +34,7 @@ export function SiteHeader({ showCart = false }: SiteHeaderProps) {
                 'sticky top-0 z-30 transition-[background-color,box-shadow] duration-300',
                 scrolled
                     ? 'bg-background/85 shadow-[0_1px_0_var(--border)] backdrop-blur-xl'
-                    : 'bg-background',
+                    : 'bg-transparent',
             )}
         >
             <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 md:h-[4.5rem] md:px-6">

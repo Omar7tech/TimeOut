@@ -3,6 +3,9 @@ export type OrderType = 'dine_in' | 'takeaway' | 'both';
 /** The visual layout used to render product cards on the storefront menu. */
 export type ProductCardDesign = 'classic' | 'spotlight' | 'minimal';
 
+/** The visual style of the footer at the bottom of the menu. */
+export type FooterDesign = 'classic' | 'receipt';
+
 /** The visual style of the section cards on the menu's landing view. */
 export type CategoryCardDesign = 'slab' | 'tile' | 'list' | 'bubbles';
 

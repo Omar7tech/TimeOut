@@ -1,54 +1,16 @@
 import { usePage } from '@inertiajs/react';
 import { MapPin } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
 import { AnimatedLogo } from '@/components/animated-logo';
 import { FooterHours } from '@/components/menu/footer-hours';
+import { MAPS_URL } from '@/components/menu/footer-shared';
+import type { SiteFooterProps } from '@/components/menu/footer-shared';
+import { ReceiptFooter } from '@/components/menu/receipt-footer';
+import { useFooterDesign } from '@/hooks/use-footer-design';
+import { useSeen } from '@/hooks/use-seen';
 import { useShop } from '@/lib/shop';
 import { cn } from '@/lib/utils';
 import { buildWhatsAppUrl } from '@/lib/whatsapp-order';
-import type { Category } from '@/types';
 
-/** The shop on Google Maps, the same link as the structured data. */
-const MAPS_URL = 'https://maps.app.goo.gl/oqgUfzQC5yu9EVso6';
-
-interface SiteFooterProps {
-    categories: Category[];
-    /** Jump to a section of the menu above (same client-side filter as the pills). */
-    onSelectCategory?: (id: number) => void;
-}
-
-/**
- * Whether the element has scrolled into view yet. Fires once and stays true,
- * so whatever it starts plays a single time.
- */
-function useSeen<T extends Element>(): [React.RefObject<T | null>, boolean] {
-    const ref = useRef<T>(null);
-    const [seen, setSeen] = useState(false);
-
-    useEffect(() => {
-        const el = ref.current;
-
-        if (!el || seen) {
-            return;
-        }
-
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    setSeen(true);
-                    observer.disconnect();
-                }
-            },
-            { threshold: 0.3 },
-        );
-
-        observer.observe(el);
-
-        return () => observer.disconnect();
-    }, [seen]);
-
-    return [ref, seen];
-}
 
 /** A small heading over a footer column. */
 function Label({ children }: { children: React.ReactNode }) {
@@ -60,13 +22,27 @@ function Label({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * The close of every menu page, in the page's own theme: an orange "Hungry?"
+ * The menu's footer, in the design chosen in the dashboard: the classic one
+ * below, or the till receipt.
+ */
+export function SiteFooter(props: SiteFooterProps) {
+    const design = useFooterDesign();
+
+    if (design === 'receipt') {
+        return <ReceiptFooter {...props} />;
+    }
+
+    return <ClassicFooter {...props} />;
+}
+
+/**
+ * Classic: the close of every menu page, in the page's own theme: an orange "Hungry?"
  * card with the two things a customer wants next (order on WhatsApp, get
  * directions), one tidy panel with the sections, hours and socials, and the
  * logo set large and whole at the foot, drawing itself in once when it
  * scrolls into view. The brand's food doodles sit faintly behind it all.
  */
-export function SiteFooter({ categories, onSelectCategory }: SiteFooterProps) {
+function ClassicFooter({ categories, onSelectCategory }: SiteFooterProps) {
     const { socials, whatsappNumber, whatsappBadge } = usePage().props;
     const chatNumber = whatsappNumber ?? whatsappBadge.number;
     const showHours = useShop().statusMode === 'automatic';
@@ -74,9 +50,16 @@ export function SiteFooter({ categories, onSelectCategory }: SiteFooterProps) {
 
     return (
         <footer className="relative isolate mt-20 overflow-hidden border-t border-border bg-surface">
+            {/* The brand's food doodles: clear around the logo at the foot,
+                fading away towards the top so the content above sits on a
+                clean surface. */}
             <div
                 aria-hidden
-                className="absolute inset-0 -z-10 bg-foreground opacity-[0.045] [mask-image:url('/images/doodles.webp')] [mask-size:560px] [mask-repeat:repeat]"
+                className="absolute inset-0 -z-10 bg-foreground opacity-[0.08] [mask-image:url('/images/doodles.webp')] [mask-size:480px] [mask-repeat:repeat]"
+            />
+            <div
+                aria-hidden
+                className="absolute inset-x-0 top-0 -z-10 h-[62%] bg-gradient-to-b from-surface from-35% to-transparent"
             />
 
             <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 pt-10 md:gap-5 md:px-6 md:pt-14">
