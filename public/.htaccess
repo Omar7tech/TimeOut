@@ -5,6 +5,11 @@
 
     RewriteEngine On
 
+    # One canonical host: send www to the bare domain, so pages and the
+    # images in /storage always share an origin.
+    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+    RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
@@ -22,4 +27,13 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+</IfModule>
+
+# Let uploaded images be read from any origin: the menu paints category
+# icons through CSS masks and the admin uploader fetches previews, and both
+# need CORS to load a picture.
+<IfModule mod_headers.c>
+    <FilesMatch "\.(webp|png|jpe?g|gif|svg|avif)$">
+        Header set Access-Control-Allow-Origin "*"
+    </FilesMatch>
 </IfModule>
